@@ -1,0 +1,574 @@
+{
+  "_legend": {
+    "✓": "visible by default",
+    "V": "requires traveler capability",
+    "V+PF": "requires traveler capability AND the profile flag in profileRules",
+    "L": "visible, read-only («Lectura» tag)",
+    "P": "requires a configured permission in user.permissions (hidden by default)",
+    "(missing role)": "not visible (—)"
+  },
+  "_roles": "COL Colaborador · CHH Capital Humano HSM · DIR Dirección (Hospital/Corporativa) · CHC Capital Humano Corporativo · DGA · HH Hotelería HSM · HC Hotelería Corporativo · VIA Viáticos · CON Contabilidad/Tesorería · CTR Contraloría · ADM Admin/Seguridad TI",
+  "_icons": "icon = file name in public/assets/icons/<icon>.svg and key in src/config/icons.js. Same function = same icon for every role.",
+  "profileRules": {
+    "anticipo": "anticipo",
+    "representacion": "representacion"
+  },
+  "groups": [
+    {
+      "group": null,
+      "items": [
+        {
+          "id": "inicio",
+          "label": "Inicio",
+          "icon": "home",
+          "route": "/inicio",
+          "us": "US-01",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "✓",
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓",
+            "HH": "✓",
+            "HC": "✓",
+            "VIA": "✓",
+            "CON": "✓",
+            "CTR": "✓",
+            "ADM": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Planeación de viaje",
+      "items": [
+        {
+          "id": "creacion",
+          "label": "Creación",
+          "icon": "plus",
+          "route": "/viaje/creacion",
+          "us": "US-08",
+          "fn": "Crear solicitud de viaje",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "V",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "V",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "V",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        },
+        {
+          "id": "misviajes",
+          "label": "Mis viajes",
+          "icon": "suitcase",
+          "route": "/viaje/mis-viajes",
+          "us": "US-11",
+          "fn": "Expediente de folios propios",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "V",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "V",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "V",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        },
+        {
+          "id": "anticipo",
+          "label": "Anticipo",
+          "icon": "money",
+          "route": "/viaje/anticipo",
+          "us": "US-15",
+          "visibility": {
+            "COL": "V+PF",
+            "CHH": "V+PF",
+            "DIR": "V+PF",
+            "CHC": "V+PF",
+            "DGA": "V+PF",
+            "HH": "V+PF",
+            "HC": "V+PF",
+            "VIA": "V+PF",
+            "CON": "V+PF",
+            "CTR": "V+PF",
+            "ADM": "V+PF"
+          }
+        },
+        {
+          "id": "hospedaje",
+          "label": "Hospedaje",
+          "icon": "bed",
+          "route": "/viaje/hospedaje",
+          "us": "US-12",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "V",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "V",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "V",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        },
+        {
+          "id": "vuelo",
+          "label": "Vuelo",
+          "icon": "plane",
+          "route": "/viaje/vuelo",
+          "us": "US-12",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "V",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "V",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "V",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        },
+        {
+          "id": "comprobacion",
+          "label": "Comprobación",
+          "icon": "checkSquare",
+          "route": "/viaje/comprobacion",
+          "us": "US-19",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "V",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "V",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "V",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        },
+        {
+          "id": "representacion",
+          "label": "Gastos de representación",
+          "icon": "receipt",
+          "route": "/viaje/representacion",
+          "us": "US-20",
+          "visibility": {
+            "COL": "V+PF",
+            "CHH": "V+PF",
+            "DIR": "V+PF",
+            "CHC": "V+PF",
+            "DGA": "✓",
+            "HH": "V+PF",
+            "HC": "V+PF",
+            "VIA": "V+PF",
+            "CON": "V+PF",
+            "CTR": "V+PF",
+            "ADM": "V+PF"
+          }
+        }
+      ]
+    },
+    {
+      "group": null,
+      "items": [
+        {
+          "id": "perfil",
+          "label": "Perfil del viajero",
+          "icon": "user",
+          "route": "/perfil-viajero",
+          "us": "US-04",
+          "fn": "Consulta y actualización del perfil de viajero",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "V",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "V",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "✓",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        }
+      ]
+    },
+    {
+      "group": null,
+      "items": [
+        {
+          "id": "externos",
+          "label": "Viajeros externos",
+          "icon": "userPlus",
+          "route": "/viajeros-externos",
+          "us": "US-05",
+          "fn": "Gestión de colaboradores externos",
+          "visibility": {
+            "CHH": "✓",
+            "VIA": "L"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Presupuesto",
+      "items": [
+        {
+          "id": "pres-monitor",
+          "label": "Monitor",
+          "icon": "chart",
+          "route": "/presupuesto/monitor",
+          "us": "US-06",
+          "visibility": {
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓",
+            "VIA": "✓",
+            "CON": "✓",
+            "CTR": "✓",
+            "ADM": "P"
+          }
+        },
+        {
+          "id": "pres-act",
+          "label": "Actualización",
+          "icon": "refresh",
+          "route": "/presupuesto/actualizacion",
+          "us": "US-07",
+          "visibility": {
+            "CON": "✓",
+            "CTR": "L",
+            "DIR": "P"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Autorización",
+      "items": [
+        {
+          "id": "aut-viaje",
+          "label": "Aprobación de viaje",
+          "icon": "checkCircle",
+          "route": "/autorizacion/viaje",
+          "us": "US-09",
+          "visibility": {
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓"
+          }
+        },
+        {
+          "id": "aut-rep",
+          "label": "Gastos de representación",
+          "icon": "receipt",
+          "route": "/autorizacion/representacion",
+          "us": "US-20",
+          "visibility": {
+            "DGA": "✓",
+            "CTR": "✓"
+          }
+        },
+        {
+          "id": "aut-comp",
+          "label": "Comprobaciones",
+          "icon": "fileCheck",
+          "route": "/autorizacion/comprobaciones",
+          "us": "US-20",
+          "fn": "Evidencias de gastos de representación (DGA)",
+          "visibility": {
+            "DGA": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Reservaciones",
+      "items": [
+        {
+          "id": "res-hsm",
+          "label": "Hospedaje HSM",
+          "icon": "hospital",
+          "route": "/reservaciones/hospedaje-hsm",
+          "us": "US-13",
+          "visibility": {
+            "HH": "✓"
+          }
+        },
+        {
+          "id": "res-hotel",
+          "label": "Hotel y vuelo",
+          "icon": "hotel",
+          "route": "/reservaciones/hotel-vuelo",
+          "us": "US-14",
+          "fn": "Hotel externo y ciclo de vuelo",
+          "visibility": {
+            "VIA": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Gestión",
+      "items": [
+        {
+          "id": "ges-comp",
+          "label": "Comprobaciones",
+          "icon": "checkSquare",
+          "route": "/gestion/comprobaciones",
+          "us": "US-21",
+          "fn": "Validación de comprobaciones",
+          "visibility": {
+            "VIA": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Contabilización",
+      "items": [
+        {
+          "id": "con-plan",
+          "label": "Planeación de viaje",
+          "icon": "list",
+          "route": "/contabilizacion/planeacion",
+          "us": "US-11",
+          "visibility": {
+            "CON": "✓"
+          }
+        },
+        {
+          "id": "con-ant",
+          "label": "Solicitud de anticipo",
+          "icon": "money",
+          "route": "/contabilizacion/anticipo",
+          "us": "US-16",
+          "visibility": {
+            "CON": "✓"
+          }
+        },
+        {
+          "id": "con-comp",
+          "label": "Comprobación",
+          "icon": "checkSquare",
+          "route": "/contabilizacion/comprobacion",
+          "us": "US-22",
+          "visibility": {
+            "CON": "✓"
+          }
+        },
+        {
+          "id": "con-rep",
+          "label": "Gastos de representación",
+          "icon": "receipt",
+          "route": "/contabilizacion/representacion",
+          "us": "US-22",
+          "visibility": {
+            "CON": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": null,
+      "items": [
+        {
+          "id": "encuestas",
+          "label": "Gestión de encuestas",
+          "icon": "survey",
+          "route": "/encuestas",
+          "us": "US-18",
+          "visibility": {
+            "HC": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": null,
+      "items": [
+        {
+          "id": "dashboard",
+          "label": "Dashboard",
+          "icon": "grid",
+          "route": "/dashboard",
+          "us": "US-23",
+          "visibility": {
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓",
+            "HC": "✓",
+            "VIA": "✓",
+            "CON": "✓",
+            "CTR": "✓",
+            "ADM": "P"
+          }
+        },
+        {
+          "id": "reportes",
+          "label": "Reportes",
+          "icon": "fileText",
+          "route": "/reportes",
+          "us": "US-24",
+          "visibility": {
+            "CHH": "✓",
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓",
+            "HC": "✓",
+            "VIA": "✓",
+            "CON": "✓",
+            "CTR": "✓",
+            "ADM": "✓"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Administración",
+      "items": [
+        {
+          "id": "adm-perfiles",
+          "label": "Perfiles de viajero",
+          "icon": "users",
+          "route": "/administracion/perfiles",
+          "us": "US-03",
+          "visibility": {
+            "ADM": "✓"
+          }
+        },
+        {
+          "id": "adm-catalogos",
+          "label": "Catálogos y parámetros",
+          "icon": "book",
+          "route": "/administracion/catalogos",
+          "us": "US-25",
+          "fn": "Catálogos, parámetros globales y mantenimiento",
+          "visibility": {
+            "ADM": "✓"
+          }
+        },
+        {
+          "id": "adm-politicas",
+          "label": "Políticas y guías",
+          "icon": "shield",
+          "route": "/administracion/politicas",
+          "us": "US-27",
+          "visibility": {
+            "ADM": "✓"
+          }
+        },
+        {
+          "id": "adm-usuarios",
+          "label": "Usuarios y permisos",
+          "icon": "key",
+          "route": "/administracion/usuarios",
+          "us": "US-26",
+          "visibility": {
+            "ADM": "✓"
+          }
+        },
+        {
+          "id": "adm-bitacora",
+          "label": "Bitácora",
+          "icon": "history",
+          "route": "/administracion/bitacora",
+          "us": "US-26",
+          "visibility": {
+            "ADM": "✓",
+            "CHH": "L",
+            "DIR": "L",
+            "CHC": "L",
+            "CON": "L",
+            "CTR": "L"
+          }
+        }
+      ]
+    },
+    {
+      "group": "Ayuda",
+      "items": [
+        {
+          "id": "ayu-politicas",
+          "label": "Políticas",
+          "icon": "shield",
+          "route": "/ayuda/politicas",
+          "us": "US-27",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "✓",
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓",
+            "HH": "✓",
+            "HC": "✓",
+            "VIA": "✓",
+            "CON": "✓",
+            "CTR": "✓",
+            "ADM": "✓"
+          }
+        },
+        {
+          "id": "ayu-guia",
+          "label": "Guía de usuario",
+          "icon": "help",
+          "route": "/ayuda/guia",
+          "us": "US-27",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "✓",
+            "DIR": "✓",
+            "CHC": "✓",
+            "DGA": "✓",
+            "HH": "✓",
+            "HC": "✓",
+            "VIA": "✓",
+            "CON": "✓",
+            "CTR": "✓",
+            "ADM": "✓"
+          }
+        },
+        {
+          "id": "ayu-encuesta",
+          "label": "Encuesta",
+          "icon": "survey",
+          "route": "/ayuda/encuesta",
+          "us": "US-18",
+          "fn": "Responder encuesta de hospedaje HSM",
+          "visibility": {
+            "COL": "✓",
+            "CHH": "✓",
+            "DIR": "V",
+            "CHC": "V",
+            "DGA": "—",
+            "HH": "V",
+            "HC": "V",
+            "VIA": "V",
+            "CON": "V",
+            "CTR": "V",
+            "ADM": "V"
+          }
+        }
+      ]
+    }
+  ]
+}

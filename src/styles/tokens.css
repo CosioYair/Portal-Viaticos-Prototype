@@ -1,0 +1,67 @@
+/* DESIGN TOKENS as CSS custom properties — mirror of src/config/designTokens.js (keep in sync). */
+:root {
+  /* Brand / neutrals */
+  --c-blue: #00A7E1;
+  --c-blue-hover: #0093C7;
+  --c-blue-text: #0077A8;
+  --c-blue-tint: #E6F6FC;
+  --c-text: #4A4F54;
+  --c-text-2: #777779;
+  --c-text-3: #A9A8A9;
+  --c-gray-light: #D0D2D3;
+  --c-border: #D9D8D6;
+  --c-bg: #F4F4F4;
+  --c-snow: #F9F9F9;
+  --c-white: #FFFFFF;
+  --c-behind: #E9E9E9;
+  /* Semantic */
+  --c-success: #A2C83A;
+  --c-success-text: #7DA321;
+  --c-success-bg: #F3F8E6;
+  --c-warning: #E9A800;
+  --c-warning-text: #B37D00;
+  --c-warning-bg: #FFF6DC;
+  --c-error: #F25757;
+  --c-error-bg: #FEEDED;
+  --c-emergency: #E1251B;
+  --c-emergency-bg: #FCE8E6;
+  --c-tooltip: #2E3236;
+  /* Sidebar (on Digital Blue) */
+  --sb-bg: var(--c-blue);
+  --sb-fg: #FFFFFF;
+  --sb-hover: rgba(255,255,255,.18);
+  --sb-hover-strong: rgba(255,255,255,.28);
+  --sb-divider: rgba(255,255,255,.35);
+  --sb-active-bg: #FFFFFF;
+  --sb-active-fg: #4A4F54;
+  --sb-active-icon: #00A7E1;
+  --sb-count-bg: #FFFFFF;
+  --sb-count-fg: #0077A8;
+  /* Typography */
+  --font: Roboto, system-ui, sans-serif;
+  --track-tight: -0.04em;   /* −4 % */
+  --track-snug: -0.02em;    /* −2 % */
+  --track-wide: 0.06em;     /* +6 % */
+  --track-wider: 0.08em;    /* +8 % */
+  /* Dimensions */
+  --header-h: 64px;
+  --sidebar-w: 284px;
+  --sidebar-w-collapsed: 72px;
+  --logo-h: 30px;
+  --avatar: 36px;
+  --icon-btn: 44px;
+  --panel-notices-w: 400px;
+  --panel-account-w: 300px;
+  --panel-offset: 24px;
+  --page-pad: 24px;
+  --main-pad: 28px 32px 48px;
+  --card-pad: 20px;
+  --kpi-min: 170px;
+  /* Shape */
+  --r-card: 8px;
+  --r-message: 6px;
+  --r-control: 4px;
+  --r-counter: 11px;
+  --shadow-panel: 0 8px 24px rgba(74,79,84,.16);
+  --shadow-tooltip: 0 2px 8px rgba(0,0,0,.2);
+}

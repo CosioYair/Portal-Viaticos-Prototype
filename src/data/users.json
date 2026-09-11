@@ -1,0 +1,223 @@
+{
+  "_comment": "DEMO DATA. role = functional role code (see roles). traveler = independent capability. perfil = traveler profile; its flags (anticipo, representacion) unlock V+PF items. permissions = configured P items (empty = hidden).",
+  "defaultUserId": "u01",
+  "roles": {
+    "COL": {
+      "code": "COL",
+      "label": "Colaborador",
+      "kind": "colaborador",
+      "scope": "Sus propios folios",
+      "note": "Viajero por definición."
+    },
+    "CHH": {
+      "code": "CHH",
+      "label": "Capital Humano HSM",
+      "kind": "gestor",
+      "scope": "Su hospital",
+      "note": "Registra y gestiona viajeros externos (quedan vinculados a este usuario). NO autoriza. Puede ser viajero."
+    },
+    "DIR": {
+      "code": "DIR",
+      "label": "Dirección",
+      "kind": "autorizador",
+      "scope": "Su hospital o su dirección corporativa",
+      "note": "Dirección de Hospital y Dirección Corporativa comparten navegación; cambia el ámbito de datos."
+    },
+    "CHC": {
+      "code": "CHC",
+      "label": "Capital Humano Corporativo",
+      "kind": "autorizador",
+      "scope": "Consolidado",
+      "note": "CH CO: autorizaciones escaladas (excedentes de política/presupuesto, Dirección de Hospital vacante). Distinto de Capital Humano HSM."
+    },
+    "DGA": {
+      "code": "DGA",
+      "label": "DGA",
+      "kind": "autorizador",
+      "scope": "Consolidado",
+      "note": "Dirección General Adjunta: autorizaciones específicas y preautorización de gastos de representación."
+    },
+    "HH": {
+      "code": "HH",
+      "label": "Hotelería HSM",
+      "kind": "gestor",
+      "scope": "Su unidad hospitalaria",
+      "note": "Confirma o rechaza hospedaje HSM."
+    },
+    "HC": {
+      "code": "HC",
+      "label": "Hotelería Corporativo",
+      "kind": "gestor",
+      "scope": "Todas las unidades",
+      "note": "Gestión de encuestas de hospedaje."
+    },
+    "VIA": {
+      "code": "VIA",
+      "label": "Viáticos",
+      "kind": "gestor",
+      "scope": "Consolidado",
+      "note": "Hotel externo, vuelo y validación de comprobaciones."
+    },
+    "CON": {
+      "code": "CON",
+      "label": "Contabilidad / Tesorería",
+      "kind": "gestor",
+      "scope": "Consolidado",
+      "note": "Contabilización; genera IT0014 (Nómina está fuera del portal)."
+    },
+    "CTR": {
+      "code": "CTR",
+      "label": "Contraloría",
+      "kind": "autorizador",
+      "scope": "Consolidado",
+      "note": "Gastos de representación después de DGA."
+    },
+    "ADM": {
+      "code": "ADM",
+      "label": "Admin / Seguridad TI",
+      "kind": "administrador",
+      "scope": "Configuración del portal",
+      "note": "Usuarios, permisos, perfiles, catálogos, políticas, bitácora."
+    }
+  },
+  "users": [
+    {
+      "id": "u01",
+      "name": "Elizabeth Sánchez Gómez",
+      "role": "COL",
+      "roleLabel": "Colaborador",
+      "area": "Dirección Comercial y de Negocios",
+      "traveler": true,
+      "perfil": {
+        "nivel": 3,
+        "nombre": "Mandos Medios",
+        "anticipo": true,
+        "representacion": false
+      },
+      "permissions": []
+    },
+    {
+      "id": "u02",
+      "name": "Laura Miranda Torres",
+      "role": "CHH",
+      "roleLabel": "Capital Humano HSM",
+      "area": "HSM Chihuahua",
+      "traveler": true,
+      "perfil": {
+        "nivel": 3,
+        "nombre": "Mandos Medios",
+        "anticipo": true,
+        "representacion": false
+      },
+      "permissions": []
+    },
+    {
+      "id": "u03",
+      "name": "Ricardo Fuentes Ávila",
+      "role": "DIR",
+      "roleLabel": "Dirección de Hospital",
+      "area": "HSM Chihuahua",
+      "traveler": true,
+      "perfil": {
+        "nivel": 2,
+        "nombre": "Dirección",
+        "anticipo": true,
+        "representacion": false
+      },
+      "permissions": []
+    },
+    {
+      "id": "u04",
+      "name": "Mónica Herrera Luna",
+      "role": "DIR",
+      "roleLabel": "Dirección Corporativa",
+      "area": "Dirección Comercial y de Negocios",
+      "traveler": true,
+      "perfil": {
+        "nivel": 1,
+        "nombre": "Dirección Corporativa",
+        "anticipo": true,
+        "representacion": true
+      },
+      "permissions": []
+    },
+    {
+      "id": "u05",
+      "name": "Jorge Castañeda Ríos",
+      "role": "CHC",
+      "roleLabel": "Capital Humano Corporativo",
+      "area": "Corporativo",
+      "traveler": false,
+      "permissions": []
+    },
+    {
+      "id": "u06",
+      "name": "Patricia Solís Navarro",
+      "role": "DGA",
+      "roleLabel": "Dirección General Adjunta",
+      "area": "Corporativo",
+      "traveler": true,
+      "perfil": {
+        "nivel": 1,
+        "nombre": "Dirección General",
+        "anticipo": true,
+        "representacion": true
+      },
+      "permissions": []
+    },
+    {
+      "id": "u07",
+      "name": "Andrés Palma Cordero",
+      "role": "HH",
+      "roleLabel": "Hotelería HSM",
+      "area": "HSM Chihuahua",
+      "traveler": false,
+      "permissions": []
+    },
+    {
+      "id": "u08",
+      "name": "Verónica Ibarra Cano",
+      "role": "HC",
+      "roleLabel": "Hotelería Corporativo",
+      "area": "Corporativo",
+      "traveler": false,
+      "permissions": []
+    },
+    {
+      "id": "u09",
+      "name": "Daniel Osorio Peña",
+      "role": "VIA",
+      "roleLabel": "Viáticos",
+      "area": "Corporativo",
+      "traveler": false,
+      "permissions": []
+    },
+    {
+      "id": "u10",
+      "name": "Claudia Reyna Ortega",
+      "role": "CON",
+      "roleLabel": "Contabilidad / Tesorería",
+      "area": "Corporativo",
+      "traveler": false,
+      "permissions": []
+    },
+    {
+      "id": "u11",
+      "name": "Héctor Salas Bravo",
+      "role": "CTR",
+      "roleLabel": "Contraloría",
+      "area": "Corporativo",
+      "traveler": false,
+      "permissions": []
+    },
+    {
+      "id": "u12",
+      "name": "Sofía Delgado Marín",
+      "role": "ADM",
+      "roleLabel": "Admin / Seguridad TI",
+      "area": "Tecnologías de la Información",
+      "traveler": false,
+      "permissions": []
+    }
+  ]
+}

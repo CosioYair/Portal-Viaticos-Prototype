@@ -1,0 +1,18 @@
+{
+  "name": "portal-viaticos-prototype",
+  "version": "0.1.0-us01",
+  "private": true,
+  "description": "Starmedica · Portal de Viáticos 2.0 — visual/behavioral reference prototype (US-01 Layout principal y navegación por rol). Not production code.",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve@14.2.4 -l 4173 .",
+    "start:python": "python3 -m http.server 4173"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "runtime": {
+    "note": "Zero build step. Plain ES modules + CSS, served statically. Any static HTTP server works (ES modules do not load from file://).",
+    "fonts": "Roboto 400/500/700 via Google Fonts CDN (index.html). Self-host for offline use.",
+    "icons": "Inline SVG paths in src/config/icons.js (single map), exported as public/assets/icons/*.svg. Geometry follows Lucide (ISC); equivalent Lucide names documented for lucide-angular / @lucide/* consumers."
+  }
+}

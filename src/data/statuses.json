@@ -1,0 +1,65 @@
+{
+  "_comment": "Status = text + tone + icon (never color only). tone → CSS class .status--<tone>; icon → src/config/icons.js",
+  "statuses": {
+    "captura": {
+      "text": "En captura",
+      "tone": "gris",
+      "icon": "edit"
+    },
+    "pendAut": {
+      "text": "Pendiente autorización",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "pendAsig": {
+      "text": "Pendiente asignación",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "pendVal": {
+      "text": "Pendiente validación",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "enProceso": {
+      "text": "En proceso",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "aprobada": {
+      "text": "Aprobada",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "asignado": {
+      "text": "Asignado",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "realizado": {
+      "text": "Realizado",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "finalizado": {
+      "text": "Finalizado",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "rechazada": {
+      "text": "Rechazada",
+      "tone": "rojo",
+      "icon": "xCircle"
+    },
+    "cancelada": {
+      "text": "Cancelada",
+      "tone": "oscuro",
+      "icon": "slashCircle"
+    },
+    "vencido": {
+      "text": "Plazo vencido",
+      "tone": "emergencia",
+      "icon": "warning"
+    }
+  }
+}

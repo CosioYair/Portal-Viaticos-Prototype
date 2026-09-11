@@ -1,0 +1,184 @@
+{
+  "_comment": "DEMO DATA. notices = bell panel per user (tone drives icon+color, target = menu item id). deadlines = header chip. counters = pending pills per menu item.",
+  "notices": {
+    "u01": [
+      {
+        "id": "n1",
+        "text": "Comprobación del folio 00043 vence en 2 días hábiles. Registra tus gastos.",
+        "target": "comprobacion",
+        "when": "Hoy 08:00",
+        "unread": true,
+        "tone": "amarillo"
+      },
+      {
+        "id": "n2",
+        "text": "Anticipo del folio 00043 depositado: $9,090. Corre el plazo para comprobar.",
+        "target": "misviajes",
+        "when": "12 jun",
+        "unread": true,
+        "tone": "verde"
+      },
+      {
+        "id": "n3",
+        "text": "Vuelo del folio 00043 confirmado. Descarga tu itinerario.",
+        "target": "vuelo",
+        "when": "11 jun",
+        "unread": false,
+        "tone": "verde"
+      }
+    ],
+    "u02": [
+      {
+        "id": "n1",
+        "text": "La solicitud 00044 de Mariana López Cruz está pendiente de autorización de Dirección de Hospital.",
+        "target": "externos",
+        "when": "Ayer",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u03": [
+      {
+        "id": "n1",
+        "text": "Nueva solicitud 00045 de Fernando Miranda Ruiz por autorizar.",
+        "target": "aut-viaje",
+        "when": "Hace 2 h",
+        "unread": true,
+        "tone": "azul"
+      },
+      {
+        "id": "n2",
+        "text": "Presupuesto de HSM Chihuahua al 76 % de utilización.",
+        "target": "pres-monitor",
+        "when": "Hoy 07:00",
+        "unread": true,
+        "tone": "amarillo"
+      }
+    ],
+    "u04": [
+      {
+        "id": "n1",
+        "text": "Nueva solicitud 00046 de Denisse Pérez Arango por autorizar.",
+        "target": "aut-viaje",
+        "when": "Hace 40 min",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u05": [
+      {
+        "id": "n1",
+        "text": "Solicitud 00039 escalada: Dirección de HSM Saltillo vacante.",
+        "target": "aut-viaje",
+        "when": "Hace 5 h",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u06": [
+      {
+        "id": "n1",
+        "text": "Gasto de representación de Mónica Herrera Luna requiere tu autorización previa.",
+        "target": "aut-rep",
+        "when": "Hace 3 h",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u07": [
+      {
+        "id": "n1",
+        "text": "Nueva solicitud de hospedaje 00045 para el 22 jun.",
+        "target": "res-hsm",
+        "when": "Hace 2 h",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u08": [],
+    "u09": [
+      {
+        "id": "n1",
+        "text": "Comprobación 00029 con plazo vencido hace 2 días.",
+        "target": "ges-comp",
+        "when": "Hoy 07:00",
+        "unread": true,
+        "tone": "emergencia"
+      },
+      {
+        "id": "n2",
+        "text": "HSM Mérida rechazó hospedaje del folio 00046. Gestiona hotel externo.",
+        "target": "res-hotel",
+        "when": "Hace 4 h",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u10": [
+      {
+        "id": "n1",
+        "text": "Anticipo 00045 autorizado por Dirección Corporativa. Procesa la transferencia.",
+        "target": "con-ant",
+        "when": "Hace 1 h",
+        "unread": true,
+        "tone": "azul"
+      }
+    ],
+    "u11": [],
+    "u12": []
+  },
+  "deadlines": {
+    "u01": {
+      "text": "Comprobación del folio 00043 vence en 2 días hábiles",
+      "target": "comprobacion",
+      "folio": "00043"
+    },
+    "u09": {
+      "text": "2 comprobaciones con plazo vencido en tu bandeja",
+      "target": "ges-comp"
+    }
+  },
+  "counters": {
+    "u01": {
+      "comprobacion": 1,
+      "ayu-encuesta": 1
+    },
+    "u02": {
+      "externos": 2
+    },
+    "u03": {
+      "aut-viaje": 3
+    },
+    "u04": {
+      "aut-viaje": 5,
+      "aut-rep": 0
+    },
+    "u05": {
+      "aut-viaje": 2
+    },
+    "u06": {
+      "aut-viaje": 1,
+      "aut-rep": 2,
+      "aut-comp": 1
+    },
+    "u07": {
+      "res-hsm": 4
+    },
+    "u08": {
+      "encuestas": 6
+    },
+    "u09": {
+      "res-hotel": 7,
+      "ges-comp": 9
+    },
+    "u10": {
+      "con-ant": 5,
+      "con-comp": 3,
+      "con-rep": 1
+    },
+    "u11": {
+      "aut-rep": 2
+    },
+    "u12": {}
+  }
+}
