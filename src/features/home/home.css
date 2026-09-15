@@ -1,4 +1,4 @@
-/* HOME feature styles — trip card, stages, KPIs, trays (table ≥1180 / cards below) */
+/* HOME feature styles — trip card, summary KPIs (role/scope-aware), trays (table ≥1180 / cards below). Journey progress: global.css .journey* */
 .home { display: flex; flex-direction: column; gap: 24px; margin-top: 24px; }
 .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: var(--track-wide); text-transform: uppercase; color: var(--c-text-2); }
 
@@ -8,59 +8,85 @@
 .trip__folio { font-size: 14px; color: var(--c-text-2); white-space: nowrap; }
 .trip__folio strong { color: var(--c-text); }
 .trip__meta { font-size: 14px; color: var(--c-text-2); margin-top: 4px; }
-.stages { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
-.stage { display: flex; flex-direction: column; gap: 10px; align-items: stretch; position: relative; }
-.stage__line { display: flex; align-items: center; width: 100%; flex: none; }
-.stage__dot { width: 28px; height: 28px; border-radius: 50%; flex: none; background: #fff; border: 2px solid var(--c-text-3); display: flex; align-items: center; justify-content: center; color: var(--c-text-2); font-size: 12px; font-weight: 700; }
-.stage.is-done .stage__dot { background: var(--c-success); border-color: var(--c-success); color: #fff; }
-.stage.is-current .stage__dot { background: var(--c-blue); border-color: var(--c-blue); color: #fff; }
-.stage__bar { flex: 1; height: 2px; background: var(--c-border); margin: 0 8px; }
-.stage.is-done .stage__bar { background: var(--c-success); }
-.stage__body { min-width: 0; flex: 1; }
-.stage__label { font-size: 13px; font-weight: 500; color: var(--c-text-2); line-height: 16px; }
-.stage.is-done .stage__label { color: var(--c-text); }
-.stage.is-current .stage__label { color: var(--c-text); font-weight: 700; }
-.stage__note { font-size: 12px; color: var(--c-text-2); line-height: 16px; margin-top: 2px; }
 .trip__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--c-bg); }
 .trip__next { display: flex; gap: 10px; align-items: flex-start; min-width: 0; flex: 1 1 280px; }
 .trip__next svg { flex: none; margin-top: 1px; color: var(--c-blue); }
 .trip__next-text { font-size: 14px; line-height: 20px; margin-top: 2px; }
 
+.summary { display: flex; flex-direction: column; gap: 12px; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--kpi-min), 1fr)); gap: 16px; }
 .kpi { padding: 16px 18px; min-width: 0; }
 .kpi__label { font-size: 12px; color: var(--c-text-2); line-height: 16px; }
 .kpi__row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
-.kpi__dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex: none; }
+.kpi__dot { width: 10px; height: 10px; border-radius: var(--radius-circle); background: currentColor; flex: none; }
 .kpi__value { font-size: 24px; font-weight: 500; letter-spacing: var(--track-tight); line-height: 28px; color: var(--c-text); }
+.kpi__value.tone-rojo { color: var(--c-error); }           /* valueTone: the value itself carries the semantic color (e.g. Nivel de rechazos %) */
 .kpi__hint { font-size: 12px; color: var(--c-text-2); margin-top: 4px; line-height: 16px; }
 
 .tray { overflow: hidden; }
 .tray__head { display: flex; align-items: center; gap: 12px; padding: 14px var(--card-pad); border-bottom: 1px solid var(--c-border); flex-wrap: wrap; }
 .tray__title { font-size: 16px; font-weight: 500; letter-spacing: var(--track-snug); }
-.tray__count { min-width: 24px; height: 22px; padding: 0 8px; border-radius: var(--r-counter); background: var(--c-blue-tint); color: var(--c-blue-text); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.tray__count { min-width: 24px; height: 22px; padding: 0 8px; border-radius: var(--radius-default); background: var(--c-blue-tint); color: var(--c-blue-text); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
 .tray__spacer { flex: 1; }
 .tray__cta { white-space: nowrap; }
 /* table (≥1180) */
-.ttable { display: grid; grid-template-columns: 76px minmax(170px,1.2fr) minmax(200px,1.6fr) minmax(150px,auto) minmax(130px,.7fr); font-size: 13px; }
+.ttable { display: grid; font-size: 13px; }
+/* one grid per column set (home.js COLUMNS) */
+.ttable--personal, .ttable--operational { grid-template-columns: 76px minmax(170px,1.2fr) minmax(200px,1.6fr) minmax(150px,auto) minmax(130px,.7fr); }
+/* 7-column minimums sum ≤ ~880 px so tables fit the laptop breakpoint (1180–1330 px container) without clipping or horizontal scroll */
+.ttable--externos { grid-template-columns: 76px minmax(140px,1.1fr) minmax(110px,.9fr) minmax(110px,.9fr) minmax(200px,1.6fr) minmax(140px,auto) minmax(100px,.7fr); }
+.ttable--standard { grid-template-columns: 76px minmax(150px,1.2fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(190px,1.6fr) minmax(140px,auto) minmax(100px,.7fr); }
+.ttable--operationalOrg { grid-template-columns: 76px minmax(150px,1.1fr) minmax(110px,.7fr) minmax(180px,1.5fr) minmax(190px,auto) minmax(110px,.7fr); }
+.ttable--hosted { grid-template-columns: 76px minmax(160px,1.3fr) minmax(120px,.8fr) minmax(100px,.7fr) minmax(100px,.7fr) minmax(130px,auto) minmax(90px,.6fr); }
+.ttable--traveling { grid-template-columns: 76px minmax(160px,1.3fr) minmax(120px,.8fr) minmax(110px,.9fr) minmax(130px,.9fr) minmax(130px,auto) minmax(100px,.7fr); }
+.ttable--bitacora { grid-template-columns: minmax(96px,.6fr) 64px minmax(140px,1fr) minmax(120px,.8fr) minmax(96px,.6fr) minmax(200px,2fr) minmax(130px,auto); }
+.ttable--bitacora .ttable__c--age { color: var(--c-text); font-weight: 500; padding-left: var(--card-pad); padding-right: 12px; justify-content: flex-start; }
+.ttable--bitacora .ttable__c--folio { padding-left: 12px; }
+.ttable--bitacora .ttable__c--status { padding-right: var(--card-pad); justify-content: space-between; gap: 8px; }
+.ttable--bitacora .ttable__c--status svg:last-child { color: var(--c-text-3); }
+.tray__empty { margin: 0; padding: 20px var(--card-pad); font-size: 13px; line-height: 18px; color: var(--c-text-2); }
 .ttable__row { display: contents; border: 0; background: none; text-align: left; color: inherit; font: inherit; cursor: pointer; }
 .ttable__h { padding: 8px 12px; font-size: 11px; font-weight: 700; letter-spacing: var(--track-wide); text-transform: uppercase; color: var(--c-text-2); border-bottom: 1px solid var(--c-bg); }
 .ttable__h:first-child { padding-left: var(--card-pad); } .ttable__h:last-child { padding-right: var(--card-pad); }
+.ttable__h:has(.ttable__sort) { padding: 0; }
+.ttable__sort { display: flex; align-items: center; gap: 4px; width: 100%; height: 100%; padding: 8px 12px; border: 0; background: none; text-align: left; font: inherit; font-size: 11px; font-weight: 700; letter-spacing: var(--track-wide); text-transform: uppercase; color: var(--c-text-2); }
+.ttable__h:first-child .ttable__sort { padding-left: var(--card-pad); }
+.ttable__sort:hover { background: var(--c-bg); }
+.ttable__sort.is-active { color: var(--c-blue); }
+.ttable__sort span:last-child { font-size: 12px; letter-spacing: 0; flex: none; }
+/* list toolbar (search + contextual filters) and pager — shared standard for every scalable list (docs/TABLE_LIST_STANDARD.md) */
+.list-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px var(--card-pad); border-bottom: 1px solid var(--c-bg); background: var(--c-snow); }
+.list-search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border: 1px solid var(--c-gray-light); border-radius: var(--radius-default); background: var(--c-white); flex: 1 1 200px; min-width: 0; max-width: 320px; color: var(--c-text-2); }
+.list-search:focus-within { border-color: var(--c-blue); }
+.list-search input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 13px; color: var(--c-text); height: 100%; }
+.list-filter { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 8px 0 10px; border: 1px solid var(--c-gray-light); border-radius: var(--radius-default); background: var(--c-white); font-size: 12px; color: var(--c-text-2); min-width: 0; }
+.list-filter span { white-space: nowrap; }
+.list-filter select { border: 0; background: transparent; font-size: 13px; color: var(--c-text); height: 100%; min-width: 0; max-width: 200px; outline: none; }
+.list-toolbar__spacer { flex: 1; }
+.list-range { font-size: 12px; color: var(--c-text-2); white-space: nowrap; }
+.list-pager { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 10px var(--card-pad); border-top: 1px solid var(--c-bg); font-size: 12px; color: var(--c-text-2); flex-wrap: wrap; }
+.list-pager__btn { width: 36px; height: 36px; border: 1px solid var(--c-gray-light); border-radius: var(--radius-default); background: var(--c-white); color: var(--c-text); display: inline-flex; align-items: center; justify-content: center; }
+.list-pager__btn:hover:not(:disabled) { background: var(--c-bg); }
+.list-pager__btn:disabled { color: var(--c-text-3); cursor: default; }
 .ttable__c { padding: 12px; border-bottom: 1px solid var(--c-bg); display: flex; align-items: center; min-width: 0; }
 .ttable__c--folio { padding-left: var(--card-pad); font-weight: 700; }
 .ttable__c--who { display: block; }
 .ttable__c--who .who { display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ttable__c--who .area { display: block; color: var(--c-text-2); font-size: 12px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ttable__c--meta { color: var(--c-text); line-height: 18px; }
+.ttable__c--meta, .ttable__c--detalle, .ttable__c--destino, .ttable__c--asunto, .ttable__c--viajero, .ttable__c--org, .ttable__c--area, .ttable__c--usuario, .ttable__c--entrada, .ttable__c--salida, .ttable__c--fechas, .ttable__c--perfil { color: var(--c-text); line-height: 18px; }
+.ttable__c--usuario { font-weight: 500; }
+.ttable__c--viajero, .ttable__c--destino { font-weight: 500; }
 .ttable__c--age { padding-right: var(--card-pad); color: var(--c-text-2); justify-content: space-between; gap: 8px; }
 .ttable__c--age svg { color: var(--c-text-3); }
 /* cards (<1180) */
 .tcards { display: flex; flex-direction: column; }
 .tcard { display: block; width: 100%; text-align: left; padding: 14px 20px; border: 0; border-bottom: 1px solid var(--c-bg); background: none; color: inherit; font: inherit; }
-.tcard__top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
-.tcard__folio { font-size: 13px; font-weight: 700; }
-.tcard__age { font-size: 12px; color: var(--c-text-2); }
+.tcard__top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+.tcard__folio { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.tcard__age { font-size: 12px; color: var(--c-text-2); text-align: right; line-height: 16px; }
 .tcard__who { font-size: 14px; font-weight: 500; margin-top: 4px; }
 .tcard__area { font-size: 12px; color: var(--c-text-2); }
-.tcard__meta { font-size: 13px; margin-top: 6px; line-height: 18px; }
+.tcard__meta { font-size: 13px; margin-top: 4px; line-height: 18px; }
+.tcard__k { color: var(--c-text-2); }
 .tcard .status { margin-top: 8px; }
 

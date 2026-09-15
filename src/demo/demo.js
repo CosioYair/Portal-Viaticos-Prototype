@@ -15,7 +15,7 @@ export function loadDemoUserId(users, fallback) {
 export function saveDemoUserId(id) { try { localStorage.setItem(STORAGE_KEY, id); } catch { /* storage unavailable */ } }
 
 export function renderDemoBar(users, user) {
-  const travelerLine = isTraveler(user) ? `Viajero: sí · ${user.perfil ? `Nivel ${user.perfil.nivel} · ${user.perfil.nombre}` : ''}` : 'Viajero: no';
+  const travelerLine = isTraveler(user) ? `Viajero: sí${user.perfil ? ` · Perfil ${user.perfil.label}` : ''}` : 'Viajero: no';
   return `
 <div class="demo-bar">
   <span class="demo-bar__tag">${icon('info', 12)}Modo demo · Solo prototipo</span>

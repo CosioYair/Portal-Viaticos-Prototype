@@ -1,6 +1,7 @@
 // ICONS — the single icon mapping. Key = file name in public/assets/icons/<key>.svg.
 // Outline icons, viewBox 24, stroke 2, round caps (Lucide geometry; Lucide names in ASSET_MANIFEST.md).
 // Menu items reference these keys in data/navigation.json ("icon"); statuses in data/statuses.json.
+// Rule (client V2): same function = same icon in every role menu. Every «Comprobación / Comprobaciones» item uses fileCheck (document + check).
 export const ICONS = {
   // navigation
   home:        'M3 10l9-7 9 7v10a2 2 0 01-2 2H5a2 2 0 01-2-2zM9 22V12h6v10',
@@ -34,6 +35,8 @@ export const ICONS = {
   bell:         'M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0',
   chevronDown:  'M6 9l6 6 6-6',
   chevronRight: 'M9 6l6 6-6 6',
+  chevronLeft:  'M15 18l-6-6 6-6',
+  search:       'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3',
   chevronsLeft: 'M11 17l-5-5 5-5M18 17l-5-5 5-5',
   chevronsRight:'M13 17l5-5-5-5M6 17l5-5-5-5',
   close:        'M18 6L6 18M6 6l12 12',

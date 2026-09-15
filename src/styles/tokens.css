@@ -1,4 +1,4 @@
-/* DESIGN TOKENS as CSS custom properties — mirror of src/config/designTokens.js (keep in sync). */
+/* DESIGN TOKENS as CSS custom properties — the only place visual values live. */
 :root {
   /* Brand / neutrals */
   --c-blue: #00A7E1;
@@ -57,11 +57,12 @@
   --main-pad: 28px 32px 48px;
   --card-pad: 20px;
   --kpi-min: 170px;
-  /* Shape */
-  --r-card: 8px;
-  --r-message: 6px;
-  --r-control: 4px;
-  --r-counter: 11px;
+  --journey-marker: 40px;        /* journey-progress step marker (desktop) */
+  --journey-marker-mobile: 36px;
+  /* Shape — STARMEDICA CORNER STANDARD (client review 2026-09): rectangular UI surfaces have NO rounded corners.
+     --radius-default applies to cards, panels, buttons, inputs, menus, chips, message bars, tooltips, counters.
+     --radius-circle is ONLY for elements whose meaning is circular: avatar, journey-step marker, status dot. */
+  --radius-default: 0px;
+  --radius-circle: 50%;
   --shadow-panel: 0 8px 24px rgba(74,79,84,.16);
-  --shadow-tooltip: 0 2px 8px rgba(0,0,0,.2);
 }

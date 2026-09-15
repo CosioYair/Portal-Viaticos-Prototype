@@ -8,6 +8,12 @@ Goal: no visual resource should require guessing from a screenshot or PDF.
 |---|---|---|---|---|
 | Starmedica logo (official, supplied by client) | PNG, transparent | `public/assets/branding/logo-starmedica.png` | Brand mark in the header, links to Inicio. Render at **30 px high** (desktop) / **24 px** (mobile), width auto — never alter color, proportion or replace with text/initials. | `src/layout/portal-layout.js › renderHeader` (`LOGO_SRC` in `src/config/app-config.js`, `.brand__logo`) |
 
+## 1b. Demo user photo
+
+| Name | Type | Path | Purpose | Notes |
+|---|---|---|---|---|
+| Demo profile photo — client-supplied (u01) | JPG, 400 × 400 px | `public/assets/users/demo-profile-user.jpg` | Avatar in the header (36 px) and mobile drawer (40 px) — not repeated in the account dropdown, circular crop (`object-fit: cover`). Referenced from `src/data/users.json › users[].photo`; rendered by `avatar()` in `src/config/app-config.js`. | **DEMO DATA supplied by the client for the mockup** (cropped square, face untouched). Not an employee record, no external URL. Users without `photo` render initials (also the fallback if the file fails to load). Production shows the authenticated collaborator's photo. |
+
 ## 2. Typography
 
 | Name | Source | Weights | Configured in |
@@ -22,7 +28,7 @@ Offline: self-host the same three weights and swap the `<link>` for `@font-face`
 - **Files:** every icon is also exported as `public/assets/icons/<key>.svg` (`viewBox 0 0 24 24`, `stroke="currentColor"`, `stroke-width 2`, round caps/joins, `fill none`).
 - **Library equivalence:** geometry follows **Lucide** (https://lucide.dev, ISC). If the production team prefers the package (e.g. `lucide-angular`), the equivalent Lucide icon name is listed below for every glyph. Use Lucide ≥ 0.400 for these names.
 - **Sizes:** menu 20 px · header bell 22 px · hamburger 24 px · chevron (account) 16 px · status chips 16 px · message bar 22 px · notices 20 px · empty/blocked states 32–40 px (stroke 1.5) · deadline chip 18 px.
-- **Rule:** SAME FUNCTION = SAME ICON, independent of role. each menu item in `src/data/navigation.json` names its icon once, so e.g. `checkSquare` is used for Comprobación (traveler), Gestión › Comprobaciones (Viáticos) and Contabilización › Comprobación alike.
+- **Rule:** SAME FUNCTION = SAME ICON, independent of role. Each menu item in `src/data/navigation.json` names its icon once. Client V2 (2026-09-14): every Comprobación / Comprobaciones item (traveler `comprobacion`, DGA `aut-comp`, Viáticos `ges-comp`, Contabilidad `con-comp`) uses `fileCheck` (document + check); `checkSquare` stays in the catalog for statuses/other uses.
 
 ### 3a. Navigation icons (menu item → icon)
 
@@ -33,8 +39,8 @@ Offline: self-host the same three weights and swap the `<link>` for `@font-face`
 | misviajes | `suitcase` | `briefcase` | public/assets/icons/suitcase.svg |
 | anticipo | `money` | `dollar-sign` | public/assets/icons/money.svg |
 | hospedaje | `bed` | `bed` | public/assets/icons/bed.svg |
-| vuelo | `plane` | `plane` | public/assets/icons/plane.svg |
-| comprobacion | `checkSquare` | `square-check-big` | public/assets/icons/checkSquare.svg |
+| vuelo (Vuelos) | `plane` | `plane` | public/assets/icons/plane.svg |
+| comprobacion | `fileCheck` | `file-check` | public/assets/icons/fileCheck.svg |
 | representacion | `receipt` | `receipt` | public/assets/icons/receipt.svg |
 | perfil | `user` | `user` | public/assets/icons/user.svg |
 | externos | `userPlus` | `user-plus` | public/assets/icons/userPlus.svg |
@@ -45,10 +51,10 @@ Offline: self-host the same three weights and swap the `<link>` for `@font-face`
 | aut-comp | `fileCheck` | `file-check` | public/assets/icons/fileCheck.svg |
 | res-hsm | `hospital` | `building-2` | public/assets/icons/hospital.svg |
 | res-hotel | `hotel` | `hotel` | public/assets/icons/hotel.svg |
-| ges-comp | `checkSquare` | `square-check-big` | public/assets/icons/checkSquare.svg |
+| ges-comp | `fileCheck` | `file-check` | public/assets/icons/fileCheck.svg |
 | con-plan | `list` | `list` | public/assets/icons/list.svg |
 | con-ant | `money` | `dollar-sign` | public/assets/icons/money.svg |
-| con-comp | `checkSquare` | `square-check-big` | public/assets/icons/checkSquare.svg |
+| con-comp | `fileCheck` | `file-check` | public/assets/icons/fileCheck.svg |
 | con-rep | `receipt` | `receipt` | public/assets/icons/receipt.svg |
 | encuestas | `survey` | `message-square-more` | public/assets/icons/survey.svg |
 | dashboard | `grid` | `layout-dashboard` | public/assets/icons/grid.svg |
@@ -70,12 +76,12 @@ Offline: self-host the same three weights and swap the `<link>` for `@font-face`
 | `bell` | `bell` | public/assets/icons/bell.svg | Header — Avisos button 22 px; notices empty state 32 px (#A9A8A9, stroke 1.5) |
 | `chevronDown` | `chevron-down` | public/assets/icons/chevronDown.svg | Header — account button, 16 px #777779 (rotates 180° when open) |
 | `chevronRight` | `chevron-right` | public/assets/icons/chevronRight.svg | Home trays — row affordance, 16 px #A9A8A9 |
-| `chevronsLeft` | `chevrons-left` | public/assets/icons/chevronsLeft.svg | Sidebar — «Contraer menú», 20 px |
-| `chevronsRight` | `chevrons-right` | public/assets/icons/chevronsRight.svg | Sidebar rail — «Expandir menú», 20 px |
+| `chevronsLeft` | `chevrons-left` | public/assets/icons/chevronsLeft.svg | Sidebar fixed utility footer — «Contraer menú», 18 px |
+| `chevronsRight` | `chevrons-right` | public/assets/icons/chevronsRight.svg | Sidebar rail fixed utility footer — «Expandir menú», 18 px (title + aria-label) |
 | `close` | `x` | public/assets/icons/close.svg | Mobile drawer — close, 22 px |
 | `logOut` | `log-out` | public/assets/icons/logOut.svg | Account menu — «Cerrar sesión», 18 px |
 | `arrowRight` | `arrow-right` | public/assets/icons/arrowRight.svg | Home trip card — «Siguiente paso», 20 px #00A7E1 |
-| `check` | `check` | public/assets/icons/check.svg | Home trip card — completed stage, 14 px stroke 3, white on #A2C83A |
+| `check` | `check` | public/assets/icons/check.svg | Journey progress — completed stage, 18 px stroke 3, white on #A2C83A (40 px marker, 36 px mobile) |
 | `lock` | `lock` | public/assets/icons/lock.svg | «Sin permiso» state, 40 px #A9A8A9 stroke 1.5 |
 | `wrench` | `wrench` | public/assets/icons/wrench.svg | «Sección no construida» state, 40 px #A9A8A9 stroke 1.5 |
 | `spinner` | `loader-circle` | public/assets/icons/spinner.svg | Loading state footer, 18 px #00A7E1 |
@@ -98,8 +104,12 @@ Tone → icon mapping lives in `TONE_ICON` (`src/config/icons.js`); status → i
 
 | Name | Type | Where | Notes |
 |---|---|---|---|
-| Avatar | CSS (initials) | `.avatar` in `styles/layout.css` | 36 px (40 px in account menu / drawer), #E6F6FC bg, #0077A8 initials Bold 13/14 px. No image asset. |
+| Avatar | Photo (§1b) over CSS initials | `.avatar`, `.avatar__img` in `styles/layout.css` | Circle 36 px (40 px in the mobile drawer). Photo covers the initials; fallback #E6F6FC bg, #0077A8 initials Bold 13/14 px. |
+| Journey-step marker | CSS | `.journey__marker` in `styles/global.css` | Circle 40 px (36 px mobile) — semantic circle, allowed exception to the 0 px corner standard. |
 | Skeleton shimmer | CSS keyframes | `@keyframes smv-shimmer` in `styles/global.css` | Loading state |
 | Scrollbars | CSS | `styles/global.css`, `styles/layout.css` | 6 px, thumb gray 22 % / white 30 % on blue, no track |
 
 No other images, illustrations or icon fonts are used in US-01.
+
+## 5. Corner standard
+All rectangular UI surfaces: `--radius-default: 0px`. Only semantic circles (avatar, journey-step marker, status dot, kpi dot) use `--radius-circle: 50%`. No pill buttons/chips.

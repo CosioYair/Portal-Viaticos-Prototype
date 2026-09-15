@@ -20,3 +20,7 @@ export const DATA_FILES = ['users', 'navigation', 'statuses', 'home', 'notificat
 // Utilities shared by templates
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const initials = (name) => name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('');
+// Avatar: DEMO photo when the user has one (users.json › photo — asset supplied by the client for the mockup, never an employee record); initials otherwise / as fallback.
+// The <img> sits over the initials; if the file is missing the browser shows nothing and the initials remain visible (alt="" + transparent).
+export const avatar = (user, cls = '') =>
+  `<span class="avatar ${cls}" aria-hidden="true"><span>${esc(initials(user.name))}</span>${user.photo ? `<img class="avatar__img" src="${user.photo}" alt="">` : ''}</span>`;

@@ -1,5 +1,5 @@
 {
-  "_comment": "DEMO DATA. role = functional role code (see roles). traveler = independent capability. perfil = traveler profile; its flags (anticipo, representacion) unlock V+PF items. permissions = configured P items (empty = hidden).",
+  "_comment": "DEMO DATA. role = functional role code (see roles). traveler = independent capability. perfil = traveler profile: label = client-approved vocabulary shown to the user (Director · Ejecutivo · Mando medio · Operativo · DGA — never «Nivel n»); perfil.representacion unlocks Gastos de representación (V+PF). personnelGroup = SAP personnel group (mock): E / ED executive-director groups · EJ executive · MM mandos medios · OP operativo. ANTICIPO RULE (client, V2 final): Anticipo does NOT apply ONLY when perfil is Director AND personnelGroup is E or ED (client: «Solo a Director grupo E ED»); DGA is a distinct profile and does not inherit the rule — resolved in src/layout/navigation.js › anticipoApplies(), never hardcoded per user. hospital = hospital the collaborator belongs to; ONLY for hospital-based users (corporate users omit it and the account panel shows no Hospital field). Account panel shows employeeNumber · direccion · hospital (when present) · puesto · perfil.label. photo = DEMO portrait supplied by the client for the mockup (local asset under public/assets/users/, not an employee record); users without photo render initials. permissions = configured P items (empty = hidden).",
   "defaultUserId": "u01",
   "roles": {
     "COL": {
@@ -28,7 +28,7 @@
       "label": "Capital Humano Corporativo",
       "kind": "autorizador",
       "scope": "Consolidado",
-      "note": "CH CO: autorizaciones escaladas (excedentes de política/presupuesto, Dirección de Hospital vacante). Distinto de Capital Humano HSM."
+      "note": "CH CO (Dirección de Capital Humano Corporativo): autorizaciones escaladas (excedentes de política/presupuesto, autorizaciones específicas, Dirección de Hospital vacante). Distinto de Capital Humano HSM. Puede ser viajero."
     },
     "DGA": {
       "code": "DGA",
@@ -83,30 +83,34 @@
   "users": [
     {
       "id": "u01",
-      "name": "Elizabeth Sánchez Gómez",
+      "name": "Eduardo Sánchez Gómez",
+      "employeeNumber": "102340",
       "role": "COL",
       "roleLabel": "Colaborador",
-      "area": "Dirección Comercial y de Negocios",
+      "direccion": "Dirección Comercial y de Negocios",
+      "puesto": "Gerente de Estrategias Comerciales",
+      "personnelGroup": "MM",
       "traveler": true,
       "perfil": {
-        "nivel": 3,
-        "nombre": "Mandos Medios",
-        "anticipo": true,
+        "label": "Mando medio",
         "representacion": false
       },
+      "photo": "public/assets/users/demo-profile-user.jpg",
       "permissions": []
     },
     {
       "id": "u02",
       "name": "Laura Miranda Torres",
+      "employeeNumber": "102477",
       "role": "CHH",
       "roleLabel": "Capital Humano HSM",
-      "area": "HSM Chihuahua",
+      "direccion": "Dirección de Capital Humano",
+      "hospital": "HSM Chihuahua",
+      "puesto": "Coordinadora de Capital Humano",
+      "personnelGroup": "MM",
       "traveler": true,
       "perfil": {
-        "nivel": 3,
-        "nombre": "Mandos Medios",
-        "anticipo": true,
+        "label": "Mando medio",
         "representacion": false
       },
       "permissions": []
@@ -114,14 +118,16 @@
     {
       "id": "u03",
       "name": "Ricardo Fuentes Ávila",
+      "employeeNumber": "102614",
       "role": "DIR",
       "roleLabel": "Dirección de Hospital",
-      "area": "HSM Chihuahua",
+      "direccion": "Dirección de Operación Hospitalaria",
+      "hospital": "HSM Chihuahua",
+      "puesto": "Director de Hospital",
+      "personnelGroup": "EJ",
       "traveler": true,
       "perfil": {
-        "nivel": 2,
-        "nombre": "Dirección",
-        "anticipo": true,
+        "label": "Director",
         "representacion": false
       },
       "permissions": []
@@ -129,14 +135,15 @@
     {
       "id": "u04",
       "name": "Mónica Herrera Luna",
+      "employeeNumber": "102751",
       "role": "DIR",
       "roleLabel": "Dirección Corporativa",
-      "area": "Dirección Comercial y de Negocios",
+      "direccion": "Dirección Comercial y de Negocios",
+      "puesto": "Directora Comercial y de Negocios",
+      "personnelGroup": "ED",
       "traveler": true,
       "perfil": {
-        "nivel": 1,
-        "nombre": "Dirección Corporativa",
-        "anticipo": true,
+        "label": "Director",
         "representacion": true
       },
       "permissions": []
@@ -144,23 +151,31 @@
     {
       "id": "u05",
       "name": "Jorge Castañeda Ríos",
+      "employeeNumber": "102888",
       "role": "CHC",
       "roleLabel": "Capital Humano Corporativo",
-      "area": "Corporativo",
-      "traveler": false,
+      "direccion": "Dirección de Capital Humano",
+      "puesto": "Director de Capital Humano Corporativo",
+      "personnelGroup": "EJ",
+      "traveler": true,
+      "perfil": {
+        "label": "Director",
+        "representacion": true
+      },
       "permissions": []
     },
     {
       "id": "u06",
       "name": "Patricia Solís Navarro",
+      "employeeNumber": "103025",
       "role": "DGA",
       "roleLabel": "Dirección General Adjunta",
-      "area": "Corporativo",
+      "direccion": "Corporativo",
+      "puesto": "Directora General Adjunta",
+      "personnelGroup": "ED",
       "traveler": true,
       "perfil": {
-        "nivel": 1,
-        "nombre": "Dirección General",
-        "anticipo": true,
+        "label": "DGA",
         "representacion": true
       },
       "permissions": []
@@ -168,54 +183,73 @@
     {
       "id": "u07",
       "name": "Andrés Palma Cordero",
+      "employeeNumber": "103162",
       "role": "HH",
       "roleLabel": "Hotelería HSM",
-      "area": "HSM Chihuahua",
+      "direccion": "Dirección de Operación Hospitalaria",
+      "hospital": "HSM Chihuahua",
+      "puesto": "Coordinador de Hotelería",
+      "personnelGroup": "MM",
       "traveler": false,
       "permissions": []
     },
     {
       "id": "u08",
       "name": "Verónica Ibarra Cano",
+      "employeeNumber": "103299",
       "role": "HC",
       "roleLabel": "Hotelería Corporativo",
-      "area": "Corporativo",
+      "direccion": "Corporativo",
+      "puesto": "Coordinadora de Hotelería Corporativa",
+      "personnelGroup": "MM",
       "traveler": false,
       "permissions": []
     },
     {
       "id": "u09",
       "name": "Daniel Osorio Peña",
+      "employeeNumber": "103436",
       "role": "VIA",
       "roleLabel": "Viáticos",
-      "area": "Corporativo",
+      "direccion": "Corporativo",
+      "puesto": "Analista de Viáticos",
+      "personnelGroup": "OP",
       "traveler": false,
       "permissions": []
     },
     {
       "id": "u10",
       "name": "Claudia Reyna Ortega",
+      "employeeNumber": "103573",
       "role": "CON",
       "roleLabel": "Contabilidad / Tesorería",
-      "area": "Corporativo",
+      "direccion": "Corporativo",
+      "puesto": "Coordinadora de Tesorería",
+      "personnelGroup": "MM",
       "traveler": false,
       "permissions": []
     },
     {
       "id": "u11",
       "name": "Héctor Salas Bravo",
+      "employeeNumber": "103710",
       "role": "CTR",
       "roleLabel": "Contraloría",
-      "area": "Corporativo",
+      "direccion": "Corporativo",
+      "puesto": "Contralor Corporativo",
+      "personnelGroup": "EJ",
       "traveler": false,
       "permissions": []
     },
     {
       "id": "u12",
       "name": "Sofía Delgado Marín",
+      "employeeNumber": "103847",
       "role": "ADM",
       "roleLabel": "Admin / Seguridad TI",
-      "area": "Tecnologías de la Información",
+      "direccion": "Tecnologías de la Información",
+      "puesto": "Administradora de Seguridad TI",
+      "personnelGroup": "MM",
       "traveler": false,
       "permissions": []
     }

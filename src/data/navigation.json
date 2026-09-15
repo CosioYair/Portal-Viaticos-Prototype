@@ -8,7 +8,8 @@
     "(missing role)": "not visible (—)"
   },
   "_roles": "COL Colaborador · CHH Capital Humano HSM · DIR Dirección (Hospital/Corporativa) · CHC Capital Humano Corporativo · DGA · HH Hotelería HSM · HC Hotelería Corporativo · VIA Viáticos · CON Contabilidad/Tesorería · CTR Contraloría · ADM Admin/Seguridad TI",
-  "_icons": "icon = file name in public/assets/icons/<icon>.svg and key in src/config/icons.js. Same function = same icon for every role.",
+  "_icons": "icon = file name in public/assets/icons/<icon>.svg and key in src/config/icons.js. Same function = same icon for every role (client V2: every Comprobación / Comprobaciones item uses fileCheck = document + check). Module/menu naming uses the plural «Vuelos».",
+  "_profileRules": "V+PF flag per item. anticipo is resolved by navigation.js › anticipoApplies(user) (perfil Director + personnelGroup E/ED → no Anticipo; DGA does not inherit it); representacion reads perfil.representacion.",
   "profileRules": {
     "anticipo": "anticipo",
     "representacion": "representacion"
@@ -126,7 +127,7 @@
         },
         {
           "id": "vuelo",
-          "label": "Vuelo",
+          "label": "Vuelos",
           "icon": "plane",
           "route": "/viaje/vuelo",
           "us": "US-12",
@@ -147,7 +148,7 @@
         {
           "id": "comprobacion",
           "label": "Comprobación",
-          "icon": "checkSquare",
+          "icon": "fileCheck",
           "route": "/viaje/comprobacion",
           "us": "US-19",
           "visibility": {
@@ -195,7 +196,7 @@
           "icon": "user",
           "route": "/perfil-viajero",
           "us": "US-04",
-          "fn": "Consulta y actualización del perfil de viajero",
+          "fn": "Consulta y actualización del perfil de viajero (Viáticos: consulta en solo lectura)",
           "visibility": {
             "COL": "✓",
             "CHH": "V",
@@ -204,7 +205,7 @@
             "DGA": "V",
             "HH": "V",
             "HC": "V",
-            "VIA": "✓",
+            "VIA": "L",
             "CON": "V",
             "CTR": "V",
             "ADM": "V"
@@ -316,11 +317,11 @@
         },
         {
           "id": "res-hotel",
-          "label": "Hotel y vuelo",
+          "label": "Hotel y vuelos",
           "icon": "hotel",
           "route": "/reservaciones/hotel-vuelo",
           "us": "US-14",
-          "fn": "Hotel externo y ciclo de vuelo",
+          "fn": "Hotel externo y ciclo de vuelos",
           "visibility": {
             "VIA": "✓"
           }
@@ -333,7 +334,7 @@
         {
           "id": "ges-comp",
           "label": "Comprobaciones",
-          "icon": "checkSquare",
+          "icon": "fileCheck",
           "route": "/gestion/comprobaciones",
           "us": "US-21",
           "fn": "Validación de comprobaciones",
@@ -369,7 +370,7 @@
         {
           "id": "con-comp",
           "label": "Comprobación",
-          "icon": "checkSquare",
+          "icon": "fileCheck",
           "route": "/contabilizacion/comprobacion",
           "us": "US-22",
           "visibility": {

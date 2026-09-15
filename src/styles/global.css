@@ -1,4 +1,5 @@
-/* GLOBAL — resets, Roboto, scrollbars, keyframes, shared UI (buttons, cards, status chips, panels, shell states) */
+/* GLOBAL — resets, Roboto, scrollbars, keyframes, shared UI (buttons, cards, status chips, journey progress, panels, shell states)
+   Corner standard: every rectangular surface uses var(--radius-default) = 0. Only semantic circles use var(--radius-circle). */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
@@ -17,7 +18,7 @@ h1, h2, p, ol, ul { margin: 0; }
 * { scrollbar-width: thin; scrollbar-color: rgba(74,79,84,.25) transparent; }
 *::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: rgba(74,79,84,.22); border-radius: 6px; }
+*::-webkit-scrollbar-thumb { background: rgba(74,79,84,.22); border-radius: var(--radius-default); }
 *::-webkit-scrollbar-thumb:hover { background: rgba(74,79,84,.4); }
 
 @keyframes smv-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -27,7 +28,7 @@ h1, h2, p, ol, ul { margin: 0; }
 
 
 /* Buttons (Starmedica): primary 42 filled · secondary 40 outlined · tertiary text · labels 12 Bold Caps +8 % */
-.btn { height: 42px; padding: 0 24px; border: 0; border-radius: var(--r-control); background: var(--c-blue); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: var(--track-wider); text-transform: uppercase; white-space: nowrap; }
+.btn { height: 42px; padding: 0 24px; border: 0; border-radius: var(--radius-default); background: var(--c-blue); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: var(--track-wider); text-transform: uppercase; white-space: nowrap; }
 .btn:hover { background: var(--c-blue-hover); }
 .btn--secondary { height: 40px; border: 1px solid var(--c-blue); background: var(--c-white); color: var(--c-blue); }
 .btn--secondary:hover { background: var(--c-blue-tint); }
@@ -35,11 +36,11 @@ h1, h2, p, ol, ul { margin: 0; }
 .btn--tertiary:hover { background: none; text-decoration: underline; }
 
 /* Card */
-.card { background: var(--c-white); border: 1px solid var(--c-border); border-radius: var(--r-card); }
+.card { background: var(--c-white); border: 1px solid var(--c-border); border-radius: var(--radius-default); }
 .card--pad { padding: var(--card-pad); }
 
 /* Status chip — color + icon + text */
-.status { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--r-control); font-size: 12px; font-weight: 500; white-space: nowrap; }
+.status { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: var(--radius-default); font-size: 12px; font-weight: 500; white-space: nowrap; }
 .status--gris       { background: var(--c-bg);           color: var(--c-text-2); }
 .status--azul       { background: var(--c-blue-tint);    color: var(--c-blue); }
 .status--verde      { background: var(--c-success-bg);   color: var(--c-success-text); }
@@ -48,6 +49,27 @@ h1, h2, p, ol, ul { margin: 0; }
 .status--emergencia { background: var(--c-emergency-bg); color: var(--c-emergency); }
 .status--amarillo   { background: var(--c-warning-bg);   color: var(--c-warning-text); }
 .status > span { color: var(--c-text); }
+
+/* ---- Journey progress (shared, src/shared/journey-progress.js) — 4 canonical stages, prominent markers ---- */
+.journey { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.journey__step { display: flex; flex-direction: column; gap: 12px; position: relative; min-width: 0; }
+.journey__marker {
+  width: var(--journey-marker); height: var(--journey-marker); border-radius: var(--radius-circle); flex: none; z-index: 1;
+  background: var(--c-white); border: 2px solid var(--c-text-3); color: var(--c-text-2);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700;
+}
+/* connector to the next step: runs from the marker's right edge to the end of the column */
+.journey__step:not(:last-child)::after { content: ''; position: absolute; top: calc(var(--journey-marker) / 2 - 1.5px); left: calc(var(--journey-marker) + 8px); right: -8px; height: 3px; background: var(--c-border); }
+.journey__step.is-done::after { background: var(--c-success); }
+.journey__step.is-done .journey__marker { background: var(--c-success); border-color: var(--c-success); color: #fff; }
+.journey__step.is-current .journey__marker { background: var(--c-blue); border-color: var(--c-blue); color: #fff; box-shadow: 0 0 0 4px var(--c-blue-tint); }
+/* «No aplica»: the stage stays in place (same number), filled gray — never removed nor renumbered */
+.journey__step.is-na .journey__marker { background: var(--c-border); border-color: var(--c-border); color: var(--c-text); }
+.journey__body { display: block; min-width: 0; }
+.journey__label { display: block; font-size: 14px; font-weight: 500; color: var(--c-text-2); line-height: 18px; }
+.journey__step.is-done .journey__label { color: var(--c-text); }
+.journey__step.is-current .journey__label { color: var(--c-text); font-weight: 700; }
+.journey__note { display: block; font-size: 13px; color: var(--c-text-2); line-height: 18px; margin-top: 2px; }
 
 /* Tone foregrounds (icons in message bar / notices / kpi dots) */
 .tone-info, .tone-azul { color: var(--c-blue); } .tone-amarillo { color: var(--c-warning-text); } .tone-rojo { color: var(--c-error); }
@@ -69,12 +91,11 @@ h1, h2, p, ol, ul { margin: 0; }
 .notices__empty-title { font-size: 14px; font-weight: 500; margin-top: 8px; }
 .notices__empty-text { font-size: 13px; color: var(--c-text-2); margin-top: 4px; line-height: 18px; }
 
-/* ---- Account menu ---- */
-.account__id { display: flex; gap: 12px; padding: 16px; }
-.account__lines { min-width: 0; line-height: 18px; }
-.account__name { font-size: 14px; font-weight: 500; }
-.account__role { font-size: 12px; font-weight: 700; letter-spacing: var(--track-wide); color: var(--c-text); margin-top: 2px; text-transform: uppercase; }
-.account__area, .account__perfil { font-size: 12px; color: var(--c-text-2); }
+/* ---- Account menu: fields only (identity lives in the header — never repeated here) ---- */
+.account__fields { margin: 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.account__field { display: grid; grid-template-columns: 1fr; gap: 1px; }
+.account__field dt { font-size: 11px; font-weight: 700; letter-spacing: var(--track-wide); text-transform: uppercase; color: var(--c-text-2); }
+.account__field dd { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-text); }
 .account__sep { height: 1px; background: var(--c-border); }
 .account__item { display: flex; align-items: center; gap: 10px; width: 100%; height: 44px; padding: 0 16px; border: 0; background: none; color: var(--c-text); font-size: 14px; text-align: left; }
 .account__item:hover { background: var(--c-bg); }
@@ -91,10 +112,10 @@ h1, h2, p, ol, ul { margin: 0; }
 .state__actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
 .mskel { display: flex; flex-direction: column; gap: 16px; }
-.mskel__title { height: 28px; width: 180px; border-radius: 4px; background: linear-gradient(90deg,#E4E4E4 25%,#F0F0F0 50%,#E4E4E4 75%); background-size: 200% 100%; animation: smv-shimmer 1.2s linear infinite; }
-.mskel__bar { height: 44px; border-radius: 6px; background: var(--c-behind); }
+.mskel__title { height: 28px; width: 180px; border-radius: var(--radius-default); background: linear-gradient(90deg,#E4E4E4 25%,#F0F0F0 50%,#E4E4E4 75%); background-size: 200% 100%; animation: smv-shimmer 1.2s linear infinite; }
+.mskel__bar { height: 44px; border-radius: var(--radius-default); background: var(--c-behind); }
 .mskel__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 16px; }
-.mskel__grid div { height: 88px; border-radius: 8px; background: var(--c-behind); }
-.mskel__block { height: 220px; border-radius: 8px; background: var(--c-behind); }
+.mskel__grid div { height: 88px; border-radius: var(--radius-default); background: var(--c-behind); }
+.mskel__block { height: 220px; border-radius: var(--radius-default); background: var(--c-behind); }
 .mskel__foot { display: flex; align-items: center; gap: 10px; color: var(--c-text-2); font-size: 13px; }
 .mskel__foot svg { color: var(--c-blue); }

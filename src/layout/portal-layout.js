@@ -3,9 +3,10 @@
 // the message bar and the work area (Home or a shell state). Plain string templates; one render() per state change.
 // Angular: LayoutComponent + HeaderComponent + AccountMenuComponent + NotificationsComponent (+ a small StateService).
 import { icon, TONE_ICON } from '../config/icons.js';
-import { LOGO_SRC, esc, initials, viewportMode } from '../config/app-config.js';
+import { LOGO_SRC, esc, avatar, viewportMode } from '../config/app-config.js';
 import { resolveNavigation, findItem, canSee, isTraveler, renderSidebar, renderDrawer } from './navigation.js';
 import { renderHome } from '../features/home/home.js';
+import { listReducer } from '../shared/data-list.js';
 import { renderDemoBar, renderDemoTag, loadDemoUserId, saveDemoUserId, DEMO_LOADING_MS } from '../demo/demo.js'; // DEMO ONLY
 
 // ---------- shared fragments (used by features too) ----------
@@ -32,21 +33,24 @@ function renderHeader({ user, mode, loading, deadline, unread, bellOpen, account
     ? `<div class="hskel"><div class="hskel__avatar"></div>${mobile ? '' : '<div class="hskel__lines"><div class="hskel__l1"></div><div class="hskel__l2"></div></div>'}</div>`
     : `<div style="position:relative;min-width:0">
     <button class="account-btn${accountOpen ? ' is-open' : ''}" data-action="account:toggle" aria-haspopup="menu" aria-expanded="${accountOpen}" aria-label="Cuenta">
-      <span class="avatar" aria-hidden="true">${esc(initials(user.name))}</span>
+      ${avatar(user)}
       ${mobile ? '' : `<span class="account-btn__id"><span class="account-btn__name">${esc(user.name)}</span><span class="account-btn__role">${esc(user.roleLabel)}</span></span>`}
       ${icon('chevronDown', 16, { color: '#777779', cls: 'account-btn__chevron' })}
     </button></div>`}
 </header>`;
 }
 
-// ---------- account menu: identity + «Cerrar sesión» (no standalone «Cerrar» anywhere else) ----------
+// ---------- account menu: complementary account fields → «Cerrar sesión» ----------
+// Client rule (identity redundancy): the HEADER is the identity area (photo · name · role). The dropdown must NOT repeat them;
+// it starts directly with Número de colaborador · Dirección · Hospital (only when user.hospital exists: hospital-based users) · Puesto · Perfil (readable label, never internal level codes).
 function renderAccountMenu(user) {
-  const perfil = isTraveler(user) && user.perfil ? `<div class="account__perfil">Perfil de viajero: Nivel ${user.perfil.nivel} · ${esc(user.perfil.nombre)}</div>` : '';
+  const rows = [['Número de colaborador', user.employeeNumber], ['Dirección', user.direccion]];
+  if (user.hospital) rows.push(['Hospital', user.hospital]);
+  rows.push(['Puesto', user.puesto]);
+  if (isTraveler(user) && user.perfil) rows.push(['Perfil', user.perfil.label]);
   return `
 <div class="panel panel--account" role="menu" data-stop>
-  <div class="account__id"><span class="avatar avatar--lg">${esc(initials(user.name))}</span>
-    <div class="account__lines"><div class="account__name">${esc(user.name)}</div><div class="account__role">${esc(user.roleLabel)}</div><div class="account__area">${esc(user.area)}</div>${perfil}</div>
-  </div>
+  <dl class="account__fields">${rows.map(([k, v]) => `<div class="account__field"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
   <div class="account__sep"></div>
   <button class="account__item" role="menuitem" data-action="go" data-route="cerrar">${icon('logOut', 18)}Cerrar sesión</button>
 </div>`;
@@ -58,7 +62,7 @@ function renderNotifications(notices, unread) {
     <button class="notice${n.unread ? ' is-unread' : ''}" data-action="notice:open" data-id="${n.id}" data-route="${n.target}">
       ${icon(TONE_ICON[n.tone] || 'info', 20, { cls: `tone-${n.tone}` })}
       <span style="display:block"><span class="notice__text">${esc(n.text)}</span>
-      <span class="notice__foot"><span>${esc(n.when)}</span><span class="notice__go">Ir a ${esc(n.targetLabel)} ›</span></span></span>
+      <span class="notice__foot"><span>Notificado: ${esc(n.notifiedAt)}</span><span class="notice__go">Ir a ${esc(n.targetLabel)} ›</span></span></span>
     </button>`).join('')}</div>`
     : `<div class="notices__empty">${icon('bell', 32, { color: '#A9A8A9', stroke: 1.5 })}<div class="notices__empty-title">Sin avisos nuevos</div><div class="notices__empty-text">Aquí aparecerán los pasos que requieran tu atención.</div></div>`;
   return `
@@ -82,6 +86,7 @@ export function mountPortal(root, data) {
     route: 'inicio', loading: true, collapsed: false,
     bellOpen: false, accountOpen: false, drawerOpen: false,
     read: {},                                                    // notice ids read in this session
+    lists: {},                                                   // per-tray list state { q, f, sort, dir, page } (src/shared/data-list.js), key = userId:trayIndex
     mode: viewportMode(root.clientWidth || 1200)
   };
   const set = (patch) => { Object.assign(state, patch); render(); };
@@ -101,14 +106,22 @@ export function mountPortal(root, data) {
     'drawer:open':    () => set({ drawerOpen: true }),
     'drawer:close':   () => set({ drawerOpen: false }),
     'notice:open':    (el) => { state.read[el.dataset.id] = true; actions.go(el); },
-    'demo:user':      (el) => { saveDemoUserId(el.value); set({ userId: el.value, route: 'inicio', bellOpen: false, accountOpen: false, drawerOpen: false, read: {} }); startLoading(); } // DEMO ONLY
+    // scalable lists: search / filter / sort / page (client rule) — one reducer, state per tray
+    'list:search':    (el) => { state.lists[el.dataset.list] = listReducer(state.lists[el.dataset.list], 'list:search', { value: el.value }); renderKeepingFocus(el); },
+    'list:filter':    (el) => set({ lists: { ...state.lists, [el.dataset.list]: listReducer(state.lists[el.dataset.list], 'list:filter', { field: el.dataset.field, value: el.value }) } }),
+    'list:sort':      (el) => set({ lists: { ...state.lists, [el.dataset.list]: listReducer(state.lists[el.dataset.list], 'list:sort', { field: el.dataset.field }) } }),
+    'list:page':      (el) => set({ lists: { ...state.lists, [el.dataset.list]: listReducer(state.lists[el.dataset.list], 'list:page', { dir: el.dataset.dir }) } }),
+    'demo:user':      (el) => { saveDemoUserId(el.value); set({ userId: el.value, route: 'inicio', bellOpen: false, accountOpen: false, drawerOpen: false, read: {}, lists: {} }); startLoading(); } // DEMO ONLY
   };
   root.addEventListener('click', (e) => {
     const el = e.target.closest('[data-action]');
     if (el && el.tagName !== 'SELECT') return actions[el.dataset.action]?.(el);
     if ((state.bellOpen || state.accountOpen) && !e.target.closest('[data-stop]')) set({ bellOpen: false, accountOpen: false }); // click outside closes panels
   });
-  root.addEventListener('change', (e) => { const el = e.target.closest('[data-action]'); if (el) actions[el.dataset.action]?.(el); });
+  root.addEventListener('change', (e) => { const el = e.target.closest('[data-action]'); if (el && el.dataset.action !== 'list:search') actions[el.dataset.action]?.(el); });
+  root.addEventListener('input', (e) => { const el = e.target.closest('[data-action="list:search"]'); if (el) actions['list:search'](el); });
+  // re-render while typing in a search box without losing the caret (plain-string templates rebuild the DOM)
+  function renderKeepingFocus(input) { const key = input.dataset.list, pos = input.selectionStart; render(); const again = root.querySelector(`[data-action="list:search"][data-list="${key}"]`); if (again) { again.focus(); again.setSelectionRange(pos, pos); } }
   new ResizeObserver(es => { const m = viewportMode(es[0].contentRect.width); if (m !== state.mode) requestAnimationFrame(() => set({ mode: m, drawerOpen: m === 'mobile' && state.drawerOpen })); }).observe(root);
 
   function render() {
@@ -131,7 +144,7 @@ export function mountPortal(root, data) {
       ${crumbs.length ? `<nav class="crumbs" aria-label="Ruta"><button class="crumbs__home" data-action="go" data-route="inicio">Inicio</button>${crumbs.map(c => `<span>›</span><span>${esc(c)}</span>`).join('')}</nav>` : ''}
       <div class="title-row"><h1 class="title">${esc(title)}</h1>${isHome && !mobile ? '<span class="title-row__meta">Actualizado hoy · 10:42</span>' : ''}</div>
       ${bar}
-      ${isDenied ? deniedState(user.roleLabel) : isNotBuilt ? notBuiltState(title, item ? item.us : '') : isClosed ? closedState() : renderHome(userHome, user, statuses.statuses, state.mode)}`;
+      ${isDenied ? deniedState(user.roleLabel) : isNotBuilt ? notBuiltState(title, item ? item.us : '') : isClosed ? closedState() : renderHome(userHome, user, statuses.statuses, state.mode, state.lists)}`;
 
     root.className = `shell${mobile ? ' is-mobile is-narrow' : state.mode === 'narrow' ? ' is-narrow' : ''}`;
     root.innerHTML = `

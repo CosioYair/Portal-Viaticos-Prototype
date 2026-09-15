@@ -1,7 +1,7 @@
 // NAVIGATION — (1) permission resolution and (2) rendering of the desktop sidebar and the mobile drawer.
 // Angular: SidebarComponent + MobileDrawerComponent + a NavigationService holding resolveNavigation().
 import { icon } from '../config/icons.js';
-import { esc, initials } from '../config/app-config.js';
+import { esc, avatar } from '../config/app-config.js';
 
 // ---------- 1. PERMISSION RESOLUTION (the only place) ----------
 // active user + role + traveler capability + traveler profile + configured permissions → visible navigation.
@@ -13,11 +13,26 @@ import { esc, initials } from '../config/app-config.js';
 //   —     (role missing in item.visibility) not visible
 export function isTraveler(user) { return user.role === 'COL' || !!user.traveler; }
 
+// ANTICIPO RULE (client, final: «Solo a Director grupo E ED»): Anticipo does NOT apply ONLY when the traveler profile is exactly Director
+// AND the SAP personnel group is E or ED (users.json › personnelGroup). DGA is a distinct profile and does NOT inherit this rule; any other
+// profile/group keeps Anticipo. Used for the menu (V+PF)
+// and mirrored in the journey (stage 2 «No aplica»). Angular: TravelerRulesService.anticipoApplies(user).
+export const NO_ANTICIPO_GROUPS = ['E', 'ED'];
+export function anticipoApplies(user) {
+  const label = user.perfil && user.perfil.label;
+  return !(label === 'Director' && NO_ANTICIPO_GROUPS.includes(user.personnelGroup));
+}
+// Profile flag resolution for V+PF items: anticipo is derived from the rule above; other flags (representacion) come from perfil.
+export function profileAllows(user, flag) {
+  if (flag === 'anticipo') return isTraveler(user) && !!user.perfil && anticipoApplies(user);
+  return !!(user.perfil && user.perfil[flag]);
+}
+
 export function canSee(item, user, profileRules) {
   const rule = item.visibility[user.role];
   if (rule === '✓' || rule === 'L') return true;
   if (rule === 'V') return isTraveler(user);
-  if (rule === 'V+PF') return isTraveler(user) && !!(user.perfil && user.perfil[profileRules[item.id]]);
+  if (rule === 'V+PF') return isTraveler(user) && profileAllows(user, profileRules[item.id]);
   if (rule === 'P') return (user.permissions || []).includes(item.id);
   return false;
 }
@@ -40,16 +55,20 @@ export function findItem(navigation, id) {
 }
 
 // ---------- 2. RENDERING ----------
+// Collapsed: the label is NOT rendered (nothing hidden off-screen can widen the rail); title + aria-label name the item instead.
 function navItem(it, cls, collapsed) {
   return `
-<button class="${cls}${it.active ? ' is-active' : ''}" data-action="go" data-route="${it.id}" data-tip="${esc(it.label)}"${it.active ? ' aria-current="page"' : ''}>
+<button class="${cls}${it.active ? ' is-active' : ''}" data-action="go" data-route="${it.id}" aria-label="${esc(it.label)}"${collapsed ? ` title="${esc(it.label)}"` : ''}${it.active ? ' aria-current="page"' : ''}>
   ${icon(it.icon, 20)}
   ${collapsed ? '' : `<span class="nav-item__label">${esc(it.label)}</span>${it.readOnly ? '<span class="nav-item__ro">Lectura</span>' : ''}`}
   ${it.count > 0 ? `<span class="nav-item__count">${it.count}</span>` : ''}
 </button>`;
 }
 
-// Desktop sidebar: #00A7E1, full height under the header, expanded 284 px / collapsed 72 px rail with tooltips.
+// Desktop sidebar: #00A7E1, full height under the header, expanded 284 px / collapsed 72 px rail (native tooltips).
+// Structure: .sidebar__scroll (navigation, the ONLY part that scrolls, vertically) + .sidebar__foot (utility footer, always visible).
+// The collapse/expand control is a SHELL UTILITY, not a navigation item (client rule): it lives in that footer,
+// separated from the groups and visually secondary — never next to «Inicio». Mobile has no such control (drawer).
 export function renderSidebar(groups, { collapsed, loading }) {
   let first = true;
   const body = loading
@@ -68,10 +87,12 @@ export function renderSidebar(groups, { collapsed, loading }) {
   return `
 <nav class="sidebar${collapsed ? ' is-collapsed' : ''}" aria-label="Menú principal">
   <div class="sidebar__scroll">
-    <button class="sidebar__toggle" data-action="sidebar:toggle" data-tip="Expandir menú" aria-label="${label}" title="${label}">
-      ${icon(collapsed ? 'chevronsRight' : 'chevronsLeft', 20)}${collapsed ? '' : '<span>Contraer menú</span>'}
-    </button>
     ${body}
+  </div>
+  <div class="sidebar__foot">
+    <button class="sidebar__toggle" data-action="sidebar:toggle" aria-label="${label}" title="${label}" aria-expanded="${!collapsed}">
+      ${icon(collapsed ? 'chevronsRight' : 'chevronsLeft', 18)}${collapsed ? '' : `<span>${label}</span>`}
+    </button>
   </div>
 </nav>`;
 }
@@ -81,8 +102,8 @@ export function renderDrawer(groups, user) {
   return `
 <div class="drawer" role="dialog" aria-label="Menú principal">
   <div class="drawer__head">
-    <div class="drawer__avatar">${esc(initials(user.name))}</div>
-    <div class="drawer__id"><div class="drawer__name">${esc(user.name)}</div><div class="drawer__role">${esc(user.roleLabel.toUpperCase())} · ${esc(user.area)}</div></div>
+    ${avatar(user, 'avatar--lg avatar--drawer')}
+    <div class="drawer__id"><div class="drawer__name">${esc(user.name)}</div><div class="drawer__role">${esc(user.roleLabel.toUpperCase())} · ${esc(user.direccion)}</div></div>
     <button class="drawer__close" data-action="drawer:close" aria-label="Cerrar menú">${icon('close', 22)}</button>
   </div>
   <nav class="drawer__nav">

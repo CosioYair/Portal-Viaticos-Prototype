@@ -1,5 +1,5 @@
-/* RESPONSIVE — classes toggled on .shell by src/core/layout/PortalLayout.js from the CONTAINER width
-   (see src/config/responsiveConfig.js):  .is-narrow (< 1180)  ·  .is-mobile (< 760, implies narrow) */
+/* RESPONSIVE — classes toggled on .shell by src/layout/portal-layout.js from the CONTAINER width
+   (see src/config/app-config.js):  .is-narrow (< 1180)  ·  .is-mobile (< 760, implies narrow) */
 
 /* NARROW (< 1180): sidebar persists; deadline chip narrows; tray tables become cards (handled in HomePage by mode) */
 .shell.is-narrow .deadline { max-width: 220px; }
@@ -19,8 +19,10 @@
 .shell.is-mobile .panel { right: 12px; left: 12px; width: auto; }
 .shell.is-mobile .title { font-size: 24px; }
 .shell.is-mobile .btn--trip { width: 100%; }
-/* Stages stack as rows */
-.shell.is-mobile .stages { grid-template-columns: 1fr; gap: 12px; }
-.shell.is-mobile .stage { flex-direction: row; align-items: center; }
-.shell.is-mobile .stage__line { width: 28px; }
-.shell.is-mobile .stage__bar { display: none; }
+/* Journey progress stacks vertically: marker + text per row, vertical connector between markers */
+.shell.is-mobile .journey { grid-template-columns: 1fr; gap: 0; }
+.shell.is-mobile .journey__step { flex-direction: row; align-items: flex-start; gap: 14px; padding-bottom: 20px; }
+.shell.is-mobile .journey__step:last-child { padding-bottom: 0; }
+.shell.is-mobile .journey__marker { width: var(--journey-marker-mobile); height: var(--journey-marker-mobile); font-size: 15px; }
+.shell.is-mobile .journey__step:not(:last-child)::after { top: calc(var(--journey-marker-mobile) + 4px); bottom: 4px; left: calc(var(--journey-marker-mobile) / 2 - 1.5px); right: auto; width: 3px; height: auto; }
+.shell.is-mobile .journey__body { padding-top: 8px; }
