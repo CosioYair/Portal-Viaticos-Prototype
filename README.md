@@ -1,6 +1,11 @@
 # Portal de Viáticos 2.0 — prototipo de referencia (código fuente)
 
-**Cliente:** Starmedica · **Hito actual:** **US-01 · Layout baseline aprobado para continuidad del proyecto** (2026-09-15). El shell del portal, la navegación por rol, el comportamiento responsivo, los tokens visuales y el estándar de tablas/listas quedan aprobados como línea base. Las pantallas de Inicio representan el estado funcional actual del prototipo y podrán refinarse conforme se implementen las historias funcionales posteriores, conservando el layout y patrones visuales aprobados.
+**Cliente:** Starmedica · **Estado (2026-10-02):**
+- **US-01 — Layout y navegación por rol · APPROVED · CLOSED · FULLY SYNCED**
+- **US-02 — Pantallas de Inicio · APPROVED · CLOSED · FULLY SYNCED** — Inicio compuesto por rol, ámbito, capacidad de viajero y orden definido por el cliente. Referencia: `docs/HOME_VISIBILITY_MATRIX.md`, `docs/US02_DESIGN_NOTES.md`.
+- Historias aún en revisión (REVIEW MODE · SYNC PENDING): Perfil del viajero (US-03 / US-04), US-08 Nueva solicitud de viaje, US-26 Usuarios y permisos / Bitácora, catálogos y tarifas. Su implementación vigente está incluida en el **prototipo completo** (`prototype/`) pero NO está aprobada; se portará a `src/` al finalizar cada historia.
+
+Este proyecto es el **ÚNICO código fuente acumulado** del Portal: las historias siguientes lo extienden; nunca se rehace US-01 ni US-02.
 
 ## Fundación implementada (US-01)
 Shell del portal (encabezado, menú lateral 284 / 72 px, barra de mensajes, área de trabajo) · navegación por rol (`navigation.json` + `canSee`) · layout consciente de la capacidad de viajero · vistas de Inicio de referencia por rol · indicador de etapas compartido (JourneyProgress) · estándar de tablas/listas con búsqueda, filtros, orden y paginación (`data-list.js`) · diseño responsivo (1440 / 1280 / 390) · tokens y activos Starmedica · reglas de negocio de visualización (Anticipo, presupuesto, perfil, folio). Las vistas de Inicio pueden seguir evolucionando con las historias funcionales posteriores.
@@ -16,9 +21,12 @@ npm run start:python       # alternativa Python 3
 ```
 `?dev=1` muestra atajos de desarrollo en la franja de demo.
 
+**Prototipo completo (todas las historias, todos los estados de vista previa):** con el mismo servidor abre `http://localhost:4173/prototype/Portal%20Viaticos.dc.html`. Es la referencia visual y funcional vigente (incluye la franja MODO DEMO para cambiar de usuario y de estado del Inicio). `prototype/support.js` es el runtime del prototipo; no forma parte de la arquitectura propuesta.
+
 ## Dónde está cada cosa
 ```
 index.html                      documento de entrada (estilos + src/app.js)
+prototype/                      SNAPSHOT del prototipo aprobado/vigente: Portal Viaticos.dc.html + datos (us01/us26/usperfil/us08/uscat-data.js) + imágenes; referencia de todo lo no portado a src/
 public/assets/branding/         logo-starmedica.png — logo REAL (no redibujar ni sustituir)
 public/assets/icons/*.svg       un archivo por icono (mismos nombres que src/config/icons.js)
 public/assets/users/            demo-profile-user.jpg — fotografía DEMO proporcionada por el cliente para la maqueta
@@ -35,13 +43,15 @@ src/
   data/statuses.json            estatus (texto + tono + icono)
   data/home.json                Inicio representativo por usuario
   data/notifications.json       avisos, alertas de plazo, contadores pendientes
+  data/people.json              registro canónico de personas (celda Colaborador / Viajero externo)
+  data/traveler.json            perfiles vigentes, asignaciones, comprobaciones (saldo por comprobar), precondición presupuestal personal, colores de concepto
   demo/demo.js                  DEMO ONLY — franja MODO DEMO, cambio de usuario, persistencia
   styles/tokens.css             tokens visuales (CSS custom properties, valores aprobados)
   styles/global.css             reset, Roboto, scrollbars, botones, tarjetas, chips, paneles, estados
   styles/layout.css             shell, encabezado, sidebar (284 / 72), drawer
   styles/responsive.css         reglas < 1180 y < 760 (clases .is-narrow / .is-mobile en el shell)
   styles/demo.css               DEMO ONLY
-docs/MENU_MATRIX.md             matriz de visibilidad del menú · docs/HOME_VISIBILITY_MATRIX.md ámbito del Inicio por rol · docs/US01_DESIGN_NOTES.md decisiones aprobadas
+docs/MENU_MATRIX.md             matriz de visibilidad del menú (+ orden por rol) · docs/HOME_VISIBILITY_MATRIX.md Inicio por rol (canónico US-02) · docs/TABLE_LIST_STANDARD.md · docs/US01_DESIGN_NOTES.md · docs/US02_DESIGN_NOTES.md
 ```
 
 ## Reglas de visibilidad del menú (`data/navigation.json` → `layout/navigation.js › canSee`)
@@ -82,3 +92,11 @@ Artefacto publicado (validación interactiva del cliente) · HTML autocontenido 
 - **Anticipo**: No aplica solo para perfil Director con grupo de personal E / ED (DGA es un perfil distinto y no hereda la regla) (`users.json › personnelGroup`, regla única en `src/layout/navigation.js › anticipoApplies`). El indicador de etapas conserva la etapa 2 como «No aplica».
 - **Presupuesto**: Planeado · Ejercido · Comprometido · PRE disponible = Planeado − Comprometido. «Ejercido» es el término canónico.
 - **Perfil**: Director · Ejecutivo · Mando medio · Operativo · DGA; nunca «Nivel» para clasificación de personal.
+
+## Reglas del Inicio (US-02 · aprobadas)
+- Orden por rol definido por el cliente (`home.order`); sin orden: KPIs → bandejas → secciones del viajero. CH CO: Presupuesto → Casos escalados → Solicitudes por autorizar → Colaboradores en viaje → Perfil → Tu viaje → Nueva solicitud. DGA: Presupuesto → Perfil → Tu viaje → Autorizaciones. Hotelería HSM: Hospedaje HSM · ‹hospital› → Indicadores → Solicitudes. Viáticos: Hotel externo y vuelos → Comprobaciones.
+- Severidad: advertencia = amarillo · incumplimiento/vencido/bloqueo = rojo · utilización 0–70 verde · 71–84 amarillo · ≥85 rojo; la severidad vive en su indicador (sin franjas duplicadas).
+- Ayuda descriptiva en «?»; alertas, bloqueos, plazos y estatus siempre visibles. SAP no disponible = un aviso amarillo arriba.
+- Celda de persona compartida; Detalle en dos líneas; filtro Destino y resumen de decisión en bandejas de autorización; ruta de vuelo destacada; «Viaja en X días».
+- Trayecto compartido: Anticipo «No aplica» por configuración del perfil (DGA) o Director E/ED; «Saldo pendiente por comprobar» en Comprobación del viaje propio.
+- Vigencias siempre «desde … hasta …».

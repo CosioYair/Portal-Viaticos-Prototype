@@ -18,8 +18,12 @@ export function isTraveler(user) { return user.role === 'COL' || !!user.traveler
 // profile/group keeps Anticipo. Used for the menu (V+PF)
 // and mirrored in the journey (stage 2 «No aplica»). Angular: TravelerRulesService.anticipoApplies(user).
 export const NO_ANTICIPO_GROUPS = ['E', 'ED'];
-export function anticipoApplies(user) {
+// US-02 (rule 253): a traveler profile CONFIGURED without anticipo (traveler.json › profiles[].anticipo = «No», e.g. DGA) also makes stage 2 «No aplica».
+// Decided by profile configuration, never by role name. profiles is optional (menu calls without it keep the original rule).
+export function anticipoApplies(user, profiles = []) {
   const label = user.perfil && user.perfil.label;
+  const prof = profiles.find(p => p.perfil === label);
+  if (prof && prof.anticipo === 'No') return false;
   return !(label === 'Director' && NO_ANTICIPO_GROUPS.includes(user.personnelGroup));
 }
 // Profile flag resolution for V+PF items: anticipo is derived from the rule above; other flags (representacion) come from perfil.
@@ -38,11 +42,15 @@ export function canSee(item, user, profileRules) {
 }
 
 // Returns the groups (catalog order) with only the items this user can see, plus readOnly / count / active flags.
+// roleMenuOrder (rule 265): presentation-only order of options inside a group for one role (e.g. CHC · Planeación de viaje: Creación → Mis viajes →
+// Hospedaje → Vuelos → Anticipo → …). Never changes permissions, routes or visibility.
 export function resolveNavigation(navigation, user, counters, activeRoute) {
+  const order = (navigation.roleMenuOrder || {})[user.role] || {};
+  const sorted = g => order[g.group] ? [...g.items].sort((a, b) => (order[g.group].indexOf(a.id) + 1 || 999) - (order[g.group].indexOf(b.id) + 1 || 999)) : g.items;
   return navigation.groups
     .map(g => ({
       group: g.group,
-      items: g.items.filter(it => canSee(it, user, navigation.profileRules)).map(it => ({
+      items: sorted(g).filter(it => canSee(it, user, navigation.profileRules)).map(it => ({
         ...it, readOnly: it.visibility[user.role] === 'L', count: counters[it.id] || 0, active: it.id === activeRoute
       }))
     }))

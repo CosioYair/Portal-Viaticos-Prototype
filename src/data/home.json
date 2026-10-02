@@ -1,7 +1,8 @@
 {
-  "_comment": "DEMO DATA. Inicio per user. help = neutral contextual text (no «tu/tus»); personal wording only in actions. alert replaces help. myTrip = the MOST RECENT trip/request only and ALWAYS carries the 4 canonical stages (shared JourneyProgress); stages[].state = done | current | todo | na («No aplica»: the stage keeps its number and position, gray — Anticipo for perfil Director with personnelGroup E/ED — DGA does not inherit the rule). summary or summaries[] (several blocks in order); each block has scope: personal · operational · organizational. ORGANIZATIONAL BUDGET block = Planeado · Ejercido · Comprometido · PRE disponible, with PRE disponible = Planeado − Comprometido (Ejercido = consumed part of Comprometido; it does not change the formula). kpi.valueTone = true paints the value in the tone color (Nivel de rechazos % in red — no threshold rule). trays[].columns = personal · externos · standard · operational · operationalOrg · hosted · traveling · bitacora (docs/TABLE_LIST_STANDARD.md); trays[].detalleMeaning states what Detalle holds in that table (same meaning for every row); trays[].filters = contextual filters (status · org · perfil); trays[].pageSize (default 5). rows[].status = key in statuses.json. Folio rule: prose says «folio 000nn»; a FOLIO column cell holds the number only («—» when the record has none). Canonical scope reference per role: docs/HOME_VISIBILITY_MATRIX.md.",
+  "_comment": "DEMO DATA · Inicio per user — synchronized at US-02 FINALIZATION (2026-10-02) from the canonical prototype HOMES (us01-data.js). order = client-defined section order per role (rule 252/264/267): perfil · trip · nueva · sum<i> · tray<i>; missing = base order KPIs(10+) → trays(20+) → traveler(30–32). summaries[] blocks carry scope personal · operational · organizational; monitorCta = «Ir a Monitor» (Presupuesto › Monitor); chart + conceptDots = CH CO embedded micro-chart in PRE disponible and fixed concept dots (traveler.json › budgetConceptColors). PRE disponible hint = «Planeado − Estimado · n % utilizado» → n drives budget severity (≤70 verde · 71–84 amarillo · ≥85 rojo). trays[].columns: personal · externos · standard (authorization: Destino filter, decision summary, two-line Detalle) · operationalOrg · collabOrg · hosted · traveling (+Asunto) · anticipos · repr · bitacora. Rows reference people by personId / extId (people.json); legs = flight route; meta/metaSub = Detalle lines; statusSub = status context line. {hospital} in titles = the user hospital. myTrip.stages[].state = done | current | todo | na. Status values are keys of statuses.json.",
   "homes": {
     "u01": {
+      "title": "Inicio",
       "help": "Aquí se muestra el viaje actual, lo que falta por hacer y los indicadores de viaje correspondientes al perfil.",
       "myTrip": {
         "folio": "00043",
@@ -9,10 +10,15 @@
         "dates": "15 – 18 jun 2026",
         "nights": "4 días · 3 noches",
         "motivo": "Operación",
-        "next": "Registra tus gastos y comprobantes. Quedan 2 días hábiles para comprobar.",
+        "stage": 3,
+        "status": "enProceso",
+        "next": "Registra tus gastos y comprobantes de este viaje desde Comprobación.",
+        "deadline": {
+          "text": "Quedan 2 días hábiles para comprobar",
+          "severity": "warning"
+        },
         "nextCta": "Comprobar gastos",
         "nextTarget": "comprobacion",
-        "status": "enProceso",
         "stages": [
           {
             "label": "Aprobación de viaje",
@@ -62,15 +68,7 @@
             "hint": "Del presupuesto de viáticos asignado al colaborador",
             "tone": "verde"
           }
-        ],
-        "personalBudget": {
-          "assignedBudget": 25000,
-          "committed": 9090,
-          "inTransit": 9090,
-          "accumulatedExpense": 14350,
-          "assignedBudgetUsagePercent": 56,
-          "_mock": "USER-SCOPE display values for the demo. assignedBudgetUsagePercent = share of the collaborator's OWN assigned travel budget already used; the production calculation will be connected to the approved budget rules (Presupuesto). No Dirección totals here."
-        }
+        ]
       },
       "trays": [
         {
@@ -109,17 +107,19 @@
       ]
     },
     "u02": {
+      "title": "Inicio",
       "help": "Aquí se muestran los viajeros externos registrados por este usuario y sus pendientes. El viaje propio y sus etapas aparecen cuando existe una solicitud reciente.",
       "myTrip": {
         "folio": "00041",
-        "dest": "Corporativo CDMX",
+        "dest": "Corporativo",
         "dates": "24 – 25 jun 2026",
         "nights": "2 días · 1 noche",
         "motivo": "Reunión comité",
+        "stage": 1,
+        "status": "pendAut",
         "next": "Tu solicitud espera la autorización de Dirección de Hospital.",
         "nextCta": "Ver solicitud",
         "nextTarget": "misviajes",
-        "status": "pendAut",
         "stages": [
           {
             "label": "Aprobación de viaje",
@@ -179,8 +179,8 @@
           "rows": [
             {
               "folio": "00044",
-              "viajero": "Mariana López Cruz",
-              "destino": "Corporativo CDMX",
+              "extId": "x01",
+              "destino": "Corporativo",
               "asunto": "Entrevista · candidata",
               "detalle": "Viaje 8 – 9 jun 2026 · Comprobación vence 15 jun 2026",
               "status": "enProceso",
@@ -188,8 +188,8 @@
             },
             {
               "folio": "00040",
-              "viajero": "Raúl Estrada Pineda",
-              "destino": "HSM Torreón",
+              "extId": "x02",
+              "destino": "HSM Monterrey",
               "asunto": "Reunión sindical",
               "detalle": "Viaje 17 – 18 jun 2026 · Comprobación abre 18 jun 2026",
               "status": "aprobada",
@@ -200,11 +200,8 @@
       ]
     },
     "u03": {
+      "title": "Inicio",
       "help": "Aquí se muestran las solicitudes por autorizar del hospital y el presupuesto de viáticos de la unidad. Las solicitudes también llegan a la APP.",
-      "alert": {
-        "tone": "amarillo",
-        "text": "El presupuesto de HSM Chihuahua supera el 76 % de utilización. Revisa el saldo antes de aprobar nuevas solicitudes."
-      },
       "summary": {
         "scope": "organizational",
         "title": "Presupuesto de viáticos · HSM Chihuahua",
@@ -227,7 +224,7 @@
           {
             "label": "PRE disponible",
             "value": "$288,000",
-            "hint": "Planeado − Comprometido · 76 % utilizado",
+            "hint": "Planeado − Estimado · 76 % utilizado",
             "tone": "amarillo"
           },
           {
@@ -244,16 +241,15 @@
           "cta": "Ir a Aprobación de viaje",
           "target": "aut-viaje",
           "columns": "standard",
-          "detalleMeaning": "Fechas de viaje · monto estimado · fecha de solicitud",
+          "detalleMeaning": "Línea 1: fechas del viaje · monto estimado · Línea 2: fecha de solicitud",
           "filters": [
-            "status"
+            "destino"
           ],
           "rows": [
             {
               "folio": "00045",
-              "who": "Fernando Miranda Ruiz",
-              "area": "HSM Chihuahua · Enfermería · Operativo",
-              "destino": "HSM Torreón",
+              "personId": "u09",
+              "destino": "HSM Ciudad Juárez",
               "asunto": "Capacitación",
               "detalle": "Viaje 22 – 23 jun 2026 · $6,200 est. · Solicitada 9 jun 2026",
               "status": "pendAut",
@@ -261,9 +257,8 @@
             },
             {
               "folio": "00044",
-              "who": "Mariana López Cruz",
-              "area": "HSM Chihuahua · Externa · Capital Humano HSM",
-              "destino": "Corporativo CDMX",
+              "extId": "x01",
+              "destino": "Corporativo",
               "asunto": "Entrevista · candidata",
               "detalle": "Viaje 20 jun 2026 · $4,800 est. · Solicitada 8 jun 2026",
               "status": "pendAut",
@@ -271,9 +266,8 @@
             },
             {
               "folio": "00042",
-              "who": "Octavio Hernández Díaz",
-              "area": "HSM Chihuahua · Mantenimiento · Operativo",
-              "destino": "HSM Saltillo",
+              "personId": "u07",
+              "destino": "HSM Monterrey",
               "asunto": "Operación",
               "detalle": "Viaje 19 jun 2026 · $3,900 est. · Solicitada 6 jun 2026",
               "status": "pendAut",
@@ -293,10 +287,16 @@
           ],
           "rows": [
             {
+              "folio": "00049",
+              "personId": "u10",
+              "entrada": "28 sep 2026",
+              "salida": "2 oct 2026",
+              "status": "pendiente",
+              "age": "Por asignar"
+            },
+            {
               "folio": "00043",
-              "who": "Eduardo Sánchez Gómez",
-              "area": "Dirección Comercial y de Negocios · Mando medio",
-              "org": "Corporativo",
+              "personId": "u01",
               "entrada": "15 jun 2026",
               "salida": "18 jun 2026",
               "status": "asignado",
@@ -304,9 +304,7 @@
             },
             {
               "folio": "00040",
-              "who": "Raúl Estrada Pineda",
-              "area": "Externo · Capital Humano HSM",
-              "org": "HSM Torreón",
+              "extId": "x02",
               "entrada": "17 jun 2026",
               "salida": "18 jun 2026",
               "status": "asignado",
@@ -314,9 +312,7 @@
             },
             {
               "folio": "00036",
-              "who": "Karla Aparicio Vela",
-              "area": "Normatividad · Ejecutivo",
-              "org": "Corporativo",
+              "personId": "u11",
               "entrada": "16 jun 2026",
               "salida": "19 jun 2026",
               "status": "asignado",
@@ -327,6 +323,7 @@
       ]
     },
     "u04": {
+      "title": "Inicio",
       "help": "Aquí se muestran las solicitudes de la dirección en segunda instancia, el presupuesto de viáticos de la dirección corporativa y el viaje propio.",
       "myTrip": {
         "folio": "00048",
@@ -334,10 +331,11 @@
         "dates": "6 – 7 jul 2026",
         "nights": "2 días · 1 noche",
         "motivo": "Reunión comité",
+        "stage": 1,
+        "status": "aprobada",
         "next": "Viaje aprobado. Confirma hospedaje y vuelo.",
         "nextCta": "Confirmar hospedaje",
         "nextTarget": "hospedaje",
-        "status": "aprobada",
         "stages": [
           {
             "label": "Aprobación de viaje",
@@ -363,6 +361,7 @@
       },
       "summary": {
         "scope": "organizational",
+        "monitorCta": true,
         "title": "Presupuesto de viáticos · Dirección Comercial y de Negocios",
         "kpis": [
           {
@@ -383,7 +382,7 @@
           {
             "label": "PRE disponible",
             "value": "$241,000",
-            "hint": "Planeado − Comprometido · 56 % utilizado",
+            "hint": "Planeado − Estimado · 56 % utilizado",
             "tone": "verde"
           },
           {
@@ -400,36 +399,33 @@
           "cta": "Ir a Aprobación de viaje",
           "target": "aut-viaje",
           "columns": "standard",
-          "detalleMeaning": "Fechas de viaje · monto estimado · fecha de solicitud",
+          "detalleMeaning": "Línea 1: fechas del viaje · monto estimado · Línea 2: fecha de solicitud",
           "filters": [
-            "status"
+            "destino"
           ],
           "rows": [
             {
               "folio": "00046",
-              "who": "Denisse Pérez Arango",
-              "area": "Corporativo · Dictamen clínico · Ejecutivo",
+              "personId": "u11",
               "destino": "HSM Mérida",
-              "asunto": "Dictamen clínico",
+              "asunto": "Proyecto",
               "detalle": "Viaje 23 – 25 jun 2026 · $7,100 est. · Solicitada 9 jun 2026",
               "status": "pendAut",
               "age": "Hace 40 min"
             },
             {
               "folio": "00045",
-              "who": "Fernando Miranda Ruiz",
-              "area": "HSM Chihuahua · Enfermería · Operativo",
-              "destino": "HSM Torreón",
+              "personId": "u09",
+              "destino": "HSM Ciudad Juárez",
               "asunto": "Capacitación",
               "detalle": "Viaje 22 – 23 jun 2026 · $6,200 est. · Solicitada 9 jun 2026",
               "status": "pendAut",
               "age": "Hace 2 h"
             },
             {
-              "folio": "00043",
-              "who": "Anna Delfina Valdez",
-              "area": "Corporativo · Admisión · Operativo",
-              "destino": "HSM Querétaro",
+              "folio": "00017",
+              "personId": "u07",
+              "destino": "Corporativo",
               "asunto": "Reunión comité",
               "detalle": "Viaje 21 jun 2026 · $5,400 est. · Solicitada 8 jun 2026",
               "status": "pendAut",
@@ -437,9 +433,8 @@
             },
             {
               "folio": "00041",
-              "who": "Laura Miranda Torres",
-              "area": "HSM Chihuahua · Capital Humano HSM · Mando medio",
-              "destino": "Corporativo CDMX",
+              "personId": "u02",
+              "destino": "Corporativo",
               "asunto": "Reunión comité",
               "detalle": "Viaje 24 – 25 jun 2026 · $4,050 est. · Solicitada 7 jun 2026",
               "status": "pendAut",
@@ -447,8 +442,7 @@
             },
             {
               "folio": "00038",
-              "who": "Sergio Lara Campos",
-              "area": "HSM Puebla · Administración · Mando medio",
+              "personId": "u10",
               "destino": "HSM Veracruz",
               "asunto": "Operación",
               "detalle": "Viaje 26 jun 2026 · $2,900 est. · Solicitada 5 jun 2026",
@@ -470,20 +464,18 @@
           "rows": [
             {
               "folio": "00043",
-              "who": "Eduardo Sánchez Gómez",
-              "area": "Estrategias Comerciales · Mando medio",
-              "org": "Corporativo",
+              "personId": "u01",
               "destino": "HSM Chihuahua",
+              "asunto": "Operación",
               "fechas": "15 – 18 jun 2026",
               "status": "enProceso",
               "age": "Regresa en 3 días"
             },
             {
-              "folio": "00037",
-              "who": "Paola Rangel Ochoa",
-              "area": "Ventas institucionales · Ejecutivo",
-              "org": "Corporativo",
-              "destino": "HSM Monterrey",
+              "folio": "00018",
+              "personId": "u07",
+              "destino": "Corporativo",
+              "asunto": "Capacitación",
               "fechas": "14 – 16 jun 2026",
               "status": "enProceso",
               "age": "Regresa en 1 día"
@@ -493,6 +485,16 @@
       ]
     },
     "u05": {
+      "order": [
+        "sum0",
+        "sum1",
+        "tray0",
+        "tray1",
+        "perfil",
+        "trip",
+        "nueva"
+      ],
+      "title": "Inicio",
       "help": "Aquí llegan solo los casos escalados de: hospitales con Dirección vacante, excedentes de política o presupuesto, autorizaciones específicas.",
       "myTrip": {
         "folio": "00047",
@@ -500,10 +502,11 @@
         "dates": "2 – 3 jul 2026",
         "nights": "2 días · 1 noche",
         "motivo": "Reunión comité",
+        "stage": 1,
+        "status": "pendAut",
         "next": "Tu solicitud espera la autorización de Dirección Corporativa.",
         "nextCta": "Ver solicitud",
         "nextTarget": "misviajes",
-        "status": "pendAut",
         "stages": [
           {
             "label": "Aprobación de viaje",
@@ -530,6 +533,9 @@
       "summaries": [
         {
           "scope": "organizational",
+          "monitorCta": true,
+          "chart": true,
+          "conceptDots": true,
           "title": "Presupuesto de viáticos · Dirección de Capital Humano",
           "kpis": [
             {
@@ -550,7 +556,7 @@
             {
               "label": "PRE disponible",
               "value": "$180,000",
-              "hint": "Planeado − Comprometido · 57 % utilizado",
+              "hint": "Planeado − Estimado · 57 % utilizado",
               "tone": "verde"
             }
           ]
@@ -567,7 +573,7 @@
             {
               "label": "Hospitales con Dirección vacante",
               "value": "1",
-              "hint": "HSM Saltillo",
+              "hint": "HSM Monterrey",
               "tone": "amarillo"
             },
             {
@@ -579,21 +585,20 @@
       ],
       "trays": [
         {
-          "title": "Casos escalados",
+          "title": "Solicitudes por autorizar",
           "count": 2,
           "cta": "Ir a Aprobación de viaje",
           "target": "aut-viaje",
           "columns": "standard",
-          "detalleMeaning": "Fechas de viaje · monto estimado · motivo del escalamiento",
+          "detalleMeaning": "Línea 1: fechas del viaje · monto estimado · Línea 2: motivo del escalamiento",
           "filters": [
-            "status"
+            "destino"
           ],
           "rows": [
             {
               "folio": "00039",
-              "who": "Gabriela Núñez Ortiz",
-              "area": "HSM Saltillo · Enfermería · Mando medio",
-              "destino": "Corporativo CDMX",
+              "personId": "u12",
+              "destino": "Corporativo",
               "asunto": "Operación",
               "detalle": "Viaje 19 jun 2026 · $4,300 est. · Escalada: Dirección de Hospital vacante",
               "status": "pendAut",
@@ -601,10 +606,9 @@
             },
             {
               "folio": "00037",
-              "who": "Luis Ángel Romero",
-              "area": "Corporativo · Jurídico · Mando medio",
+              "personId": "u13",
               "destino": "HSM Mérida",
-              "asunto": "Auditoría",
+              "asunto": "Operación",
               "detalle": "Viaje 24 – 29 jun 2026 · $9,800 est. · Escalada: excede noches del perfil (5 de 3)",
               "status": "pendAut",
               "age": "Hace 2 días"
@@ -624,20 +628,18 @@
           "rows": [
             {
               "folio": "00030",
-              "who": "Daniel Izcalli Muñoz",
-              "area": "Capital Humano HSM · Operativo",
-              "org": "HSM Chihuahua",
-              "destino": "HSM Torreón",
+              "personId": "u02",
+              "destino": "HSM Ciudad Juárez",
+              "asunto": "Operación",
               "fechas": "13 – 16 jun 2026",
               "status": "enProceso",
               "age": "Regresa en 1 día"
             },
             {
               "folio": "00034",
-              "who": "Rocío Sandoval Peña",
-              "area": "Reclutamiento · Mando medio",
-              "org": "Corporativo",
+              "personId": "u13",
               "destino": "HSM Guadalajara",
+              "asunto": "Capacitación",
               "fechas": "15 – 17 jun 2026",
               "status": "enProceso",
               "age": "Regresa en 2 días"
@@ -647,17 +649,27 @@
       ]
     },
     "u06": {
+      "title": "Inicio",
       "help": "Aquí se muestran las autorizaciones de viaje pendientes, los gastos de representación por autorizar y el viaje propio. Con la autorización previa de DGA el caso continúa a Contraloría.",
+      "order": [
+        "sum0",
+        "perfil",
+        "trip",
+        "nueva",
+        "sum1",
+        "tray0"
+      ],
       "myTrip": {
         "folio": "00035",
         "dest": "HSM Monterrey",
         "dates": "30 jun – 1 jul 2026",
         "nights": "2 días · 1 noche",
         "motivo": "Reunión comité",
+        "stage": 1,
+        "status": "aprobada",
         "next": "Viaje aprobado. Confirma hospedaje y vuelo.",
         "nextCta": "Confirmar hospedaje",
         "nextTarget": "hospedaje",
-        "status": "aprobada",
         "stages": [
           {
             "label": "Aprobación de viaje",
@@ -666,8 +678,8 @@
           },
           {
             "label": "Anticipo",
-            "state": "current",
-            "note": "Por solicitar"
+            "state": "na",
+            "note": "No aplica · reembolso al comprobar"
           },
           {
             "label": "Comprobación",
@@ -681,26 +693,56 @@
           }
         ]
       },
-      "summary": {
-        "scope": "operational",
-        "title": "Autorizaciones pendientes",
-        "kpis": [
-          {
-            "label": "Autorizaciones de viaje pendientes",
-            "value": "1",
-            "tone": "azul"
-          },
-          {
-            "label": "Representación por autorizar",
-            "value": "2",
-            "tone": "azul"
-          },
-          {
-            "label": "Comprobaciones DGA por revisar",
-            "value": "1"
-          }
-        ]
-      },
+      "summaries": [
+        {
+          "scope": "organizational",
+          "monitorCta": true,
+          "title": "Presupuesto de viáticos · Dirección General Adjunta",
+          "kpis": [
+            {
+              "label": "Planeado 2026",
+              "value": "$800,000",
+              "hint": "Dirección General Adjunta"
+            },
+            {
+              "label": "Ejercido",
+              "value": "$296,000",
+              "hint": "Gasto comprobado y contabilizado"
+            },
+            {
+              "label": "Comprometido",
+              "value": "$472,000",
+              "hint": "Incluye lo ejercido y las reservas vigentes"
+            },
+            {
+              "label": "PRE disponible",
+              "value": "$328,000",
+              "hint": "Planeado − Estimado · 59 % utilizado",
+              "tone": "verde"
+            }
+          ]
+        },
+        {
+          "scope": "operational",
+          "title": "Autorizaciones pendientes",
+          "kpis": [
+            {
+              "label": "Autorizaciones de viaje pendientes",
+              "value": "1",
+              "tone": "azul"
+            },
+            {
+              "label": "Representación por autorizar",
+              "value": "2",
+              "tone": "azul"
+            },
+            {
+              "label": "Comprobaciones DGA por revisar",
+              "value": "1"
+            }
+          ]
+        }
+      ],
       "trays": [
         {
           "title": "Pendientes de autorización",
@@ -716,36 +758,28 @@
           "rows": [
             {
               "folio": "00036",
-              "who": "Mónica Herrera Luna",
-              "area": "Dirección Comercial y de Negocios · Director",
-              "org": "Corporativo",
+              "personId": "u04",
               "meta": "Gasto de representación · Cena con proveedor · 5 jun 2026 · $4,200",
               "status": "pendAut",
               "age": "Hace 3 h"
             },
             {
               "folio": "00034",
-              "who": "Ricardo Fuentes Ávila",
-              "area": "Dirección de Hospital · Director",
-              "org": "HSM Chihuahua",
+              "personId": "u03",
               "meta": "Gasto de representación · Comida con autoridades · 3 jun 2026 · $2,800",
               "status": "pendAut",
               "age": "Hace 1 día"
             },
             {
               "folio": "00033",
-              "who": "Karla Aparicio Vela",
-              "area": "Normatividad · Ejecutivo",
-              "org": "Corporativo",
+              "personId": "u11",
               "meta": "Autorización de viaje · HSM Puebla → HSM Querétaro · 26 jun 2026 · $5,800 est.",
               "status": "pendAut",
               "age": "Hace 2 días"
             },
             {
               "folio": "00031",
-              "who": "Héctor Salas Bravo",
-              "area": "Contraloría · Ejecutivo",
-              "org": "Corporativo",
+              "personId": "u11",
               "meta": "Comprobación de representación · Desayuno con auditores · 28 may 2026 · $1,950",
               "status": "pendVal",
               "age": "Hace 3 días"
@@ -755,15 +789,21 @@
       ]
     },
     "u07": {
-      "help": "Confirma habitación o rechaza por falta de disponibilidad. Las solicitudes rechazadas pasan automáticamente a Viáticos.",
+      "order": [
+        "sum0",
+        "sum1",
+        "tray0"
+      ],
+      "title": "Inicio",
+      "help": "Confirma habitación o rechaza por falta de disponibilidad. Las solicitudes rechazadas continúan su gestión fuera del hospital.",
       "summaries": [
         {
           "scope": "operational",
-          "title": "Hospedaje HSM Chihuahua",
+          "title": "Hospedaje HSM · {hospital}",
           "kpis": [
             {
               "label": "Solicitudes pendientes",
-              "value": "4",
+              "value": "2",
               "tone": "azul"
             },
             {
@@ -778,28 +818,23 @@
         },
         {
           "scope": "operational",
-          "title": "Indicadores de hospedaje · HSM Chihuahua · 2026",
+          "title": "Indicadores de hospedaje · {hospital}",
           "kpis": [
             {
-              "label": "Satisfacción de huésped",
+              "label": "Promedio de satisfacción del huésped",
               "value": "4.4 / 5",
               "hint": "Encuesta de hospedaje",
               "tone": "verde"
             },
             {
-              "label": "Satisfacción de la estancia",
-              "value": "4.2 / 5",
-              "hint": "Calificación promedio"
-            },
-            {
-              "label": "Índice de incidencias",
-              "value": "3 %",
-              "hint": "2 quejas / 64 estancias"
+              "label": "Estancia promedio del mes",
+              "value": "2.6 noches",
+              "hint": "Septiembre 2026"
             },
             {
               "label": "Nivel de rechazos",
               "value": "8 %",
-              "hint": "5 rechazos de 64 solicitudes · falta de disponibilidad",
+              "hint": "Rechazadas / solicitadas del mes",
               "tone": "rojo",
               "valueTone": true
             }
@@ -808,49 +843,40 @@
       ],
       "trays": [
         {
-          "title": "Solicitudes de hospedaje · HSM Chihuahua",
+          "title": "Solicitudes de hospedaje · {hospital}",
           "count": 4,
           "cta": "Ir a Hospedaje HSM",
           "target": "res-hsm",
           "columns": "operationalOrg",
           "detalleMeaning": "Fechas de estancia · noches · tipo de habitación",
           "filters": [
-            "status",
-            "org"
+            "status"
           ],
           "rows": [
             {
               "folio": "00043",
-              "who": "Eduardo Sánchez Gómez",
-              "area": "Dirección Comercial y de Negocios",
-              "org": "Corporativo",
+              "personId": "u01",
               "meta": "15 – 18 jun 2026 · 3 noches · Habitación individual",
               "status": "pendAut",
               "age": "Llega en 6 días"
             },
             {
               "folio": "00045",
-              "who": "Fernando Miranda Ruiz",
-              "area": "Enfermería",
-              "org": "HSM Torreón",
+              "personId": "u09",
               "meta": "22 – 23 jun 2026 · 1 noche · Habitación compartida",
               "status": "pendAut",
               "age": "Llega en 13 días"
             },
             {
               "folio": "00040",
-              "who": "Raúl Estrada Pineda",
-              "area": "Externo · Capital Humano HSM",
-              "org": "HSM Torreón",
+              "extId": "x02",
               "meta": "17 – 18 jun 2026 · 1 noche · Habitación individual",
               "status": "asignado",
               "age": "Hab. 413 asignada"
             },
             {
               "folio": "00036",
-              "who": "Karla Aparicio Vela",
-              "area": "Normatividad · Ejecutivo",
-              "org": "Corporativo",
+              "personId": "u11",
               "meta": "16 – 19 jun 2026 · 3 noches · Habitación individual",
               "status": "asignado",
               "age": "Hab. 407 asignada"
@@ -860,6 +886,7 @@
       ]
     },
     "u08": {
+      "title": "Inicio",
       "help": "Administra la encuesta de hospedaje HSM y consulta sus resultados por unidad.",
       "summary": {
         "scope": "operational",
@@ -883,6 +910,39 @@
       },
       "trays": [
         {
+          "title": "Bandeja de trabajo · Rechazadas por Hotelería HSM",
+          "count": 2,
+          "cta": "Ir a Hotel y vuelos",
+          "target": "res-hotel",
+          "columns": "collabOrg",
+          "detalleMeaning": "Línea 1: fechas de estancia · Línea 2: noches solicitadas",
+          "filters": [
+            "destino"
+          ],
+          "rows": [
+            {
+              "folio": "00052",
+              "personId": "u13",
+              "destino": "HSM Guadalajara",
+              "meta": "6 – 8 oct 2026",
+              "metaSub": "2 noches",
+              "status": "rechazada",
+              "statusSub": "Rechazada por HSM hace 2 h",
+              "age": "Viaja en 6 días"
+            },
+            {
+              "folio": "00053",
+              "personId": "u02",
+              "destino": "HSM Monterrey",
+              "meta": "13 – 14 oct 2026",
+              "metaSub": "1 noche",
+              "status": "rechazada",
+              "statusSub": "Rechazada por HSM hace 1 día",
+              "age": "Viaja en 13 días"
+            }
+          ]
+        },
+        {
           "title": "Encuestas sin responder",
           "count": 6,
           "cta": "Ir a Gestión de encuestas",
@@ -896,18 +956,14 @@
           "rows": [
             {
               "folio": "00038",
-              "who": "Eduardo Sánchez Gómez",
-              "area": "Dirección Comercial y de Negocios · Mando medio",
-              "org": "Corporativo",
+              "personId": "u01",
               "meta": "Estancia HSM Querétaro · 3 – 5 may 2026 · Sin recordatorio",
               "status": "enProceso",
               "age": "Enviada hace 12 días"
             },
             {
               "folio": "00032",
-              "who": "Sergio Lara Campos",
-              "area": "Administración · Mando medio",
-              "org": "HSM Puebla",
+              "personId": "u10",
               "meta": "Estancia HSM Mérida · 20 – 22 abr 2026 · 1 recordatorio (10 jun 2026)",
               "status": "enProceso",
               "age": "Enviada hace 30 días"
@@ -917,6 +973,12 @@
       ]
     },
     "u09": {
+      "order": [
+        "sum0",
+        "tray1",
+        "tray0"
+      ],
+      "title": "Inicio",
       "help": "Bandejas de trabajo: hotel externo, vuelos y validación de comprobaciones. Al tomar una solicitud nadie más puede validarla mientras esté asignada.",
       "summary": {
         "scope": "operational",
@@ -924,12 +986,12 @@
         "kpis": [
           {
             "label": "Hotel externo",
-            "value": "3",
+            "value": "2",
             "tone": "azul"
           },
           {
             "label": "Vuelos",
-            "value": "4",
+            "value": "3",
             "tone": "azul"
           },
           {
@@ -950,7 +1012,7 @@
           "count": 9,
           "cta": "Ir a Validación de comprobaciones",
           "target": "ges-comp",
-          "columns": "operationalOrg",
+          "columns": "collabOrg",
           "detalleMeaning": "Monto comprobado vs. anticipo · diferencia",
           "filters": [
             "status",
@@ -959,54 +1021,48 @@
           "rows": [
             {
               "folio": "00029",
-              "who": "Sofía Gutiérrez Mena",
-              "area": "Jurídico · Mando medio",
-              "org": "Corporativo",
+              "personId": "u01",
+              "destino": "HSM Chihuahua",
               "meta": "$8,450 comprobados de $8,000 · Pendiente de reembolso $450",
               "status": "vencido",
               "age": "Venció hace 2 días"
             },
             {
               "folio": "00030",
-              "who": "Daniel Izcalli Muñoz",
-              "area": "Capital Humano HSM · Operativo",
-              "org": "HSM Chihuahua",
+              "personId": "u03",
+              "destino": "Corporativo",
               "meta": "$3,200 comprobados de $3,200 · Sin diferencia",
               "status": "pendVal",
               "age": "Hace 1 día · Atiende: Rosa M."
             },
             {
               "folio": "00028",
-              "who": "Anna Delfina Valdez",
-              "area": "Admisión · Operativo",
-              "org": "Corporativo",
+              "personId": "u02",
+              "destino": "HSM Querétaro",
               "meta": "$5,100 comprobados de $5,400 · Excedente por devolver $300",
               "status": "pendVal",
               "age": "Hace 3 días"
             },
             {
               "folio": "00027",
-              "who": "Patricia Solís Navarro",
-              "area": "Dirección General Adjunta · DGA",
-              "org": "Corporativo",
+              "personId": "u06",
+              "destino": "HSM Monterrey",
               "meta": "$6,900 comprobados de $6,900 · Sin diferencia",
               "status": "pendVal",
               "age": "Hace 3 días"
             },
             {
               "folio": "00026",
-              "who": "Tomás Villarreal Ibáñez",
-              "area": "Mantenimiento · Operativo",
-              "org": "HSM Saltillo",
+              "personId": "u05",
+              "destino": "HSM Monterrey",
               "meta": "$2,100 comprobados de $2,600 · Excedente por devolver $500",
               "status": "vencido",
               "age": "Venció hace 1 día"
             },
             {
               "folio": "00025",
-              "who": "Mónica Herrera Luna",
-              "area": "Dirección Comercial y de Negocios · Director",
-              "org": "Corporativo",
+              "personId": "u04",
+              "destino": "HSM Guadalajara",
               "meta": "$3,100 comprobados de $3,100 · Sin diferencia",
               "status": "pendVal",
               "age": "Hace 4 días"
@@ -1015,137 +1071,223 @@
         },
         {
           "title": "Hotel externo y vuelos",
-          "count": 7,
+          "count": 5,
           "cta": "Ir a Hotel y vuelos",
           "target": "res-hotel",
-          "columns": "operationalOrg",
-          "detalleMeaning": "Servicio · fechas · condición de la reserva",
+          "columns": "collabOrg",
+          "detalleMeaning": "Vuelo: ruta · fecha de viaje · Hotel: fechas de estancia · noches",
           "filters": [
-            "status",
-            "org"
+            "servicio",
+            "status"
           ],
           "rows": [
             {
               "folio": "00043",
-              "who": "Eduardo Sánchez Gómez",
-              "area": "Dirección Comercial y de Negocios · Mando medio",
-              "org": "Corporativo",
-              "meta": "Vuelos · Ida y vuelta 15 y 18 jun 2026 · Corporativo → Chihuahua · Equipaje documentado",
+              "personId": "u01",
+              "servicio": "Vuelo",
+              "destino": "HSM Chihuahua",
+              "legs": [
+                [
+                  "CD. MX",
+                  "CUU"
+                ],
+                [
+                  "CUU",
+                  "CD. MX"
+                ]
+              ],
+              "fechaViaje": "15 – 18 jun 2026",
               "status": "pendAsig",
               "age": "Viaja en 6 días"
             },
             {
+              "folio": "00047",
+              "personId": "u05",
+              "servicio": "Vuelo",
+              "destino": "HSM Guadalajara",
+              "legs": [
+                [
+                  "CD. MX",
+                  "GDL"
+                ],
+                [
+                  "GDL",
+                  "CD. MX"
+                ]
+              ],
+              "fechaViaje": "2 – 3 jul 2026",
+              "status": "asignado",
+              "age": "Viaja en 23 días"
+            },
+            {
+              "folio": "00048",
+              "personId": "u04",
+              "servicio": "Vuelo",
+              "destino": "HSM Monterrey",
+              "legs": [
+                [
+                  "CD. MX",
+                  "MTY"
+                ],
+                [
+                  "MTY",
+                  "CD. MX"
+                ]
+              ],
+              "fechaViaje": "6 – 7 jul 2026",
+              "status": "confirmado",
+              "statusSub": "Notificado: 08/06/2026",
+              "age": "Viaja en 27 días"
+            },
+            {
               "folio": "00046",
-              "who": "Denisse Pérez Arango",
-              "area": "Dictamen clínico · Ejecutivo",
-              "org": "Corporativo",
-              "meta": "Hotel externo · 23 – 25 jun 2026 · 2 noches · HSM Mérida sin disponibilidad",
-              "status": "enProceso",
-              "age": "Rechazada por HSM hace 4 h"
+              "personId": "u02",
+              "servicio": "Hotel",
+              "destino": "HSM Mérida",
+              "meta": "23 – 25 jun 2026",
+              "metaSub": "2 noches",
+              "status": "notificado",
+              "statusSub": "hace 3 h",
+              "age": "Viaja en 14 días"
+            },
+            {
+              "folio": "00042",
+              "personId": "u07",
+              "servicio": "Hotel",
+              "destino": "HSM Monterrey",
+              "meta": "19 – 20 jun 2026",
+              "metaSub": "1 noche",
+              "status": "pendAsig",
+              "age": "Viaja en 10 días"
             }
           ]
         }
       ]
     },
     "u10": {
-      "help": "Anticipos por transferir, comprobaciones por contabilizar, reembolsos y descuentos. Cada movimiento actualiza el presupuesto en tiempo real.",
+      "title": "Inicio",
+      "help": "Anticipos autorizados por transferir y contabilizaciones de lo que Viáticos ya validó y aprobó. Cada movimiento actualiza el presupuesto en tiempo real.",
       "summary": {
         "scope": "operational",
         "title": "Contabilización",
         "kpis": [
           {
             "label": "Anticipos por transferir",
-            "value": "5",
-            "hint": "$38,400",
-            "tone": "azul"
-          },
-          {
-            "label": "Comprobaciones por contabilizar",
-            "value": "3",
-            "tone": "azul"
-          },
-          {
-            "label": "Reembolsos pendientes",
             "value": "2",
-            "hint": "$1,150"
+            "hint": "$10,250",
+            "tone": "azul"
           },
           {
-            "label": "Descuentos IT0014 por generar",
-            "value": "1",
-            "hint": "$700"
+            "label": "Contabilizaciones pendientes",
+            "value": "7",
+            "tone": "azul"
           }
         ]
       },
       "trays": [
         {
-          "title": "Anticipos autorizados por transferir",
-          "count": 5,
+          "title": "Anticipos autorizados",
+          "count": 3,
           "cta": "Ir a Solicitud de anticipo",
           "target": "con-ant",
-          "columns": "operationalOrg",
-          "detalleMeaning": "Monto · cuenta destino · fecha de autorización",
+          "columns": "anticipos",
+          "detalleMeaning": "Línea 1: CECO · monto · Línea 2: fecha de autorización de la solicitud",
           "filters": [
-            "status",
-            "org"
+            "status"
           ],
           "rows": [
             {
               "folio": "00045",
-              "who": "Fernando Miranda Ruiz",
-              "area": "Enfermería · CECO CHI11000",
-              "org": "HSM Chihuahua",
-              "meta": "$6,200 · Cuenta SAP ····4405 · Autorizado 10 jun 2026",
-              "status": "pendAut",
+              "personId": "u09",
+              "meta": "CECO CHI11000 · Por transferir: $6,200",
+              "metaSub": "Autorizada 10 jun 2026",
+              "status": "pendTransf",
               "age": "Autorizado hace 1 h"
             },
             {
               "folio": "00041",
-              "who": "Laura Miranda Torres",
-              "area": "Capital Humano HSM · CECO CHI12000",
-              "org": "HSM Chihuahua",
-              "meta": "$4,050 · Cuenta SAP ····9812 · Autorizado 10 jun 2026",
-              "status": "pendAut",
+              "personId": "u02",
+              "meta": "CECO CHI12000 · Por transferir: $4,050",
+              "metaSub": "Autorizada 10 jun 2026",
+              "status": "pendTransf",
               "age": "Autorizado hace 5 h"
             },
             {
               "folio": "00039",
-              "who": "Gabriela Núñez Ortiz",
-              "area": "CECO SAL11000",
-              "org": "HSM Saltillo",
-              "meta": "$4,300 · Cuenta alterna ····2210 · Autorizado 9 jun 2026",
-              "status": "pendAut",
-              "age": "Autorizado ayer"
+              "personId": "u12",
+              "meta": "CECO MTY11000 · Transferido: $4,300",
+              "metaSub": "Autorizada 9 jun 2026",
+              "status": "transferido",
+              "age": "Transferido hace 2 h"
             }
           ]
         },
         {
-          "title": "Cierres pendientes",
-          "count": 3,
+          "title": "Contabilizaciones pendientes",
+          "count": 7,
+          "pageSize": 7,
           "cta": "Ir a Comprobación",
           "target": "con-comp",
-          "columns": "operationalOrg",
-          "detalleMeaning": "Saldo de la cuenta · situación · fecha de la comprobación",
+          "columns": "anticipos",
+          "detalleMeaning": "Línea 1: concepto · importe · Línea 2: validación de Viáticos",
           "filters": [
-            "status",
-            "org"
+            "status"
           ],
           "rows": [
             {
+              "folio": "00044",
+              "personId": "u13",
+              "meta": "Anticipo · $5,400",
+              "metaSub": "Validado por Viáticos 10 jun 2026",
+              "status": "pcAnt",
+              "age": "Hace 2 h"
+            },
+            {
               "folio": "00030",
-              "who": "Daniel Izcalli Muñoz",
-              "area": "Capital Humano HSM · Operativo",
-              "org": "HSM Chihuahua",
-              "meta": "Saldo $0 · Cuenta en cero · Comprobación aprobada 9 jun 2026",
-              "status": "pendAut",
+              "personId": "u02",
+              "meta": "Comprobación · +$450",
+              "metaSub": "Validado por Viáticos 9 jun 2026",
+              "status": "pcComp",
               "age": "Hace 1 día"
             },
             {
+              "folio": "00025",
+              "personId": "u04",
+              "meta": "Comprobación · −$300",
+              "metaSub": "Validado por Viáticos 8 jun 2026",
+              "status": "pcComp",
+              "age": "Hace 2 días"
+            },
+            {
+              "folio": "00043",
+              "personId": "u01",
+              "meta": "Vuelos · $7,850",
+              "metaSub": "Validado por Viáticos 9 jun 2026",
+              "status": "pcVue",
+              "age": "Hace 1 día"
+            },
+            {
+              "folio": "00027",
+              "personId": "u06",
+              "meta": "Gastos de representación · $6,900",
+              "metaSub": "Validado por Viáticos 8 jun 2026",
+              "status": "pcRep",
+              "age": "Hace 2 días"
+            },
+            {
               "folio": "00028",
-              "who": "Anna Delfina Valdez",
-              "area": "Admisión · Operativo",
-              "org": "Corporativo",
-              "meta": "Saldo $300 · Devolución pendiente · Comprobación aprobada 7 jun 2026",
-              "status": "pendAut",
+              "personId": "u02",
+              "meta": "Devolución · $300",
+              "metaSub": "Validado por Viáticos 7 jun 2026",
+              "status": "pDevol",
+              "age": "Hace 3 días"
+            },
+            {
+              "folio": "00029",
+              "personId": "u01",
+              "meta": "Adeudo a colaborador · $450",
+              "metaSub": "Validado por Viáticos 7 jun 2026",
+              "status": "pAdeudo",
               "age": "Hace 3 días"
             }
           ]
@@ -1153,63 +1295,57 @@
       ]
     },
     "u11": {
+      "title": "Inicio",
       "help": "Revisa gastos de representación. Solo llegan casos con solicitud del colaborador y autorización previa de DGA.",
       "summary": {
-        "scope": "organizational",
-        "title": "Gastos de representación · Consolidado",
+        "scope": "operational",
+        "title": "Gastos de representación",
         "kpis": [
           {
-            "label": "Por revisar",
+            "label": "Por autorizar",
             "value": "2",
             "tone": "azul"
           },
           {
             "label": "Revisados este mes",
             "value": "7"
-          },
-          {
-            "label": "Presupuesto corporativo utilizado",
-            "value": "61 %",
-            "hint": "Ámbito consolidado · Presupuesto › Monitor"
           }
         ]
       },
       "trays": [
         {
-          "title": "Gastos de representación por revisar",
+          "title": "Gastos de representación por autorizar",
           "count": 2,
           "cta": "Ir a Gastos de representación",
           "target": "aut-rep",
-          "columns": "operationalOrg",
-          "detalleMeaning": "Concepto · fecha · monto · autorización DGA",
-          "filters": [
-            "status",
-            "org"
-          ],
+          "columns": "repr",
+          "detalleMeaning": "Línea 1: fecha · monto · Línea 2: fecha de autorización DGA",
+          "filters": [],
           "rows": [
             {
               "folio": "00027",
-              "who": "Patricia Solís Navarro",
-              "area": "Dirección General Adjunta · DGA",
-              "org": "Corporativo",
-              "meta": "Cena con consejo médico · 2 jun 2026 · $6,900 · Autorizó DGA 3 jun 2026",
-              "status": "pendAut",
+              "personId": "u06",
+              "asunto": "Cena con consejo médico",
+              "meta": "2 jun 2026 · $6,900",
+              "metaSub": "Autorizó DGA 3 jun 2026",
+              "status": "pendAutCtr",
               "age": "Hace 2 días"
             },
             {
               "folio": "00025",
-              "who": "Mónica Herrera Luna",
-              "area": "Dirección Comercial y de Negocios · Director",
-              "org": "Corporativo",
-              "meta": "Comida con aseguradora · 27 may 2026 · $3,100 · Autorizó DGA 28 may 2026",
-              "status": "pendAut",
-              "age": "Hace 6 días"
+              "personId": "u04",
+              "asunto": "Comida con aseguradora",
+              "meta": "27 may 2026 · $3,100",
+              "metaSub": "Autorizó DGA 28 may 2026",
+              "status": "pendAutCtr",
+              "age": "Hace 3 h"
             }
           ]
         }
       ]
     },
     "u12": {
+      "title": "Inicio",
       "help": "Administra usuarios, permisos, perfiles de viajero, catálogos, parámetros, políticas y guías. Todo cambio queda en bitácora.",
       "summary": {
         "scope": "operational",
@@ -1220,7 +1356,7 @@
             "value": "1,284"
           },
           {
-            "label": "Perfiles de viajero",
+            "label": "Tipos de perfil configurados",
             "value": "5",
             "hint": "Director · Ejecutivo · Mando medio · Operativo · DGA"
           },
@@ -1273,7 +1409,7 @@
               "who": "Ricardo Fuentes Ávila",
               "area": "Aprobación de viaje",
               "perfil": "Operativo",
-              "meta": "Solicitud aprobada · Fernando Miranda Ruiz · HSM Chihuahua → HSM Torreón",
+              "meta": "Solicitud aprobada · Fernando Miranda Ruiz · HSM Chihuahua → HSM Ciudad Juárez",
               "status": "realizado",
               "age": "Hoy 08:15"
             },
@@ -1306,7 +1442,7 @@
             },
             {
               "folio": "00036",
-              "who": "Patricia Solís Navarro",
+              "who": "Pedro Medina",
               "area": "Gastos de representación",
               "perfil": "Director",
               "meta": "Autorización previa registrada · Mónica Herrera Luna · $4,200",

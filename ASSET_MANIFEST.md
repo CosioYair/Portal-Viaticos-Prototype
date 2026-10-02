@@ -1,4 +1,4 @@
-# ASSET_MANIFEST — complete visual resource inventory (US-01)
+# ASSET_MANIFEST — complete visual resource inventory (US-01 + US-02 · 2026-10-02)
 
 Goal: no visual resource should require guessing from a screenshot or PDF.
 
@@ -13,6 +13,15 @@ Goal: no visual resource should require guessing from a screenshot or PDF.
 | Name | Type | Path | Purpose | Notes |
 |---|---|---|---|---|
 | Demo profile photo — client-supplied (u01) | JPG, 400 × 400 px | `public/assets/users/demo-profile-user.jpg` | Avatar in the header (36 px) and mobile drawer (40 px) — not repeated in the account dropdown, circular crop (`object-fit: cover`). Referenced from `src/data/users.json › users[].photo`; rendered by `avatar()` in `src/config/app-config.js`. | **DEMO DATA supplied by the client for the mockup** (cropped square, face untouched). Not an employee record, no external URL. Users without `photo` render initials (also the fallback if the file fails to load). Production shows the authenticated collaborator's photo. |
+
+## 1c. Assets added through US-02 (2026-10-02)
+| Name | Type | Path | Purpose | Notes |
+|---|---|---|---|---|
+| Demo profile photo — client-supplied, canonical u01 (Elizabeth Sánchez) | JPG | `public/assets/users/elizabeth-sanches-gomes.jpg` | Header avatar, sidebar identity | DEMO, client-supplied. `demo-profile-user.jpg` is RETAINED (previous canonical photo, intentionally kept). |
+| Welcome image | JPG | `public/assets/branding/welcome-plane.jpg` | Welcome modal (once per session) | Used by the full prototype snapshot. |
+| Prototype runtime images | JS data URLs | `prototype/us01-photo.js`, `prototype/usvisual-img.js`, `prototype/usbrand-img.js` | Offline images for the prototype/standalone | Prototype/bundle machinery only; the modular source uses the files above. |
+| Profile catalog images | JPG | `prototype/assets/perfiles/*.jpg` | Traveler-profile catalog (open story) | Client-supplied visuals; kept with the snapshot. |
+| New icons | inline SVG | `src/config/icons.js` (`utensils`, `car`, `route`, `calendar`, `sliders`, `wallet`) | Perfil de viajero summary categories | Lucide geometry: utensils · car · route · calendar · sliders-horizontal · wallet. |
 
 ## 2. Typography
 

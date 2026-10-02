@@ -4,6 +4,12 @@
 // Rule (client V2): same function = same icon in every role menu. Every «Comprobación / Comprobaciones» item uses fileCheck (document + check).
 export const ICONS = {
   // navigation
+  utensils: 'M3 2v7a3 3 0 006 0V2M6 2v20M6 9v13M21 15V2a5 5 0 00-5 5v6h5M21 15v7',   // US-02 Perfil de viajero summary / budget
+  car: 'M5 17H3v-5l2-6h14l2 6v5h-2M5 17a2 2 0 104 0 2 2 0 00-4 0zM15 17a2 2 0 104 0 2 2 0 00-4 0zM9 17h6M3 12h18',   // US-02 Perfil de viajero summary / budget
+  route: 'M6 21a3 3 0 100-6 3 3 0 000 6zM18 9a3 3 0 100-6 3 3 0 000 6zM6 15V9a4 4 0 014-4h5M9 5l-3 3M18 9v6a4 4 0 01-4 4H9',   // US-02 Perfil de viajero summary / budget
+  calendar: 'M3 6a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2zM16 2v4M8 2v4M3 10h18',   // US-02 Perfil de viajero summary / budget
+  sliders: 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',   // US-02 Perfil de viajero summary / budget
+  wallet: 'M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H6a2 2 0 00-2 2v2M16 14h.01',   // US-02 Perfil de viajero summary / budget
   home:        'M3 10l9-7 9 7v10a2 2 0 01-2 2H5a2 2 0 01-2-2zM9 22V12h6v10',
   plus:        'M12 5v14M5 12h14',
   suitcase:    'M3 7h18v13H3zM8 7V4h8v3M8 7v13M16 7v13',

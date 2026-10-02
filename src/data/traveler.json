@@ -1,0 +1,379 @@
+{
+  "_comment": "Traveler model subset used by the Home (synthetic demo data from usperfil-data.js). profiles = vigente traveler profiles (Home summary categories); assignments = vigente perfil per person; comprobaciones = canonical per-folio record — Saldo pendiente por comprobar = sujeto − comprobado (rule 262); demo.parcial = preview scenario. budget = personal precondition (rule 75b). budgetConceptColors = CH CO fixed concept colors (rule 266).",
+  "profiles": [
+    {
+      "perfil": "Director",
+      "anticipo": "Sí",
+      "hospedaje": "Hotel de convenio",
+      "habitacion": [
+        "Individual"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Renta de auto",
+        "Auto particular",
+        "Taxi"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Dirección Corporativa → DGA"
+    },
+    {
+      "perfil": "DGA",
+      "anticipo": "No",
+      "hospedaje": "Hotel de convenio",
+      "habitacion": [
+        "Individual"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Renta de auto",
+        "Auto particular",
+        "Taxi"
+      ],
+      "cadenaHospital": "No aplica",
+      "cadenaCorporativo": "Aprobación propia al capturar (sin superior)"
+    },
+    {
+      "perfil": "Ejecutivo",
+      "anticipo": "Sí",
+      "hospedaje": "Hotel de convenio",
+      "habitacion": [
+        "Individual"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Autobús",
+        "Auto particular",
+        "Taxi"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa"
+    },
+    {
+      "perfil": "Mando medio",
+      "anticipo": "Sí",
+      "hospedaje": "Hotel de convenio",
+      "habitacion": [
+        "Individual",
+        "Compartida"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Autobús",
+        "Auto particular",
+        "Taxi"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa"
+    },
+    {
+      "perfil": "Operativo",
+      "anticipo": "Sí",
+      "hospedaje": "Hotel de convenio",
+      "habitacion": [
+        "Compartida"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "transporte": [
+        "Autobús",
+        "Camioneta SM",
+        "Auto particular",
+        "Taxi"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa"
+    }
+  ],
+  "assignments": {
+    "u01": "Mando medio",
+    "u02": "Mando medio",
+    "u03": "Director",
+    "u04": "Director",
+    "u05": "Director",
+    "u06": "DGA",
+    "u07": "Mando medio",
+    "u09": "Operativo",
+    "u10": "Mando medio",
+    "u11": "Ejecutivo",
+    "u12": "Mando medio"
+  },
+  "trips": {
+    "u01": [
+      {
+        "perfilFolio": "Mando medio",
+        "folio": "00043",
+        "destino": "HSM Chihuahua",
+        "fechas": "15/06/2026 – 18/06/2026",
+        "motivo": "Operación",
+        "monto": "$9,090",
+        "status": "enProceso",
+        "uuid": "A1B2C3D4-5E6F-4711-8A90-1122334455AA",
+        "saldo": "Anticipo por comprobar $9,090"
+      },
+      {
+        "perfilFolio": "Mando medio",
+        "folio": "00038",
+        "destino": "HSM Querétaro",
+        "fechas": "11/05/2026 – 14/05/2026",
+        "motivo": "Capacitación",
+        "monto": "$7,420",
+        "status": "finalizado",
+        "uuid": "B2C3D4E5-6F70-4822-9BA1-2233445566BB",
+        "saldo": "Sin saldo pendiente"
+      },
+      {
+        "perfilFolio": "Operativo",
+        "folio": "00031",
+        "destino": "HSM Mérida",
+        "fechas": "23/03/2026 – 27/03/2026",
+        "motivo": "Operación",
+        "monto": "$11,860",
+        "status": "finalizado",
+        "uuid": "C3D4E5F6-7081-4933-ACB2-3344556677CC",
+        "saldo": "Sin saldo pendiente"
+      },
+      {
+        "perfilFolio": "Operativo",
+        "folio": "00024",
+        "destino": "HSM Veracruz",
+        "fechas": "26/01/2026 – 28/01/2026",
+        "motivo": "Reunión comité",
+        "monto": "$0",
+        "status": "cancelada",
+        "uuid": "—",
+        "saldo": "Presupuesto liberado"
+      },
+      {
+        "perfilFolio": "Operativo",
+        "folio": "00019",
+        "destino": "Corporativo",
+        "fechas": "02/12/2025 – 03/12/2025",
+        "motivo": "Proyecto",
+        "monto": "$4,150",
+        "status": "finalizado",
+        "uuid": "D4E5F607-1829-4A44-BDC3-445566778899",
+        "saldo": "Sin saldo pendiente"
+      }
+    ],
+    "u02": [
+      {
+        "perfilFolio": "Mando medio",
+        "folio": "00041",
+        "destino": "Corporativo",
+        "fechas": "24/06/2026 – 25/06/2026",
+        "motivo": "Reunión comité",
+        "monto": "$3,300",
+        "status": "pendAut",
+        "uuid": "—",
+        "saldo": "Pendiente de autorización"
+      },
+      {
+        "perfilFolio": "Mando medio",
+        "folio": "00029",
+        "destino": "HSM Mérida",
+        "fechas": "09/03/2026 – 11/03/2026",
+        "motivo": "Capacitación",
+        "monto": "$5,640",
+        "status": "finalizado",
+        "uuid": "E5F60718-293A-4B55-CEDA-5566778899AA",
+        "saldo": "Sin saldo pendiente"
+      }
+    ],
+    "u03": [
+      {
+        "perfilFolio": "Director",
+        "folio": "00040",
+        "destino": "Corporativo",
+        "fechas": "22/06/2026 – 23/06/2026",
+        "motivo": "Reunión comité",
+        "monto": "$6,400",
+        "status": "aprobada",
+        "uuid": "—",
+        "saldo": "Anticipo por solicitar"
+      },
+      {
+        "perfilFolio": "Director",
+        "folio": "00027",
+        "destino": "HSM Querétaro",
+        "fechas": "17/02/2026 – 19/02/2026",
+        "motivo": "Operación",
+        "monto": "$9,250",
+        "status": "finalizado",
+        "uuid": "F6071829-3A4B-4C66-DFEB-66778899AABB",
+        "saldo": "Sin saldo pendiente"
+      }
+    ],
+    "u13": [
+      {
+        "perfilFolio": "Operativo",
+        "folio": "00046",
+        "destino": "HSM Chihuahua",
+        "fechas": "28/09/2026 – 02/10/2026",
+        "motivo": "Proyecto",
+        "monto": "$6,800",
+        "status": "pendAut",
+        "uuid": "—",
+        "saldo": "Pendiente de autorización"
+      },
+      {
+        "perfilFolio": "Operativo",
+        "folio": "00034",
+        "destino": "HSM Veracruz",
+        "fechas": "13/04/2026 – 15/04/2026",
+        "motivo": "Operación",
+        "monto": "$4,980",
+        "status": "rechazada",
+        "uuid": "—",
+        "saldo": "Sin saldo pendiente"
+      },
+      {
+        "perfilFolio": "Operativo",
+        "folio": "00022",
+        "destino": "HSM Mérida",
+        "fechas": "12/01/2026 – 16/01/2026",
+        "motivo": "Capacitación",
+        "monto": "$8,310",
+        "status": "finalizado",
+        "uuid": "07182 93A-4B5C-4D77-EAFC-778899AABBCC",
+        "saldo": "Comprobación vencida · adeudo $1,240"
+      }
+    ]
+  },
+  "comprobaciones": {
+    "00043": {
+      "sujeto": 9090,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 4840
+      }
+    },
+    "00041": {
+      "sujeto": 3300,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 1490
+      }
+    },
+    "00040": {
+      "sujeto": 6400,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 2150
+      }
+    },
+    "00048": {
+      "sujeto": 5200,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 2900
+      }
+    },
+    "00047": {
+      "sujeto": 4600,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 2100
+      }
+    },
+    "00035": {
+      "sujeto": 6100,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 2600
+      }
+    },
+    "00046": {
+      "sujeto": 6800,
+      "comprobado": 0,
+      "demo": {
+        "parcial": 3060
+      }
+    }
+  },
+  "budget": {
+    "u01": {
+      "tipo": "Dirección corporativa",
+      "entidad": "Dirección Comercial y de Negocios",
+      "suficiente": true,
+      "propio": {
+        "comprometido": 9090,
+        "enTransito": 9090,
+        "acumulado": 14350
+      }
+    },
+    "u02": {
+      "tipo": "Hospital",
+      "entidad": "HSM Chihuahua",
+      "suficiente": true,
+      "propio": {
+        "comprometido": 3300,
+        "enTransito": 0,
+        "acumulado": 5640
+      }
+    },
+    "u03": {
+      "tipo": "Hospital",
+      "entidad": "HSM Chihuahua",
+      "suficiente": true,
+      "propio": {
+        "comprometido": 6400,
+        "enTransito": 0,
+        "acumulado": 9250
+      }
+    },
+    "u04": {
+      "tipo": "Dirección corporativa",
+      "entidad": "Dirección Comercial y de Negocios",
+      "suficiente": true,
+      "propio": {
+        "comprometido": 0,
+        "enTransito": 0,
+        "acumulado": 0
+      }
+    },
+    "u13": {
+      "tipo": "Dirección corporativa",
+      "entidad": "Corporativo",
+      "suficiente": false,
+      "propio": {
+        "comprometido": 6800,
+        "enTransito": 1240,
+        "acumulado": 13290
+      }
+    }
+  },
+  "budgetConceptColors": {
+    "Planeado": "#A2C83A",
+    "Ejercido": "#F08A24",
+    "Comprometido": "#E9C200",
+    "PRE disponible": "#8DD3F0"
+  }
+}

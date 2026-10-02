@@ -1,4 +1,4 @@
-# IMPLEMENTATION_MAP — US-01 · elemento aprobado → archivo
+# IMPLEMENTATION_MAP — elemento aprobado → archivo (US-01 + US-02 · APPROVED · FULLY SYNCED · 2026-10-02)
 
 | Elemento aprobado | Archivo(s) |
 |---|---|
@@ -45,3 +45,20 @@
 - `src/shared/data-list.js` — shared list pipeline (search · contextual filters · sort · pagination) + toolbar/header/pager renderers. Angular: DataListService (pure functions) + a table component with @Input() columns; state `{ q, f, sort, dir, page }` per list. Standard: docs/TABLE_LIST_STANDARD.md.
 - `src/layout/navigation.js › anticipoApplies / profileAllows` — Anticipo rule (perfil Director + personnelGroup E/ED → No aplica; DGA does not inherit it). Angular: TravelerRulesService.
 - `src/data/users.json › personnelGroup`, `home.json › summaries[] · trays[].filters · detalleMeaning · pageSize · kpi.valueTone`, new column sets `hosted` / `traveling` / `bitacora`.
+
+## Added in US-02 — Pantallas de Inicio (APPROVED · CLOSED · FULLY SYNCED, 2026-10-02)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Orden del Inicio por rol (`home.order`, regla 252) y orden base KPIs → bandejas → viajero | `features/home/home.js › renderHome / ordOf` · `data/home.json` |
+| Resumen «Perfil de viajero» (icono + título en una cabecera, «?», estado «Sin perfil vigente») | `home.js › perfilCard` · `.perfil*` en `home.css` · `data/traveler.json › profiles / assignments` |
+| Tu viaje: trayecto compartido, Anticipo «No aplica» por configuración del perfil, «Saldo pendiente por comprobar» | `home.js › tripCard` · `shared/journey-progress.js › renderJourneyProgress / pendingToProve` · `navigation.js › anticipoApplies(user, profiles)` · `traveler.json › comprobaciones` |
+| Nueva solicitud con precondiciones visibles | `home.js › nuevaCard` · `traveler.json › budget` |
+| Severidad presupuestal (`budgetTone`), % destacado, contorno rojo, «Ir a Monitor», viñetas de concepto y micrográfica de CH CO | `home.js › decorateSummary / summary` · `.kpi*` en `home.css` · `traveler.json › budgetConceptColors` |
+| Celda de persona compartida (Colaborador / Viajero externo) y búsqueda sobre todas sus líneas | `home.js › personOf / personCell / prepRow` · `data/people.json` · `data-list.js › applyListState (_search)` |
+| Bandejas de autorización: Detalle en dos líneas, filtro Destino, resumen de decisión | `home.js › prepRow / tray` · `.decision`, `.dcell` en `home.css` |
+| Bandejas de reservación: ruta de vuelo, hotel con noches, sub-línea de estatus | `home.js › prepRow / cell` · `.scell` |
+| Ayuda «?» compartida (título del Inicio y secciones) | `home.js › helpTip` · `.help*` en `home.css` · `portal-layout.js` (título) |
+| Orden de menú por rol (solo presentación) | `navigation.js › resolveNavigation` · `navigation.json › roleMenuOrder` |
+| Prototipo completo vigente (todas las historias, todos los estados de vista previa) | `prototype/Portal Viaticos.dc.html` + `prototype/*.js` + `prototype/assets/` |
+
+Angular: `HomeComponent` (+ `TravelerProfileSummaryComponent`, `TripCardComponent` con `JourneyProgressComponent`, `NewRequestCardComponent`, `KpiBlockComponent`, `TrayComponent` con `PersonCellComponent`), `HelpTipComponent` compartido, `TravelerRulesService.anticipoApplies / pendingToProve`, `BudgetSeverity.budgetTone`.

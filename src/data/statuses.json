@@ -1,10 +1,15 @@
 {
-  "_comment": "Status = text + tone + icon (never color only). tone → CSS class .status--<tone>; icon → src/config/icons.js",
+  "_comment": "Status = text + tone + icon (never color only). Generated from the canonical prototype STATUS map (us01-data.js) at US-02 FINALIZATION 2026-10-02.",
   "statuses": {
+    "pendiente": {
+      "text": "Pendiente",
+      "tone": "azul",
+      "icon": "clock"
+    },
     "captura": {
       "text": "En captura",
       "tone": "gris",
-      "icon": "edit"
+      "icon": "info"
     },
     "pendAut": {
       "text": "Pendiente autorización",
@@ -49,17 +54,72 @@
     "rechazada": {
       "text": "Rechazada",
       "tone": "rojo",
-      "icon": "xCircle"
+      "icon": "info"
     },
     "cancelada": {
       "text": "Cancelada",
       "tone": "oscuro",
-      "icon": "slashCircle"
+      "icon": "info"
+    },
+    "notificado": {
+      "text": "Notificado a colaborador",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "confirmado": {
+      "text": "Confirmado",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "pendTransf": {
+      "text": "Pendiente de transferencia",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "transferido": {
+      "text": "Transferido",
+      "tone": "verde",
+      "icon": "checkCircle"
+    },
+    "pcAnt": {
+      "text": "Pendiente contabilización anticipo",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "pcComp": {
+      "text": "Pendiente contabilización comprobación",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "pcVue": {
+      "text": "Pendiente contabilización vuelos",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "pcRep": {
+      "text": "Pendiente contabilización gastos de representación",
+      "tone": "azul",
+      "icon": "clock"
+    },
+    "pDevol": {
+      "text": "Pendiente devolución",
+      "tone": "amarillo",
+      "icon": "clock"
+    },
+    "pAdeudo": {
+      "text": "Pendiente adeudo a colaborador",
+      "tone": "amarillo",
+      "icon": "clock"
+    },
+    "pendAutCtr": {
+      "text": "Pendiente de autorización",
+      "tone": "azul",
+      "icon": "clock"
     },
     "vencido": {
       "text": "Plazo vencido",
       "tone": "emergencia",
-      "icon": "warning"
+      "icon": "info"
     }
   }
 }

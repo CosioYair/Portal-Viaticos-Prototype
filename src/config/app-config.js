@@ -15,7 +15,7 @@ export function viewportMode(width) {
 export const LOGO_SRC = 'public/assets/branding/logo-starmedica.png';
 
 // Mock data files loaded at startup (src/app.js)
-export const DATA_FILES = ['users', 'navigation', 'statuses', 'home', 'notifications'];
+export const DATA_FILES = ['users', 'navigation', 'statuses', 'home', 'notifications', 'people', 'traveler'];
 
 // Utilities shared by templates
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

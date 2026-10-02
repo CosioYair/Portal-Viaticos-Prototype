@@ -1,8 +1,8 @@
 {
   "name": "portal-viaticos-prototype",
-  "version": "0.1.0-us01",
+  "version": "0.2.0-us02",
   "private": true,
-  "description": "Starmedica · Portal de Viáticos 2.0 — visual/behavioral reference prototype (US-01 Layout principal y navegación por rol). Not production code.",
+  "description": "Starmedica · Portal de Viáticos 2.0 — cumulative visual/behavioral reference prototype (US-01 Layout + US-02 Pantallas de Inicio approved; open stories included in prototype/ snapshot). Not production code.",
   "type": "module",
   "scripts": {
     "start": "npx --yes serve@14.2.4 -l 4173 .",

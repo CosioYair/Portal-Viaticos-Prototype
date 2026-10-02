@@ -1,0 +1,117 @@
+{
+  "_comment": "CANONICAL PERSON REGISTRY projection (rule 87): one record per person used by every collaborator cell (Name · No. · Hospital · Perfil · Sociedad). Synthetic demo data. externals = external travelers (no employee data invented).",
+  "people": {
+    "u01": {
+      "name": "Elizabeth Sánchez Gómez",
+      "employeeNumber": "12851",
+      "org": "Corporativo",
+      "perfil": "Mando medio",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    },
+    "u02": {
+      "name": "Laura Miranda Torres",
+      "employeeNumber": "102477",
+      "org": "Corporativo",
+      "perfil": "Mando medio",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    },
+    "u03": {
+      "name": "Ricardo Fuentes Ávila",
+      "employeeNumber": "102614",
+      "org": "HSM Chihuahua",
+      "perfil": "Director",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    },
+    "u04": {
+      "name": "Mónica Herrera Luna",
+      "employeeNumber": "102751",
+      "org": "Corporativo",
+      "perfil": "Director",
+      "sociedad": "4100 · Servicio Corporativos MC S.C."
+    },
+    "u05": {
+      "name": "Alfredo Cacho",
+      "employeeNumber": "102888",
+      "org": "Corporativo",
+      "perfil": "Director",
+      "sociedad": "4100 · Servicio Corporativos MC S.C."
+    },
+    "u06": {
+      "name": "Pedro Medina",
+      "employeeNumber": "103025",
+      "org": "Corporativo",
+      "perfil": "DGA",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    },
+    "u07": {
+      "name": "Andrés Palma Cordero",
+      "employeeNumber": "103162",
+      "org": "HSM Chihuahua",
+      "perfil": "Mando medio",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    },
+    "u08": {
+      "name": "Verónica Ibarra Cano",
+      "employeeNumber": "103299",
+      "org": "Corporativo",
+      "perfil": "Sin perfil asignado",
+      "sociedad": "4800 · Administración Profesional Star Médica S.A. de C.V."
+    },
+    "u09": {
+      "name": "Daniel Osorio Peña",
+      "employeeNumber": "103436",
+      "org": "Corporativo",
+      "perfil": "Operativo",
+      "sociedad": "4800 · Administración Profesional Star Médica S.A. de C.V."
+    },
+    "u10": {
+      "name": "Claudia Reyna Ortega",
+      "employeeNumber": "103573",
+      "org": "Corporativo",
+      "perfil": "Mando medio",
+      "sociedad": "4800 · Administración Profesional Star Médica S.A. de C.V."
+    },
+    "u11": {
+      "name": "Ma. Elena",
+      "employeeNumber": "103710",
+      "org": "Corporativo",
+      "perfil": "Ejecutivo",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    },
+    "u12": {
+      "name": "Sofía Delgado Marín",
+      "employeeNumber": "103847",
+      "org": "Corporativo",
+      "perfil": "Mando medio",
+      "sociedad": "4100 · Servicio Corporativos MC S.C."
+    },
+    "u13": {
+      "name": "María Quintero Ávalos",
+      "employeeNumber": "103984",
+      "org": "Corporativo",
+      "perfil": "Sin perfil asignado",
+      "sociedad": "4800 · Administración Profesional Star Médica S.A. de C.V."
+    },
+    "u14": {
+      "name": "Rubén Gálvez Mora",
+      "employeeNumber": "104021",
+      "org": "HSM Chihuahua",
+      "perfil": "Sin perfil asignado",
+      "sociedad": "1100 · Star Médica S.A. de C.V."
+    }
+  },
+  "externals": {
+    "x01": {
+      "name": "Mariana López Cruz",
+      "hospital": "HSM Chihuahua",
+      "tipo": "Externo",
+      "registradoPor": "Capital Humano HSM"
+    },
+    "x02": {
+      "name": "Raúl Estrada Pineda",
+      "hospital": "HSM Monterrey",
+      "tipo": "Externo",
+      "registradoPor": "Capital Humano HSM"
+    }
+  }
+}

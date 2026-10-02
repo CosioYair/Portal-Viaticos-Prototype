@@ -50,3 +50,9 @@ CH CO (V2): traveler-capable in the demo → Planeación de viaje (Creación, Mi
 
 Icon rule (client V2, 2026-09-14): same function = same icon across roles — every Comprobación / Comprobaciones item (`comprobacion`, `aut-comp`, `ges-comp`, `con-comp`) uses `fileCheck` (document + check). Module/menu naming uses the plural «Vuelos» (`vuelo`, `res-hotel`); prose about a single flight is unchanged.
 
+
+
+## Presentation order by role (US-02, rule 265 · 2026-10-02)
+`navigation.json › roleMenuOrder` may reorder options inside a group for ONE role without changing visibility, permissions or routes.
+- Capital Humano Corporativo · Planeación de viaje: Creación → Mis viajes → Hospedaje → Vuelos → Anticipo → Comprobación → Gastos de representación (then Perfil del viajero …).
+- All other roles keep the catalog order.

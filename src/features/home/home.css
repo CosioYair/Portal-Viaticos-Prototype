@@ -1,5 +1,5 @@
 /* HOME feature styles — trip card, summary KPIs (role/scope-aware), trays (table ≥1180 / cards below). Journey progress: global.css .journey* */
-.home { display: flex; flex-direction: column; gap: 24px; margin-top: 24px; }
+.home { display: flex; flex-direction: column; gap: 24px; margin-top: 24px; }   /* sections carry style="order:n" (home.order, rule 252) */
 .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: var(--track-wide); text-transform: uppercase; color: var(--c-text-2); }
 
 .trip__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -90,3 +90,84 @@
 .tcard__k { color: var(--c-text-2); }
 .tcard .status { margin-top: 8px; }
 
+
+/* ---------- US-02 final (2026-10-02) ---------- */
+/* help «?» (shared pattern) */
+.help { display: inline-flex; position: relative; vertical-align: middle; margin-left: 6px; }
+.help summary { list-style: none; width: 24px; height: 24px; border: 1px solid var(--c-gray-light); border-radius: var(--radius-circle); display: inline-flex; align-items: center; justify-content: center; color: var(--c-text-2); cursor: pointer; background: var(--c-white); }
+.help summary::-webkit-details-marker { display: none; }
+.help[open] summary, .help summary:hover { color: var(--c-blue-text); border-color: var(--c-blue-text); background: var(--c-blue-tint); }
+.help__pop { position: absolute; left: 0; top: 30px; z-index: 40; width: min(320px, 80vw); padding: 14px 16px; background: var(--c-white); border: 1px solid var(--c-border); box-shadow: 0 8px 24px rgba(74,79,84,.18); font-size: 14px; line-height: 1.45; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--c-text); }
+/* Perfil de viajero summary — icon + title as one header (rule 263) */
+.perfil { overflow: hidden; }
+.perfil__head { padding: 18px 20px; background: var(--c-blue-tint); border-bottom: 1px solid #B3E3F5; }
+.perfil__eyebrow { display: flex; align-items: center; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c-blue-text); }
+.perfil__name { font-size: 28px; font-weight: 500; letter-spacing: var(--track-tight); margin-top: 4px; }
+.perfil__cats { margin: 0 0 -1px -1px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.perfil__cat { display: flex; flex-direction: column; gap: 8px; padding: 18px 16px; border-left: 1px solid var(--c-bg); border-bottom: 1px solid var(--c-bg); min-width: 0; }
+.perfil__cat-head { display: flex; align-items: center; gap: 10px; }
+.perfil__ico { width: 36px; height: 36px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--c-blue-tint); color: var(--c-blue); }
+.perfil__cat dt { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--c-blue-text); line-height: 18px; overflow-wrap: normal; hyphens: none; }
+.perfil__val { margin: 0; font-size: 15px; font-weight: 500; line-height: 20px; }
+.perfil__sub { margin: 2px 0 0; font-size: 13px; line-height: 18px; color: var(--c-text-2); }
+.perfil__actions { display: flex; gap: 12px; flex-wrap: wrap; padding: 16px 20px; }
+.is-mobile .perfil__cats { grid-template-columns: 1fr; }
+.is-mobile .perfil__actions .btn { width: 100%; }
+/* journey · Saldo pendiente por comprobar (rule 262) */
+.journey__saldo { display: grid; gap: 2px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--c-bg); }
+.journey__saldo-k { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c-text-2); }
+.journey__saldo-v { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 28px; color: var(--c-text); white-space: nowrap; }
+.journey__saldo-sub { font-size: 12px; color: var(--c-text-2); }
+.trip__deadline { display: inline-flex; margin-top: 6px; padding: 4px 8px; font-size: 13px; border: 1px solid currentColor; }
+/* Nueva solicitud + precondition */
+.nueva__row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.precond { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; padding: 10px 12px; font-size: 13px; line-height: 18px; border: 1px solid currentColor; }
+.precond span { color: var(--c-text); }
+.is-mobile .nueva .btn { width: 100%; }
+/* KPI · budget severity (rule 244/245) + CH CO concept dots and embedded micro-chart (rule 264/266) */
+.summary__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.kpi { display: flex; align-items: stretch; gap: 12px; }
+.kpi__main { flex: 0 1 auto; min-width: 0; }
+.kpi--red { border-color: var(--c-error); box-shadow: inset 0 0 0 1px var(--c-error); }
+.kpi--micro { padding-left: 14px; padding-right: 14px; }
+.kpi__label { display: flex; align-items: center; gap: 6px; }
+.kpi__cdot { width: 8px; height: 8px; border-radius: var(--radius-circle); flex: none; }
+.kpi__value { white-space: nowrap; }
+.kpi__pct { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; white-space: nowrap; }
+.kpi__pct span { font-size: 30px; font-weight: 500; letter-spacing: -.04em; line-height: 34px; }
+.kpi__pct small { font-size: 12px; color: var(--c-text-2); }
+.kpi__pct.tone-verde { color: #6B8E23; } .kpi__pct.tone-amarillo { color: #B37D00; } .kpi__pct.tone-rojo { color: var(--c-error); }
+.kpi__sev { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; font-size: 12px; font-weight: 500; line-height: 16px; color: var(--c-text); }
+.kpi__sev svg { flex: none; } .kpi__sev.tone-amarillo svg { color: #B37D00; } .kpi__sev.tone-rojo svg { color: var(--c-error); }
+/* micro-chart: occupies ONLY the free space beside the text; hidden when it does not fit (container query), never below the text */
+.kpi--micro { container-type: inline-size; }
+.kpi__micro { flex: none; margin-left: auto; align-self: flex-end; display: flex; align-items: flex-end; gap: 2px; width: 86px; border-bottom: 1px solid var(--c-border); }
+.kpi__bar { flex: 1 1 0; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; }
+.kpi__bar small { font-size: 9px; line-height: 11px; font-weight: 500; white-space: nowrap; }
+.kpi__bar i { display: block; width: 12px; }
+@container (max-width: 250px) { .kpi__micro { display: none; } }
+/* decision summary (rule 247) */
+.decision { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; padding: 12px var(--card-pad); border-bottom: 1px solid var(--c-bg); font-size: 12px; color: var(--c-text-2); }
+.decision b { font-size: 20px; font-weight: 500; letter-spacing: -.02em; color: var(--c-text); margin-right: 6px; }
+.decision em { font-style: normal; margin-left: auto; }
+/* person cell (rule 246) · two-line Detalle (rule 248) · status sub-line (rule 259) */
+.pcell { display: grid; gap: 1px; min-width: 0; }
+.pcell__name { font-size: 14px; font-weight: 700; line-height: 18px; }
+.pcell__line { font-size: 12px; line-height: 17px; color: var(--c-text); }
+.pcell__k { color: var(--c-text-2); }
+.ttable__c--who { display: flex; }
+.dcell { display: grid; gap: 2px; min-width: 0; }
+.dcell__l1.is-strong { font-weight: 700; }
+.dcell__l2 { font-size: 12px; color: var(--c-text-2); }
+.scell { display: grid; gap: 4px; justify-items: start; }
+.scell__sub { font-size: 12px; line-height: 16px; color: var(--c-text-2); }
+.status { white-space: normal; height: auto; min-height: 26px; }
+/* column sets added in US-02 */
+.ttable--standard { grid-template-columns: 76px minmax(200px,1.4fr) minmax(110px,.8fr) minmax(100px,.7fr) minmax(190px,1.4fr) minmax(150px,auto) minmax(100px,.7fr); }
+.ttable--operationalOrg, .ttable--anticipos { grid-template-columns: 76px minmax(200px,1.3fr) minmax(200px,1.5fr) minmax(170px,auto) minmax(110px,.7fr); }
+.ttable--collabOrg { grid-template-columns: 76px minmax(200px,1.3fr) minmax(110px,.8fr) minmax(200px,1.5fr) minmax(170px,auto) minmax(110px,.7fr); }
+.ttable--repr { grid-template-columns: 76px minmax(200px,1.3fr) minmax(130px,.9fr) minmax(170px,1.2fr) minmax(150px,auto) minmax(100px,.7fr); }
+.ttable--hosted { grid-template-columns: 76px minmax(200px,1.4fr) minmax(100px,.7fr) minmax(100px,.7fr) minmax(130px,auto) minmax(90px,.6fr); }
+.ttable--traveling { grid-template-columns: 76px minmax(200px,1.4fr) minmax(110px,.8fr) minmax(100px,.7fr) minmax(120px,.8fr) minmax(140px,auto) minmax(100px,.7fr); }
+.ttable--externos { grid-template-columns: 76px minmax(200px,1.3fr) minmax(110px,.8fr) minmax(100px,.7fr) minmax(190px,1.4fr) minmax(140px,auto) minmax(100px,.7fr); }
+.title-row .help { margin-right: auto; margin-left: 10px; }

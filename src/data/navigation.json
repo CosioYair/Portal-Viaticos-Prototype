@@ -571,5 +571,19 @@
         }
       ]
     }
-  ]
+  ],
+  "roleMenuOrder": {
+    "CHC": {
+      "Planeación de viaje": [
+        "creacion",
+        "misviajes",
+        "hospedaje",
+        "vuelo",
+        "anticipo",
+        "comprobacion",
+        "representacion"
+      ]
+    }
+  },
+  "_roleMenuOrder": "Presentation-only order of options inside a group for one role (rule 265). Never changes permissions, routes or visibility."
 }

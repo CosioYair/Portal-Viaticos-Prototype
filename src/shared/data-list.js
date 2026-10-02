@@ -6,7 +6,7 @@ import { icon } from '../config/icons.js';
 
 export const DEFAULT_PAGE_SIZE = 5;
 export const SORTABLE_FIELDS = ['folio', 'who', 'viajero', 'destino', 'asunto', 'org', 'entrada', 'salida', 'fechas', 'perfil', 'area', 'status', 'age'];
-export const FILTER_LABELS = { status: 'Estatus', org: 'Hospital / Corporativo', perfil: 'Perfil' };
+export const FILTER_LABELS = { status: 'Estatus', org: 'Hospital / Corporativo', perfil: 'Perfil', destino: 'Destino', servicio: 'Servicio' };
 
 export const emptyListState = () => ({ q: '', f: {}, sort: null, dir: 'asc', page: 1 });
 
@@ -19,7 +19,8 @@ export function fieldText(row, field, statuses) {
 export function applyListState(rows, columns, state, statuses, pageSize = DEFAULT_PAGE_SIZE) {
   const q = state.q.trim().toLowerCase();
   let out = rows.map((r, i) => ({ ...r, _i: i }));                       // _i keeps the original (newest-first) order for «Antigüedad»
-  if (q) out = out.filter(r => columns.some(([, f]) => fieldText(r, f, statuses).toLowerCase().includes(q)) || (r.area || '').toLowerCase().includes(q));
+  // Search covers EVERY visible value, incl. all lines of a compound person cell and the second line of Detalle / status (row._search, built by the feature).
+  if (q) out = out.filter(r => columns.some(([, f]) => fieldText(r, f, statuses).toLowerCase().includes(q)) || (r.area || '').toLowerCase().includes(q) || (r._search || '').toLowerCase().includes(q));
   for (const f of Object.keys(state.f)) if (state.f[f]) out = out.filter(r => fieldText(r, f, statuses) === state.f[f]);
   if (state.sort) {
     const dir = state.dir === 'desc' ? -1 : 1;
@@ -32,7 +33,7 @@ export function applyListState(rows, columns, state, statuses, pageSize = DEFAUL
 // Toolbar: search + contextual filters (only the ones the tray declares in tray.filters and that exist as columns) + visible range.
 // data-list = tray key; the shell routes input/change events to list:search / list:filter.
 export function renderListToolbar(key, title, allRows, columns, filterKeys, state, statuses, view) {
-  const filters = (filterKeys || []).filter(f => columns.some(([, c]) => c === f)).map(f => {
+  const filters = (filterKeys || []).filter(f => columns.some(([, c]) => c === f) || allRows.some(r => r[f] != null)).map(f => {
     const options = [...new Set(allRows.map(r => fieldText(r, f, statuses)))].sort();
     return `<label class="list-filter"><span>${FILTER_LABELS[f] || f}</span>
       <select data-action="list:filter" data-list="${key}" data-field="${f}" aria-label="Filtrar por ${FILTER_LABELS[f] || f}">

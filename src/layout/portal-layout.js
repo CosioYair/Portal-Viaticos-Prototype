@@ -5,12 +5,13 @@
 import { icon, TONE_ICON } from '../config/icons.js';
 import { LOGO_SRC, esc, avatar, viewportMode } from '../config/app-config.js';
 import { resolveNavigation, findItem, canSee, isTraveler, renderSidebar, renderDrawer } from './navigation.js';
-import { renderHome } from '../features/home/home.js';
+import { renderHome, helpTip } from '../features/home/home.js';
 import { listReducer } from '../shared/data-list.js';
 import { renderDemoBar, renderDemoTag, loadDemoUserId, saveDemoUserId, DEMO_LOADING_MS } from '../demo/demo.js'; // DEMO ONLY
 
 // ---------- shared fragments (used by features too) ----------
 export function statusChip(status) {                       // color + icon + text, never color only
+  if (!status) status = { text: '—', tone: 'gris', icon: 'info' };
   return `<span class="status status--${status.tone}">${icon(status.icon, 16)}<span>${esc(status.text)}</span></span>`;
 }
 export function messageBar(tone, text) {                    // the single, state-switching bar under the title
@@ -75,12 +76,12 @@ function renderNotifications(notices, unread) {
 // ---------- shell states ----------
 const skeleton = () => `<div class="mskel"><div class="mskel__title"></div><div class="mskel__bar"></div><div class="mskel__grid"><div></div><div></div><div></div></div><div class="mskel__block"></div><div class="mskel__foot">${icon('spinner', 18)}Cargando el portal…</div></div>`;
 const deniedState = (roleLabel) => `<section class="card state">${icon('lock', 40, { stroke: 1.5 })}<h2 class="state__title">Esta sección no está disponible para tu rol</h2><p class="state__text">Rol activo: <strong>${esc(roleLabel)}</strong>. Los permisos los administra Admin / Seguridad TI.</p><p class="state__text state__text--last">Si necesitas este acceso, solicítalo a través de tu área.</p><button class="btn" data-action="go" data-route="inicio">Volver al inicio</button></section>`;
-const notBuiltState = (title, us) => `<section class="card state state--dashed">${icon('wrench', 40, { stroke: 1.5 })}<h2 class="state__title">${esc(title)} se diseña en ${esc(us)}</h2><p class="state__text state__text--last">El prototipo aún no incluye esta pantalla. El menú y la ruta ya son los definitivos.</p><div class="state__actions"><button class="btn btn--secondary" data-action="go" data-route="inicio">Volver al inicio</button></div></section>`;
+const notBuiltState = (title) => `<section class="card state state--dashed">${icon('wrench', 40, { stroke: 1.5 })}<h2 class="state__title">${esc(title)}</h2><p class="state__text state__text--last">Funcionalidad no disponible en esta versión del prototipo. El acceso desde el menú es el definitivo.</p></section>`;   // rule 52: no internal traceability
 const closedState = () => `<section class="card state"><h2 class="state__title state__title--first">Sesión cerrada</h2><p class="state__text state__text--last">En el portal real, esta acción regresa al acceso de Star Médica. En el prototipo puedes volver al inicio o cambiar de usuario en el modo demo.</p><button class="btn" data-action="go" data-route="inicio">Volver al inicio</button></section>`;
 
 // ---------- shell ----------
 export function mountPortal(root, data) {
-  const { users, navigation, statuses, home, notifications } = data;
+  const { users, navigation, statuses, home, notifications, people = {}, traveler = {} } = data;
   const state = {
     userId: loadDemoUserId(users.users, users.defaultUserId),   // DEMO ONLY (production: session user)
     route: 'inicio', loading: true, collapsed: false,
@@ -135,16 +136,17 @@ export function mountPortal(root, data) {
     const isHome = state.route === 'inicio', isDenied = state.route === 'denied', isClosed = state.route === 'cerrar', isNotBuilt = !isHome && !isDenied && !isClosed;
     const title = isHome ? 'Inicio' : isDenied ? 'Sección sin permiso' : isClosed ? 'Cerrar' : (item ? item.label : 'Sección');
     const crumbs = isNotBuilt && item ? [item.group, item.label].filter(Boolean) : isDenied ? ['Sin permiso'] : [];
-    const bar = isHome ? (userHome.alert ? messageBar(userHome.alert.tone, userHome.alert.text) : messageBar('info', userHome.help))
+    // US-02: the Home help text lives in the «?» next to the title (shared help pattern); only real alerts (e.g. SAP data unavailable) use the message bar.
+    const bar = isHome ? (userHome.alert ? messageBar(userHome.alert.tone, userHome.alert.text) : '')
       : isDenied ? messageBar('rojo', 'No es posible abrir esta sección: tu rol no tiene permiso. Vuelve al inicio o solicita el acceso a Admin / Seguridad TI.')
       : isClosed ? messageBar('info', 'La sesión se cerró correctamente (simulación).')
-      : messageBar('amarillo', `Esta pantalla se diseña en la historia ${item ? item.us : ''}. Todavía no está disponible en el prototipo; el acceso desde el menú ya es el definitivo.`);
+      : messageBar('info', 'Funcionalidad no disponible en esta versión del prototipo.');   // rule 52: no internal traceability in the UI
 
     const work = state.loading ? skeleton() : `
       ${crumbs.length ? `<nav class="crumbs" aria-label="Ruta"><button class="crumbs__home" data-action="go" data-route="inicio">Inicio</button>${crumbs.map(c => `<span>›</span><span>${esc(c)}</span>`).join('')}</nav>` : ''}
-      <div class="title-row"><h1 class="title">${esc(title)}</h1>${isHome && !mobile ? '<span class="title-row__meta">Actualizado hoy · 10:42</span>' : ''}</div>
+      <div class="title-row"><h1 class="title">${esc(title)}</h1>${isHome && userHome.help ? helpTip('home', userHome.help) : ''}${isHome && !mobile ? '<span class="title-row__meta">Actualizado hoy · 10:42</span>' : ''}</div>
       ${bar}
-      ${isDenied ? deniedState(user.roleLabel) : isNotBuilt ? notBuiltState(title, item ? item.us : '') : isClosed ? closedState() : renderHome(userHome, user, statuses.statuses, state.mode, state.lists)}`;
+      ${isDenied ? deniedState(user.roleLabel) : isNotBuilt ? notBuiltState(title, item ? item.us : '') : isClosed ? closedState() : renderHome(userHome, user, statuses.statuses, state.mode, state.lists, { people: people.people || {}, externals: people.externals || {}, traveler, travelerCapable: isTraveler(user) })}`;
 
     root.className = `shell${mobile ? ' is-mobile is-narrow' : state.mode === 'narrow' ? ' is-narrow' : ''}`;
     root.innerHTML = `

@@ -12,7 +12,7 @@
       },
       {
         "id": "n2",
-        "text": "Anticipo del folio 00043 depositado: $9,090. Corre el plazo para comprobar.",
+        "text": "Anticipo del folio 00043 depositado: $9,090.",
         "target": "misviajes",
         "notifiedAt": "12 jun",
         "unread": true,
@@ -68,7 +68,7 @@
     "u05": [
       {
         "id": "n1",
-        "text": "Solicitud folio 00039 escalada: Dirección de HSM Saltillo vacante.",
+        "text": "Solicitud folio 00039 escalada: Dirección de HSM Monterrey vacante.",
         "target": "aut-viaje",
         "notifiedAt": "Hace 5 h",
         "unread": true,
@@ -162,19 +162,19 @@
       "aut-comp": 1
     },
     "u07": {
-      "res-hsm": 4
+      "res-hsm": 2
     },
     "u08": {
-      "encuestas": 6
+      "encuestas": 6,
+      "res-hotel": 2
     },
     "u09": {
-      "res-hotel": 7,
+      "res-hotel": 5,
       "ges-comp": 9
     },
     "u10": {
-      "con-ant": 5,
-      "con-comp": 3,
-      "con-rep": 1
+      "con-ant": 2,
+      "con-comp": 7
     },
     "u11": {
       "aut-rep": 2

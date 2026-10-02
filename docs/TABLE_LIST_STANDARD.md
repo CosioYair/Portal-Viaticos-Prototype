@@ -52,3 +52,12 @@ Conceptual model for Angular: `dataset + filter state + sort state + page state 
 
 ## 10. State
 - State per list `{ q, f: { field: value }, sort, dir, page }` (`emptyListState()`); reducer `listReducer()`; pipeline `applyListState(rows, columns, state, statuses, pageSize)`. State resets when the demo user changes. Development wires the same state to the API (server-side filter/sort/page for large modules).
+
+
+## US-02 additions (APPROVED · 2026-10-02)
+- **Person cell** (internal): column COLABORADOR — name 14 px Bold + «No. · Hospital · Perfil · Sociedad» lines (label gray / value ink). External: column VIAJERO EXTERNO — Hospital · Tipo · Registrado por. No separate Hospital / Corporativo column when the cell already shows it. Search covers every line.
+- **Authorization trays** (`standard`): Detalle line 1 = dates + estimated amount, line 2 = context; filter **Destino** (Estatus does not discriminate); decision summary over filtered rows.
+- **Reservation trays** (`collabOrg`): flight route bold «A → B | B → A» + «Fecha de viaje»; hotel dates + nights; Antigüedad «Viaja en X días»; status sub-line for notification time.
+- **Accounting** (`anticipos`): Anticipos autorizados (Pendiente de transferencia · Transferido) · Contabilizaciones pendientes (anticipo · comprobación ± · vuelos · gastos de representación · devolución · adeudo a colaborador), every row with amount.
+- **Contraloría** (`repr`): Asunto before Detalle; status «Pendiente de autorización» (Contraloría); age since arrival to Contraloría.
+- Status chips wrap (no nowrap / fixed height) and accept a gray sub-line.
