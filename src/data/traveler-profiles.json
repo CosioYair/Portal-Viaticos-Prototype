@@ -1,0 +1,783 @@
+{
+  "_note": "Traveler-profile administration model (synthetic demo data + client-confirmed tariff values; see docs/TRAVELER_PROFILE_MODEL.md). One model consumed by Home, Mi perfil de viajero, Creación and the estimate.",
+  "today": "18/09/2026",
+  "profiles": [
+    {
+      "id": "pf-dir",
+      "perfil": "Director",
+      "estado": "Vigente",
+      "from": "01/01/2026",
+      "to": "31/12/2026",
+      "semanasMes": 3,
+      "nochesSemana": 6,
+      "diasMax": 18,
+      "diasComprobar": 7,
+      "anticipo": "Sí",
+      "hospedaje": "Hotel",
+      "habitacion": [
+        "Individual"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "representacion": "Sí, con autorización de DGA y revisión de Contraloría",
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Renta de auto",
+        "Auto particular"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Dirección Corporativa → DGA",
+      "doc": "Política-de-viaje-2026-Direccion.pdf",
+      "colaboradores": 3
+    },
+    {
+      "id": "pf-eje",
+      "perfil": "Ejecutivo",
+      "estado": "Vigente",
+      "from": "01/01/2026",
+      "to": "31/12/2026",
+      "semanasMes": 3,
+      "nochesSemana": 5,
+      "diasMax": 15,
+      "diasComprobar": 7,
+      "anticipo": "Sí",
+      "hospedaje": "Hotel",
+      "habitacion": [
+        "Individual"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "representacion": "No",
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Autobús",
+        "Auto particular"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa",
+      "doc": "Política-de-viaje-2026-Ejecutivo.pdf",
+      "colaboradores": 2
+    },
+    {
+      "id": "pf-mm",
+      "perfil": "Mando medio",
+      "estado": "Vigente",
+      "from": "01/01/2026",
+      "to": "31/12/2026",
+      "semanasMes": 2,
+      "nochesSemana": 5,
+      "diasMax": 12,
+      "diasComprobar": 7,
+      "anticipo": "Sí",
+      "hospedaje": "Hospital",
+      "habitacion": [
+        "Individual",
+        "Compartida"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "representacion": "No",
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Autobús",
+        "Auto particular"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa",
+      "doc": "Política-de-viaje-2026-Mando-medio.pdf",
+      "colaboradores": 6
+    },
+    {
+      "id": "pf-op",
+      "perfil": "Operativo",
+      "estado": "Vigente",
+      "from": "01/01/2026",
+      "to": "31/12/2026",
+      "semanasMes": 2,
+      "nochesSemana": 4,
+      "diasMax": 8,
+      "diasComprobar": 7,
+      "anticipo": "Sí",
+      "hospedaje": "Hospital",
+      "habitacion": [
+        "Compartida"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "representacion": "No",
+      "transporte": [
+        "Autobús",
+        "Camioneta SM",
+        "Auto particular"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa",
+      "doc": "Política-de-viaje-2026-Operativo.pdf",
+      "colaboradores": 4
+    },
+    {
+      "id": "pf-mm-2027",
+      "perfil": "Mando medio",
+      "estado": "Futura",
+      "from": "01/01/2027",
+      "to": "31/12/2027",
+      "semanasMes": 2,
+      "nochesSemana": 5,
+      "diasMax": 12,
+      "diasComprobar": 7,
+      "anticipo": "Sí",
+      "hospedaje": "Hospital",
+      "habitacion": [
+        "Individual"
+      ],
+      "alimentos": [
+        "Desayuno",
+        "Comida",
+        "Cena"
+      ],
+      "representacion": "No",
+      "transporte": [
+        "Avión",
+        "Camioneta SM",
+        "Autobús",
+        "Auto particular"
+      ],
+      "cadenaHospital": "Dirección de Hospital → Dirección Corporativa",
+      "cadenaCorporativo": "Director inmediato → Dirección Corporativa",
+      "doc": "Política-de-viaje-2027-Mando-medio.pdf",
+      "colaboradores": 6
+    }
+  ],
+  "externalPolicy": {
+    "id": "pf-ext",
+    "perfil": "Viajero externo",
+    "estado": "Vigente",
+    "from": "01/09/2026",
+    "to": "31/12/9999",
+    "semanasMes": null,
+    "nochesSemana": null,
+    "diasMax": null,
+    "diasComprobar": 7,
+    "anticipo": "No",
+    "anticipoNota": "No aplica · viajero externo",
+    "hospedaje": "Hospital",
+    "alimentos": [
+      "Desayuno",
+      "Comida",
+      "Cena"
+    ],
+    "transporte": [
+      "Avión",
+      "Camioneta SM",
+      "Autobús",
+      "Renta de auto",
+      "Auto particular"
+    ],
+    "transportePendiente": true,
+    "limitesPendientes": true,
+    "representacion": "No",
+    "cadenaHospital": "Dirección de Hospital → Dirección Corporativa seleccionada → Capital Humano Corporativo"
+  },
+  "transports": [
+    "Avión",
+    "Camioneta SM",
+    "Autobús",
+    "Renta de auto",
+    "Auto particular"
+  ],
+  "concepts": [
+    {
+      "id": "c1",
+      "label": "Hospedaje",
+      "unidad": "por noche",
+      "duracion": "noches",
+      "fuente": "confirmada",
+      "impuesto": "Incluido"
+    },
+    {
+      "id": "c2",
+      "label": "Alimentos",
+      "unidad": "tope diario por comidas",
+      "duracion": "dias",
+      "fuente": "confirmada",
+      "tiers": true,
+      "impuesto": "Incluido"
+    },
+    {
+      "id": "c6",
+      "label": "Vuelos",
+      "unidad": "monto máximo · referencia",
+      "duracion": null,
+      "fuente": "confirmada",
+      "impuesto": ""
+    },
+    {
+      "id": "c7",
+      "label": "Gasolina",
+      "unidad": "monto máximo",
+      "duracion": null,
+      "fuente": "provisional"
+    },
+    {
+      "id": "c8",
+      "label": "Casetas",
+      "unidad": "monto máximo",
+      "duracion": null,
+      "fuente": "provisional"
+    },
+    {
+      "id": "c4",
+      "label": "Anticipo",
+      "unidad": "monto máximo autorizado",
+      "duracion": null,
+      "fuente": "provisional"
+    },
+    {
+      "id": "c9",
+      "label": "Gastos de representación",
+      "unidad": "monto máximo por viaje",
+      "duracion": null,
+      "fuente": "provisional",
+      "soloCapacidad": "representacion"
+    }
+  ],
+  "tariffs": {
+    "c1": {
+      "Director": 2800,
+      "Ejecutivo": 2000,
+      "Mando medio": 1800,
+      "Operativo": 1700
+    },
+    "c2": {
+      "Director": [
+        650,
+        810,
+        1055
+      ],
+      "Ejecutivo": [
+        475,
+        725,
+        985
+      ],
+      "Mando medio": [
+        400,
+        650,
+        910
+      ],
+      "Operativo": [
+        250,
+        420,
+        635
+      ],
+      "Viajero externo": [
+        400,
+        650,
+        910
+      ]
+    },
+    "c6": {
+      "Director": 5500,
+      "Ejecutivo": 5500,
+      "Mando medio": 5500,
+      "Operativo": 5500
+    },
+    "c7": {
+      "Director": 2500,
+      "Ejecutivo": 2000,
+      "Mando medio": 1800,
+      "Operativo": 1500
+    },
+    "c8": {
+      "Director": 1200,
+      "Ejecutivo": 1000,
+      "Mando medio": 900,
+      "Operativo": 800
+    },
+    "c4": {
+      "Director": null,
+      "Ejecutivo": 18000,
+      "Mando medio": 12000,
+      "Operativo": 8000
+    },
+    "c9": {
+      "Director": null
+    }
+  },
+  "tariffCategories": [
+    "Viajero externo"
+  ],
+  "tariffValidity": {
+    "from": "01/01/2026",
+    "to": "31/12/2026"
+  },
+  "tariffValiditySpecific": {
+    "c2|Director": [
+      {
+        "from": "01/06/2026",
+        "to": "31/08/2026",
+        "importes": [
+          560,
+          810,
+          1055
+        ],
+        "nota": "Ejemplo (libro)"
+      },
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c2|Ejecutivo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c2|Mando medio": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c2|Operativo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c2|Viajero externo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c1|Director": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c1|Ejecutivo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c1|Mando medio": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c1|Operativo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c6|Director": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c6|Ejecutivo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c6|Mando medio": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ],
+    "c6|Operativo": [
+      {
+        "from": "01/09/2026",
+        "to": "31/12/9999"
+      }
+    ]
+  },
+  "taxi": {
+    "label": "Taxi",
+    "unidad": "por semana",
+    "impuesto": "Incluido",
+    "from": "01/09/2026",
+    "to": "31/12/9999",
+    "ambito": "comprobacion",
+    "porHospital": {
+      "1101": 1445,
+      "1102": 1445,
+      "1105": 1445,
+      "1113": 1445
+    },
+    "otros": 1810,
+    "otrosLabel": "Cualquier otro hospital o destino",
+    "hospitalNames": {
+      "1101": "STAR MÉDICA MORELIA",
+      "1102": "STAR MÉDICA AGUASCALIENTES",
+      "1105": "STAR MÉDICA SAN LUIS POTOSÍ",
+      "1113": "STAR MÉDICA QUERÉTARO"
+    }
+  },
+  "global": {
+    "diasComprobar": {
+      "label": "Días hábiles para comprobar",
+      "dias": 7,
+      "value": "7 días hábiles"
+    },
+    "diasComplementaria": {
+      "label": "Días hábiles para comprobación complementaria",
+      "dias": 7,
+      "value": "7 días hábiles"
+    },
+    "propina": {
+      "label": "Propina máxima",
+      "value": "10 % de la factura"
+    },
+    "tintoreria": {
+      "label": "Tintorería",
+      "importe": 85,
+      "unidad": "por día",
+      "desdeDia": 6,
+      "impuesto": "Incluido",
+      "from": "01/09/2026",
+      "to": "31/12/9999",
+      "value": "$85 por día a partir del 6.º día del viaje · Impuesto incluido"
+    },
+    "antelacion": {
+      "label": "Antelación mínima para solicitar",
+      "dias": 5,
+      "value": "5 días",
+      "pendiente": true,
+      "code": "DIAS_ANTSOL"
+    },
+    "diasDeposito": {
+      "label": "Días de depósito de viáticos",
+      "value": "martes y jueves",
+      "dias": [
+        "martes",
+        "jueves"
+      ]
+    },
+    "maxExternos": {
+      "label": "Máximo de viajeros externos vigentes por usuario de Capital Humano HSM",
+      "valor": 5,
+      "value": "5 por usuario registrador"
+    }
+  },
+  "exceptionRules": [
+    {
+      "id": "r1",
+      "label": "Días hábiles para comprobar",
+      "kind": "int",
+      "unidad": "días hábiles",
+      "policy": "diasComprobar"
+    },
+    {
+      "id": "r3",
+      "label": "Tarifa de hospedaje por noche",
+      "kind": "money",
+      "unidad": "por noche",
+      "policy": "tarifa:c1"
+    },
+    {
+      "id": "r2",
+      "label": "Tope diario de alimentos (3 comidas)",
+      "kind": "money",
+      "unidad": "por día",
+      "policy": "tarifa:c2"
+    },
+    {
+      "id": "r9",
+      "label": "Tarifa de vuelos",
+      "kind": "money",
+      "unidad": "monto máximo",
+      "policy": "tarifa:c6"
+    },
+    {
+      "id": "r10",
+      "label": "Tarifa de gasolina",
+      "kind": "money",
+      "unidad": "monto máximo",
+      "policy": "tarifa:c7"
+    },
+    {
+      "id": "r11",
+      "label": "Tarifa de casetas",
+      "kind": "money",
+      "unidad": "monto máximo",
+      "policy": "tarifa:c8"
+    },
+    {
+      "id": "r13",
+      "label": "Gastos de representación",
+      "kind": "money",
+      "unidad": "monto máximo por viaje",
+      "policy": "tarifa:c9",
+      "soloCapacidad": "representacion"
+    },
+    {
+      "id": "r4",
+      "label": "Noches máximas por semana",
+      "kind": "int",
+      "unidad": "noches",
+      "policy": "nochesSemana"
+    },
+    {
+      "id": "r5",
+      "label": "Semanas máximas por mes",
+      "kind": "int",
+      "unidad": "semanas",
+      "policy": "semanasMes"
+    },
+    {
+      "id": "r7",
+      "label": "Días máximos por viaje",
+      "kind": "int",
+      "unidad": "días",
+      "policy": "diasMax"
+    },
+    {
+      "id": "r12",
+      "label": "Antelación mínima para solicitar",
+      "kind": "int",
+      "unidad": "días",
+      "policy": "antelacion",
+      "base": "global"
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "e1",
+      "userId": "u01",
+      "regla": "r1",
+      "politica": 5,
+      "valor": 10,
+      "from": "01/09/2026",
+      "to": "31/12/2026",
+      "motivo": "Cierre comercial simultáneo en tres unidades hospitalarias",
+      "documento": "Autorización-Contraloría-2026-031.pdf",
+      "by": "Sofía Delgado Marín",
+      "when": "01/09/2026 09:30",
+      "revoked": false
+    },
+    {
+      "id": "e2",
+      "userId": "u13",
+      "regla": "r2",
+      "politica": 635,
+      "valor": 800,
+      "from": "01/08/2026",
+      "to": "31/10/2026",
+      "motivo": "Comisión prolongada en plaza con tarifas superiores a la política",
+      "documento": "Autorización-DGA-2026-018.pdf",
+      "by": "Sofía Delgado Marín",
+      "when": "31/07/2026 17:10",
+      "revoked": false
+    },
+    {
+      "id": "e3",
+      "userId": "u10",
+      "regla": "r3",
+      "politica": 1800,
+      "valor": 2400,
+      "from": "01/05/2026",
+      "to": "31/07/2026",
+      "motivo": "Cierre contable presencial en plaza con tarifa hotelera superior",
+      "documento": "Autorización-DGA-2026-009.pdf",
+      "by": "Sofía Delgado Marín",
+      "when": "28/04/2026 11:45",
+      "revoked": false
+    },
+    {
+      "id": "e4",
+      "userId": "u03",
+      "regla": "r4",
+      "politica": 6,
+      "valor": 4,
+      "from": "01/10/2026",
+      "to": "31/12/2026",
+      "motivo": "Acuerdo de reducción de estancias con la Dirección Corporativa",
+      "documento": "Autorización-DirCorp-2026-004.pdf",
+      "by": "Sofía Delgado Marín",
+      "when": "10/09/2026 12:05",
+      "revoked": false
+    },
+    {
+      "id": "e5",
+      "userId": "u02",
+      "regla": "r12",
+      "politica": 5,
+      "valor": 2,
+      "from": "01/10/2026",
+      "to": "31/12/2026",
+      "motivo": "Coberturas de supervisión que se programan con aviso corto",
+      "documento": "Autorización-CHCO-2026-022.pdf",
+      "by": "Sofía Delgado Marín",
+      "when": "30/09/2026 10:15",
+      "revoked": false
+    }
+  ],
+  "assignments": {
+    "u01": [
+      {
+        "perfil": "Mando medio",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      },
+      {
+        "perfil": "Operativo",
+        "from": "01/01/2025",
+        "to": "31/12/2025",
+        "origen": "automatico",
+        "motivo": "Perfil vigente en 2025",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2025 08:40"
+      }
+    ],
+    "u02": [
+      {
+        "perfil": "Mando medio",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u03": [
+      {
+        "perfil": "Director",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u04": [
+      {
+        "perfil": "Director",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u05": [
+      {
+        "perfil": "Director",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u06": [
+      {
+        "perfil": "Director",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "libre",
+        "motivo": "Perfil Director para el titular del rol DGA (DGA usa las tarifas de Director)",
+        "documento": "Autorización-DG-2026-001.pdf",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:20"
+      }
+    ],
+    "u07": [
+      {
+        "perfil": "Mando medio",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u09": [
+      {
+        "perfil": "Operativo",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u10": [
+      {
+        "perfil": "Mando medio",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u11": [
+      {
+        "perfil": "Ejecutivo",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ],
+    "u12": [
+      {
+        "perfil": "Mando medio",
+        "from": "01/01/2026",
+        "to": "",
+        "origen": "automatico",
+        "motivo": "Alta anual del perfil por área de personal",
+        "documento": "",
+        "by": "Sofía Delgado Marín",
+        "when": "02/01/2026 09:12"
+      }
+    ]
+  }
+}
