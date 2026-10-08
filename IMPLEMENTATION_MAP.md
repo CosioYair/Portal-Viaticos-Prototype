@@ -1,4 +1,4 @@
-# IMPLEMENTATION_MAP — elemento aprobado → archivo (US-01 + US-02 · APPROVED · FULLY SYNCED · 2026-10-02)
+# IMPLEMENTATION_MAP — elemento aprobado → archivo (US-01 + US-02 + US-03 · APPROVED · FULLY SYNCED · 2026-10-08)
 
 | Elemento aprobado | Archivo(s) |
 |---|---|
@@ -62,3 +62,22 @@
 | Prototipo completo vigente (todas las historias, todos los estados de vista previa) | `prototype/Portal Viaticos.dc.html` + `prototype/*.js` + `prototype/assets/` |
 
 Angular: `HomeComponent` (+ `TravelerProfileSummaryComponent`, `TripCardComponent` con `JourneyProgressComponent`, `NewRequestCardComponent`, `KpiBlockComponent`, `TrayComponent` con `PersonCellComponent`), `HelpTipComponent` compartido, `TravelerRulesService.anticipoApplies / pendingToProve`, `BudgetSeverity.budgetTone`.
+
+## Added in US-03 — Administración de perfiles de viajero (APPROVED · CLOSED · FULLY SYNCED, 2026-10-08)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Ruta Administración › Perfiles de viajero (`adm-perfiles`, solo Admin / Seguridad TI ✓), migas, «?» por pestaña | `layout/portal-layout.js` (isTP, tpContext, acciones `tp:tab` / `tp:sim`) · `data/navigation.json` |
+| Pestañas Perfiles · Tarifas · Excepciones · Colaboradores (esta última = ficha y asignación, otra historia) | `features/traveler-profile/admin.js › renderTravelerProfileAdmin` · `traveler-profile.css` |
+| Catálogo de perfiles (lista estándar: búsqueda, filtro Estado, orden, paginación; tarjetas en angosto) + aviso «activos sin perfil» (contador = población del enlace) | `admin.js › profilesTab` · `shared/data-list.js` |
+| Matriz concepto × perfil + Viajero externo (vigencia por celda, «Sin tarifa» en rojo, «No aplica», «Importe provisional»), apilado por concepto en angosto | `admin.js › tariffsTab` · `rules.js › tariff / mealCap` |
+| Taxi por hospital destino · Tintorería global · Antelación mínima global | `admin.js › tariffsTab` · `data/traveler-profiles.json › taxi / global` |
+| Simulador de costo (cantidades capturadas, renglones tarifa × cantidad = subtotal) | `rules.js › simulate` · `admin.js` |
+| Excepciones individuales (lista con búsqueda por nombre/número/motivo, filtros Estado y Regla) | `admin.js › exceptionsTab` · `rules.js › fmtRule / tempStatus` |
+| Resolver de valor efectivo: excepción vigente → política → parámetro global, con origen | `rules.js › effectiveValue / policyRaw` |
+| Validaciones de perfil, tarifa y excepción (mismos mensajes que la UI aprobada) | `rules.js › validateProfile / validateTariff / validateException` |
+| Estados derivados (Programado · Vigente · Vencido · Revocado; catálogo Vigente · Futura · Vencida) y formateador de vigencias | `rules.js › tempStatus / profileState / vigText` |
+| Editores interactivos (perfil, tarifa, taxi, tintorería, antelación, excepción), confirmación sensible, modal de éxito y eventos de bitácora | `prototype/Portal Viaticos.dc.html › pvModal · pvAsk · pvSaveProfile · pvSaveTarifa · pvSaveExc · pvRevokeExc · pvLog · notifySuccess` |
+| Validación de archivos 5 MB (documentos de autorización) | `prototype/uscat-data.js › FILE_UPLOAD_RULES / validateUpload` |
+
+Integra con: Inicio y Mi perfil de viajero (resumen y reglas efectivas por el mismo resolver), Creación de solicitud (estimado con las tarifas máximas), Mis viajes (perfil aplicado al folio), Bitácora (eventos «Catálogos y tarifas»).
+Angular: `TravelerProfileAdminModule` (ProfilesTab · TariffsTab con TariffMatrix / GlobalRules / CostSimulator · ExceptionsTab) + `TravelerRulesService` (resolver único compartido) + componentes compartidos DataList · DateField · PersonSearch · FileField · ConfirmDialog · SuccessModal.

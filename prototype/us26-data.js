@@ -3,7 +3,7 @@ if (!window.SMV_US26) { (function(){
 // SOURCE OF TRUTH: el catálogo de opciones y la visibilidad por defecto NO viven aquí — se derivan de
 // window.SMV_US01.MENU (matriz aprobada en US-01). Este archivo solo aporta: catálogo de roles administrables,
 // mapa opción→sección, acciones por opción, usuarios administrables con vigencias, overrides y bitácora.
-// Vocabulary: «Perfil» (Director · Ejecutivo · Mando medio · Operativo · DGA), never «Nivel n».
+// Vocabulary: «Perfil» (Director · Ejecutivo · Mando medio · Operativo), never «Nivel n». DGA = functional role only.
 
 const TODAY = '15/09/2026'; // fecha de referencia con la que se sembraron los registros mock (el prototipo usa la fecha real del navegador para vigencias y estados)
 
@@ -122,7 +122,7 @@ const USERS = [
     roles: [{ code: 'CHC', scope: 'Dirección de Capital Humano', from: '01/01/2026', to: '31/12/2026' }], folios: 5,
     travelerCap: true, sapInfo: { grupo: 'EJ', area: 'Dirección de Capital Humano', funcion: 'Dirección de área corporativa' },
     overrides: [{ id: 'o2', option: 'ges-comp', section: 's7', action: 'CO', sense: 'agregar', from: '05/09/2026', to: '30/11/2026', motivo: 'Revisión temporal de comprobaciones escaladas por política', by: 'Sofía Delgado Marín', when: '05/09/2026 16:05', revoked: false }] },
-  { id: 'u06', name: 'Pedro Medina', employeeNumber: '103025', puesto: 'Director General Adjunto', perfil: 'DGA', personnelGroup: 'ED', representacion: true, estado: 'Activo',
+  { id: 'u06', name: 'Pedro Medina', employeeNumber: '103025', puesto: 'Director General Adjunto', perfil: 'Director', personnelGroup: 'ED', representacion: true, estado: 'Activo',
     roles: [{ code: 'DGA', scope: 'Consolidado', from: '01/01/2026', to: '31/12/2026' }], folios: 2,
     travelerCap: true, sapInfo: { grupo: 'ED', area: 'Corporativo', funcion: 'Dirección General Adjunta' }, overrides: [] },
   { id: 'u07', name: 'Andrés Palma Cordero', employeeNumber: '103162', puesto: 'Coordinador de Hotelería', perfil: 'Mando medio', personnelGroup: 'MM', representacion: false, estado: 'Activo',
@@ -168,7 +168,7 @@ const EVENTS = [
   { id: 'e06', when: '11/09/2026 17:45', origen: 'Web', folio: '—', user: 'Claudia Reyna Ortega', role: 'CON', area: 'Catálogos y tarifas', perfil: 'Mando medio', type: 'Catálogos y tarifas', accion: 'Modificó la tarifa de alimentos de Operativo', resultado: { tone: 'verde', text: 'Aplicado' }, field: 'Tarifa alimentos · Operativo', before: '$420.00 MXN', after: '$460.00 MXN' },
   { id: 'e07', when: '11/09/2026 12:20', origen: 'Web', folio: '00038', user: 'Alfredo Cacho', role: 'CHC', area: 'Autorización', perfil: 'Director', type: 'Excepción', accion: 'Aprobó una excepción por excedente de política', resultado: { tone: 'verde', text: 'Excepción aprobada' }, field: 'Excepción de política', before: 'Excedente 18% sobre tarifa autorizada', after: 'Excepción aprobada · motivo: negociación con proveedor único', days: 2.4 },
   { id: 'e08', when: '10/09/2026 19:02', origen: 'Web', folio: '00036', user: 'Ricardo Fuentes Ávila', role: 'DIRH', area: 'Autorización', perfil: 'Director', type: 'Autorización', accion: 'Aprobó la solicitud de viaje', resultado: { tone: 'verde', text: 'Aprobado' }, field: 'Estatus de la solicitud', before: 'Pendiente autorización', after: 'Aprobada', days: 4.6 },
-  { id: 'e09', when: '10/09/2026 13:36', origen: 'Web', folio: '00034', user: 'Pedro Medina', role: 'DGA', area: 'Autorización', perfil: 'DGA', type: 'Rechazo', accion: 'Rechazó el gasto de representación con motivo', resultado: { tone: 'rojo', text: 'Rechazado' }, field: 'Estatus del gasto de representación', before: 'Pendiente autorización', after: 'Rechazado · motivo: sin lista de asistentes', days: 3.8 },
+  { id: 'e09', when: '10/09/2026 13:36', origen: 'Web', folio: '00034', user: 'Pedro Medina', role: 'DGA', area: 'Autorización', perfil: 'Director', type: 'Rechazo', accion: 'Rechazó el gasto de representación con motivo', resultado: { tone: 'rojo', text: 'Rechazado' }, field: 'Estatus del gasto de representación', before: 'Pendiente autorización', after: 'Rechazado · motivo: sin lista de asistentes', days: 3.8 },
   { id: 'e10', when: '10/09/2026 09:14', origen: 'APP', folio: '00033', user: 'Elizabeth Sánchez Gómez', role: 'COL', area: 'Comprobaciones', perfil: 'Mando medio', type: 'Modificación', accion: 'Sustituyó un comprobante de la comprobación', resultado: { tone: 'gris', text: 'Registrado' }, field: 'Comprobante línea 3', before: 'Ticket ilegible (2.1 MB)', after: 'CFDI A-8841 (312 KB)' },
   { id: 'e11', when: '09/09/2026 17:50', origen: 'Web', folio: '00031', user: 'Claudia Reyna Ortega', role: 'CON', area: 'Contabilización', perfil: 'Mando medio', type: 'IT0014', accion: 'Emitió el archivo IT0014 de descuento', resultado: { tone: 'verde', text: 'Emitido' }, field: 'IT0014', before: 'Sin archivo', after: 'IT0014-2026-09-09 · 3 registros · $6,420.00 MXN' },
   { id: 'e12', when: '09/09/2026 15:11', origen: 'Web', folio: '—', user: 'Claudia Reyna Ortega', role: 'CON', area: 'Presupuesto', perfil: 'Mando medio', type: 'Presupuesto', accion: 'Liberó presupuesto comprometido de un folio cancelado', resultado: { tone: 'verde', text: 'Liberado' }, field: 'PRE comprometido · Dirección Comercial y de Negocios', before: '$412,000.00 MXN', after: '$396,500.00 MXN' },

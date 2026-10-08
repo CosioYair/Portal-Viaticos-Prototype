@@ -6,7 +6,7 @@ import { icon } from '../config/icons.js';
 
 export const DEFAULT_PAGE_SIZE = 5;
 export const SORTABLE_FIELDS = ['folio', 'who', 'viajero', 'destino', 'asunto', 'org', 'entrada', 'salida', 'fechas', 'perfil', 'area', 'status', 'age'];
-export const FILTER_LABELS = { status: 'Estatus', org: 'Hospital / Corporativo', perfil: 'Perfil', destino: 'Destino', servicio: 'Servicio' };
+export const FILTER_LABELS = { status: 'Estatus', org: 'Hospital / Corporativo', perfil: 'Perfil', destino: 'Destino', servicio: 'Servicio', estadoTxt: 'Estado', reglaLabel: 'Regla' };
 
 export const emptyListState = () => ({ q: '', f: {}, sort: null, dir: 'asc', page: 1 });
 

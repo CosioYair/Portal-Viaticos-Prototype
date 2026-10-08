@@ -1,4 +1,4 @@
-# ASSET_MANIFEST — complete visual resource inventory (US-01 + US-02 · 2026-10-02)
+# ASSET_MANIFEST — complete visual resource inventory (US-01 + US-02 + US-03 · 2026-10-08)
 
 Goal: no visual resource should require guessing from a screenshot or PDF.
 
@@ -20,7 +20,7 @@ Goal: no visual resource should require guessing from a screenshot or PDF.
 | Demo profile photo — client-supplied, canonical u01 (Elizabeth Sánchez) | JPG | `public/assets/users/elizabeth-sanches-gomes.jpg` | Header avatar, sidebar identity | DEMO, client-supplied. `demo-profile-user.jpg` is RETAINED (previous canonical photo, intentionally kept). |
 | Welcome image | JPG | `public/assets/branding/welcome-plane.jpg` | Welcome modal (once per session) | Used by the full prototype snapshot. |
 | Prototype runtime images | JS data URLs | `prototype/us01-photo.js`, `prototype/usvisual-img.js`, `prototype/usbrand-img.js` | Offline images for the prototype/standalone | Prototype/bundle machinery only; the modular source uses the files above. |
-| Profile catalog images | JPG | `prototype/assets/perfiles/*.jpg` | Traveler-profile catalog (open story) | Client-supplied visuals; kept with the snapshot. |
+| ~~Profile catalog images~~ | — | (removed from the snapshot 2026-10-08) | Retired by the client (rule 174) | Reference material only; never packaged or shown. |
 | New icons | inline SVG | `src/config/icons.js` (`utensils`, `car`, `route`, `calendar`, `sliders`, `wallet`) | Perfil de viajero summary categories | Lucide geometry: utensils · car · route · calendar · sliders-horizontal · wallet. |
 
 ## 2. Typography
@@ -122,3 +122,10 @@ No other images, illustrations or icon fonts are used in US-01.
 
 ## 5. Corner standard
 All rectangular UI surfaces: `--radius-default: 0px`. Only semantic circles (avatar, journey-step marker, status dot, kpi dot) use `--radius-circle: 50%`. No pill buttons/chips.
+
+## 1d. Assets reviewed for US-03 (2026-10-08)
+| Name | Type | Path | Purpose | Notes |
+|---|---|---|---|---|
+| Icons used by Perfiles de viajero | inline SVG | `src/config/icons.js` (`users`, `user`, `fileText`, `warning`, `search`, `chevronLeft/Right`) | Menu item, card titles, alerts, list toolbar | Existing glyphs; no new icon introduced. |
+| Documento de autorización (muestra) | runtime, generated | `prototype/Portal Viaticos.dc.html › docView` | «Ver documento» opens the session file or a neutral sample document inside the Portal | No document file is shipped; never an external URL. |
+| PDF captures | PNG | workspace `assets/us03/*.png` (not part of the repository) | Captured from the synchronized implementation for the US-03 PDF | Project deliverable material. |

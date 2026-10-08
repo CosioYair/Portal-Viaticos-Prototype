@@ -2,6 +2,8 @@
 // Owns the shell state and renders: header, account menu, notifications panel, sidebar/drawer (navigation.js),
 // the message bar and the work area (Home or a shell state). Plain string templates; one render() per state change.
 // Angular: LayoutComponent + HeaderComponent + AccountMenuComponent + NotificationsComponent (+ a small StateService).
+import { renderTravelerProfileAdmin, TAB_HELP } from '../features/traveler-profile/admin.js';
+import { tempStatus as tpStatus } from '../features/traveler-profile/rules.js';
 import { icon, TONE_ICON } from '../config/icons.js';
 import { LOGO_SRC, esc, avatar, viewportMode } from '../config/app-config.js';
 import { resolveNavigation, findItem, canSee, isTraveler, renderSidebar, renderDrawer } from './navigation.js';
@@ -82,11 +84,13 @@ const closedState = () => `<section class="card state"><h2 class="state__title s
 // ---------- shell ----------
 export function mountPortal(root, data) {
   const { users, navigation, statuses, home, notifications, people = {}, traveler = {} } = data;
+  const tpModel = data['traveler-profiles'] || null;   // Administración › Perfiles de viajero (US-03)
   const state = {
     userId: loadDemoUserId(users.users, users.defaultUserId),   // DEMO ONLY (production: session user)
     route: 'inicio', loading: true, collapsed: false,
     bellOpen: false, accountOpen: false, drawerOpen: false,
     read: {},                                                    // notice ids read in this session
+    tp: { tab: 'perfiles', sim: { perfil: 'Mando medio', dias: 4, noches: 3, comidas: 3, hospId: '' } },   // Perfiles de viajero: active tab + simulator inputs
     lists: {},                                                   // per-tray list state { q, f, sort, dir, page } (src/shared/data-list.js), key = userId:trayIndex
     mode: viewportMode(root.clientWidth || 1200)
   };
@@ -112,6 +116,8 @@ export function mountPortal(root, data) {
     'list:filter':    (el) => set({ lists: { ...state.lists, [el.dataset.list]: listReducer(state.lists[el.dataset.list], 'list:filter', { field: el.dataset.field, value: el.value }) } }),
     'list:sort':      (el) => set({ lists: { ...state.lists, [el.dataset.list]: listReducer(state.lists[el.dataset.list], 'list:sort', { field: el.dataset.field }) } }),
     'list:page':      (el) => set({ lists: { ...state.lists, [el.dataset.list]: listReducer(state.lists[el.dataset.list], 'list:page', { dir: el.dataset.dir }) } }),
+    'tp:tab':         (el) => set({ tp: { ...state.tp, tab: el.dataset.tab } }),
+    'tp:sim':         (el) => { const f = el.dataset.field, v = ['dias', 'noches'].includes(f) ? Math.min(99, parseInt(el.value.replace(/\D/g, ''), 10) || 0) : f === 'comidas' ? Number(el.value) : el.value; set({ tp: { ...state.tp, sim: { ...state.tp.sim, [f]: v } } }); },
     'demo:user':      (el) => { saveDemoUserId(el.value); set({ userId: el.value, route: 'inicio', bellOpen: false, accountOpen: false, drawerOpen: false, read: {}, lists: {} }); startLoading(); } // DEMO ONLY
   };
   root.addEventListener('click', (e) => {
@@ -125,6 +131,13 @@ export function mountPortal(root, data) {
   function renderKeepingFocus(input) { const key = input.dataset.list, pos = input.selectionStart; render(); const again = root.querySelector(`[data-action="list:search"][data-list="${key}"]`); if (again) { again.focus(); again.setSelectionRange(pos, pos); } }
   new ResizeObserver(es => { const m = viewportMode(es[0].contentRect.width); if (m !== state.mode) requestAnimationFrame(() => set({ mode: m, drawerOpen: m === 'mobile' && state.drawerOpen })); }).observe(root);
 
+  // Perfil vigente por colaborador (asignación que cubre hoy) y contador «activos sin perfil» = población del enlace (rule 84).
+  function tpContext() {
+    const today = tpModel.today, pp = {}; users.users.forEach(u => { pp[u.id] = { ...u, ...((people.people || {})[u.id] || {}) }; pp[u.id].puesto = pp[u.id].puesto || u.puesto; }); Object.keys(people.people || {}).forEach(id => { if (!pp[id]) pp[id] = people.people[id]; });
+    const profileOfUser = uid => { const a = (tpModel.assignments[uid] || []).find(x => tpStatus({ from: x.from, to: x.to || '31/12/9999' }, today) === 'Vigente'); return a ? a.perfil : ''; };
+    const withoutProfile = users.users.filter(u => (u.estado || 'Activo') === 'Activo' && !profileOfUser(u.id) && (u.role === 'COL' || u.traveler)).length;
+    return { people: pp, profileOfUser, withoutProfile };
+  }
   function render() {
     const user = currentUser(), mobile = state.mode === 'mobile', collapsed = !mobile && state.collapsed;
     const groups = resolveNavigation(navigation, user, notifications.counters[user.id] || {}, state.route);
@@ -133,20 +146,21 @@ export function mountPortal(root, data) {
     const unread = notices.filter(n => n.unread).length;
     const userHome = home.homes[user.id];
 
-    const isHome = state.route === 'inicio', isDenied = state.route === 'denied', isClosed = state.route === 'cerrar', isNotBuilt = !isHome && !isDenied && !isClosed;
+    const isHome = state.route === 'inicio', isDenied = state.route === 'denied', isClosed = state.route === 'cerrar', isTP = state.route === 'adm-perfiles' && !!tpModel, isNotBuilt = !isHome && !isDenied && !isClosed && !isTP;
     const title = isHome ? 'Inicio' : isDenied ? 'Sección sin permiso' : isClosed ? 'Cerrar' : (item ? item.label : 'Sección');
-    const crumbs = isNotBuilt && item ? [item.group, item.label].filter(Boolean) : isDenied ? ['Sin permiso'] : [];
+    const crumbs = (isNotBuilt || isTP) && item ? [item.group, item.label].filter(Boolean) : isDenied ? ['Sin permiso'] : [];
     // US-02: the Home help text lives in the «?» next to the title (shared help pattern); only real alerts (e.g. SAP data unavailable) use the message bar.
     const bar = isHome ? (userHome.alert ? messageBar(userHome.alert.tone, userHome.alert.text) : '')
       : isDenied ? messageBar('rojo', 'No es posible abrir esta sección: tu rol no tiene permiso. Vuelve al inicio o solicita el acceso a Admin / Seguridad TI.')
       : isClosed ? messageBar('info', 'La sesión se cerró correctamente (simulación).')
+      : isTP ? ''
       : messageBar('info', 'Funcionalidad no disponible en esta versión del prototipo.');   // rule 52: no internal traceability in the UI
 
     const work = state.loading ? skeleton() : `
       ${crumbs.length ? `<nav class="crumbs" aria-label="Ruta"><button class="crumbs__home" data-action="go" data-route="inicio">Inicio</button>${crumbs.map(c => `<span>›</span><span>${esc(c)}</span>`).join('')}</nav>` : ''}
-      <div class="title-row"><h1 class="title">${esc(title)}</h1>${isHome && userHome.help ? helpTip('home', userHome.help) : ''}${isHome && !mobile ? '<span class="title-row__meta">Actualizado hoy · 10:42</span>' : ''}</div>
+      <div class="title-row"><h1 class="title">${esc(title)}</h1>${isHome && userHome.help ? helpTip('home', userHome.help) : ''}${isTP && TAB_HELP[state.tp.tab] ? helpTip('tp-' + state.tp.tab, TAB_HELP[state.tp.tab]) : ''}${isHome && !mobile ? '<span class="title-row__meta">Actualizado hoy · 10:42</span>' : ''}</div>
       ${bar}
-      ${isDenied ? deniedState(user.roleLabel) : isNotBuilt ? notBuiltState(title, item ? item.us : '') : isClosed ? closedState() : renderHome(userHome, user, statuses.statuses, state.mode, state.lists, { people: people.people || {}, externals: people.externals || {}, traveler, travelerCapable: isTraveler(user) })}`;
+      ${isDenied ? deniedState(user.roleLabel) : isTP ? renderTravelerProfileAdmin(tpModel, state.tp, state.lists, state.mode, tpContext()) : isNotBuilt ? notBuiltState(title, item ? item.us : '') : isClosed ? closedState() : renderHome(userHome, user, statuses.statuses, state.mode, state.lists, { people: people.people || {}, externals: people.externals || {}, traveler, travelerCapable: isTraveler(user) })}`;
 
     root.className = `shell${mobile ? ' is-mobile is-narrow' : state.mode === 'narrow' ? ' is-narrow' : ''}`;
     root.innerHTML = `

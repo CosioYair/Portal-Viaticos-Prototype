@@ -105,6 +105,86 @@ const DOCS_COMPROBACION = [
   { id: 128, concepto: 'otros gastos', xml: '?', pdf: '', txt: '', iva: 'X', ivaFrontera: '', ieps: '', isHosp: '', impTraslado: '', anomalia: '«?» en XML' },
   { id: 129, concepto: 'paqueteria y mensajeria', xml: 'X', pdf: '', txt: '', iva: 'X', ivaFrontera: '', ieps: '', isHosp: '', impTraslado: '', anomalia: 'Sin PDF' }
 ];
+// Columna «Solicitud» (libro V1 (1), 2026-10-05 · CLIENT CONFIRMED — GREEN WORKBOOK): concepto de la solicitud de viaje al que aporta cada documento.
+// Es la base del GASTO ESTIMADO de la solicitud (Word «La solicitud deberá agregar los gastos estimados tomar del catálogo…»).
+const SOLICITUD_DE = { 109: 'Alimentos', 111: 'Autobús', 113: 'Casetas', 114: 'Casetas', 115: 'Estacionamiento', 116: 'Estacionamiento', 118: 'Propinas', 119: 'Propinas', 124: 'Tintorería', 126: 'Gasolina', 127: 'Hospedaje', 128: 'Otros gastos', 129: 'Paquetería y mensajería' };
+DOCS_COMPROBACION.forEach(d => { d.solicitud = SOLICITUD_DE[d.id] || ''; });
+// CONCEPTOS DE LA SOLICITUD (derivados, sin duplicar el catálogo): un concepto por valor distinto de «Solicitud», con los ids de documento que lo comprueban.
+// calculo = 'tarifa' cuando una tarifa confirmada permite estimarlo (Alimentos · Hospedaje · Tintorería); 'captura' cuando el libro solo da el concepto
+// (el viajero puede indicar un importe estimado; sin regla de cálculo en las fuentes — ninguna se inventa).
+const CONCEPTOS_SOLICITUD = [];
+DOCS_COMPROBACION.forEach(d => { if (!d.solicitud) return; let c = CONCEPTOS_SOLICITUD.find(x => x.label === d.solicitud); if (!c) { c = { id: 'cs' + d.id, label: d.solicitud, docs: [], calculo: ['Alimentos', 'Hospedaje', 'Tintorería'].includes(d.solicitud) ? 'tarifa' : 'captura' }; CONCEPTOS_SOLICITUD.push(c); } c.docs.push(d.id); });
 
-window.SMV_CAT = { HOSP_VIG, HOSPITALES, hospById, hospByAlias, hospLabel, SOCIEDADES, sociedadById, sociedadLabel, RECORRIDOS, DOCS_COMPROBACION };
+// ---------------------------------------------------------------------------
+// MOTIVOS DE VIAJE · «Motivos de viaje» (CLIENT CONFIRMED — GREEN WORKBOOK, libro V1 (1)). Vigencia 01/09/2026 – sin fecha de cierre.
+// Las vigencias de las filas 2–6 del libro (01.09.2027…2031 / 31.12.10000…) son un arrastre de celdas, no fechas de negocio → se reporta, no se copia.
+// «Otros» aparece sin código ni vigencia: OPEN CLIENT DECISION (¿motivo real u opción «Otros» del listado de destinos?) → no se incluye.
+// DILI: «solo puede aplicar a ciertas funciones» (observación del libro); la lista de funciones NO fue proporcionada → sin validación (OPEN).
+// ---------------------------------------------------------------------------
+const MOTIVOS_VIAJE = [
+  { code: 'PROY', label: 'Proyecto', from: '01/09/2026', to: '31/12/9999' },
+  { code: 'CAPA', label: 'Capacitación', from: '01/09/2026', to: '31/12/9999' },
+  { code: 'CUVA', label: 'Cubrir vacante', from: '01/09/2026', to: '31/12/9999' },
+  { code: 'RECO', label: 'Reunión comité', from: '01/09/2026', to: '31/12/9999' },
+  { code: 'DILI', label: 'Diligencias', from: '01/09/2026', to: '31/12/9999', obs: 'Solo aplica a ciertas funciones (lista pendiente del cliente)' },
+  { code: 'OPER', label: 'Operación', from: '01/09/2026', to: '31/12/9999' }
+];
+
+// ---------------------------------------------------------------------------
+// PARÁMETROS GLOBALES · «Paramtros Globales» (CLIENT CONFIRMED — GREEN WORKBOOK). idhospital «*» = todos. Vigencia 01/08/2026 – sin fecha de cierre.
+// DIAS_ANTSOL: el libro dice 5 «de la solicitud»; el Word habla de 5 para el ANTICIPO y «distinta de la fecha de la solicitud de viaje»; el alcance
+// decía 4 para la solicitud de viaje → CONFLICTO ABIERTO. El prototipo usa 5 (valor del libro) marcado como PENDIENTE DE CONFIRMACIÓN, no como confirmado.
+// ---------------------------------------------------------------------------
+const PARAMETROS_GLOBALES = [
+  { code: 'MAX_DEST', label: 'Destinos máximos por viaje', valor: 3, unidad: 'Destinos', from: '01/08/2026', to: '31/12/9999' },
+  { code: 'HOSP_CORP', label: 'Viajes de hospitales a Corporativo habilitados', valor: 1, valorLabel: 'Activo', obs: 'Cualquier persona del hospital puede viajar a Corporativo', from: '01/08/2026', to: '31/12/9999' },
+  { code: 'HOSP_HOSP', label: 'Viajes de hospital a hospital', valor: 2, valorLabel: 'Con autorización', from: '01/08/2026', to: '31/12/9999' },
+  { code: 'CORP_HOSP', label: 'Viajes de Corporativo a hospital', valor: 1, valorLabel: 'Activo', from: '01/08/2026', to: '31/12/9999' },
+  { code: 'DIAS_ANTSOL', label: 'Días de anticipación de la solicitud', valor: 5, unidad: 'Días', from: '01/08/2026', to: '31/12/9999', pendiente: 'Conflicto 4 (alcance) vs 5 (libro) · pendiente de confirmación del cliente' }
+];
+const paramGlobal = code => (PARAMETROS_GLOBALES.find(p => p.code === code) || {}).valor;
+
+// ---------------------------------------------------------------------------
+// ESTADOS DE VIAJE · «Ciudades de viaje» (CLIENT CONFIRMED — GREEN WORKBOOK): «TABLA DE ESTADOS». Solo 9 estados llevan vigencia (01/09/2026 –
+// sin fecha de cierre); los 23 restantes están listados sin vigencia y se conservan como NO VIGENTES. El libro NO trae ciudades: la ciudad de un
+// destino «Otro» se captura como texto. Sustituye el catálogo inventado del prototipo (Jalisco, Nuevo León, ciudades).
+// ---------------------------------------------------------------------------
+const ESTADOS_VIGENTES = ['Aguascalientes', 'Chihuahua', 'Ciudad de México', 'México (Estado de México)', 'Michoacán de Ocampo', 'Querétaro', 'San Luis Potosí', 'Veracruz', 'Yucatán'];
+const ESTADOS_SIN_VIGENCIA = ['Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Quintana Roo', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Zacatecas'];
+const ESTADOS_VIAJE = ESTADOS_VIGENTES.map(e => ({ estado: e, from: '01/09/2026', to: '31/12/9999', vigente: true })).concat(ESTADOS_SIN_VIGENCIA.map(e => ({ estado: e, from: '', to: '', vigente: false })));
+
+// REGLAS DE CARGA DE ARCHIVOS — configuración CENTRAL (una sola fuente; toda carga de documentos del Portal la reutiliza).
+// Fuentes: flujo aprobado «tipo / tamaño de archivo y caracteres permitidos» · Word del cliente «Archivo de justificación (validar tamaño y tipo de
+// archivo, sin caracteres especiales)». NINGUNA fuente fija la lista de tipos ni el tamaño máximo → allowedTypes / maxSizeMB = null = OPEN CLIENT DECISION
+// (la validación existe y se activa al confirmarse el valor; no se inventa). El nombre sin caracteres especiales SÍ está confirmado.
+// ESTÁNDAR GLOBAL DE CARGA DE ARCHIVOS (CLIENT CONFIRMED 2026-10-05): 5 MB máximo POR ARCHIVO en todo el Portal (actual y futuro), salvo un
+// requisito de negocio posterior documentado. allowedTypes = null → tipos aún NO confirmados por el cliente (OPEN; no se inventan).
+const FILE_UPLOAD_RULES = { maxSizeBytes: 5 * 1024 * 1024, allowedTypes: null, nameRule: 'safe' };
+// Reglas por tipo de documento = el estándar global (solo se separan si un requisito documentado lo exige).
+const FILE_RULES = {
+  justificacion: { label: 'Archivo de justificación', ...FILE_UPLOAD_RULES },
+  respaldo: { label: 'Documento de respaldo', ...FILE_UPLOAD_RULES }
+};
+// Nombre seguro: letras sin acento, números, espacio, guion y guion bajo + un solo punto antes de la extensión (estándar ya vigente en la solicitud).
+const FILE_NAME_SAFE = /^[A-Za-z0-9 _-]+(\.[A-Za-z0-9]{1,10})?$/;
+const FILE_ERRORS = {
+  FILE_TOO_LARGE: mb => 'El archivo supera el tamaño máximo permitido de ' + mb + ' MB. Selecciona un archivo de menor tamaño.',
+  INVALID_FILE_TYPE: () => 'Tipo de archivo no permitido. Selecciona un archivo con un formato admitido.',
+  INVALID_FILE_NAME: () => 'El nombre del archivo contiene caracteres no permitidos. Usa letras sin acento, números, espacios, guion o guion bajo.'
+};
+const fileMB = R => Math.round(((R && R.maxSizeBytes) || FILE_UPLOAD_RULES.maxSizeBytes) / 1048576);
+// VALIDADOR ÚNICO: tamaño → tipo → nombre; devuelve { valid, errorCode, message }. Exactamente 5 MB se acepta (solo > máximo se rechaza).
+function validateUpload(file, rules) {
+  const R = { ...FILE_UPLOAD_RULES, ...(rules || {}) }, name = String((file && file.name) || ''), dot = name.lastIndexOf('.'), ext = dot > 0 ? name.slice(dot + 1).toLowerCase() : '';
+  if (R.maxSizeBytes != null && Number(file && file.size) > R.maxSizeBytes) return { valid: false, errorCode: 'FILE_TOO_LARGE', message: FILE_ERRORS.FILE_TOO_LARGE(fileMB(R)) };
+  if (Array.isArray(R.allowedTypes) && R.allowedTypes.length && !R.allowedTypes.includes(ext)) return { valid: false, errorCode: 'INVALID_FILE_TYPE', message: FILE_ERRORS.INVALID_FILE_TYPE() };
+  if (R.nameRule === 'safe' && !FILE_NAME_SAFE.test(name)) return { valid: false, errorCode: 'INVALID_FILE_NAME', message: FILE_ERRORS.INVALID_FILE_NAME() };
+  return { valid: true, errorCode: '', message: '' };
+}
+// Texto de apoyo que TODO selector muestra antes de elegir (tipos solo cuando estén confirmados).
+function uploadHelp(rules) { const R = { ...FILE_UPLOAD_RULES, ...(rules || {}) }; return (Array.isArray(R.allowedTypes) && R.allowedTypes.length ? R.allowedTypes.map(x => x.toUpperCase()).join(', ') + ' · máximo ' : 'Tamaño máximo por archivo: ') + fileMB(R) + ' MB'; }
+// Compatibilidad: validateFile(ruleKey, file) → { ok, code, msg } sobre el validador único.
+function validateFile(ruleKey, file) { const r = validateUpload(file, FILE_RULES[ruleKey]); return { ok: r.valid, code: r.errorCode, msg: r.message }; }
+
+window.SMV_CAT = { FILE_UPLOAD_RULES, FILE_RULES, FILE_NAME_SAFE, FILE_ERRORS, validateUpload, uploadHelp, validateFile, HOSP_VIG, HOSPITALES, hospById, hospByAlias, hospLabel, SOCIEDADES, sociedadById, sociedadLabel, RECORRIDOS, DOCS_COMPROBACION, CONCEPTOS_SOLICITUD, MOTIVOS_VIAJE, PARAMETROS_GLOBALES, paramGlobal, ESTADOS_VIAJE, ESTADOS_VIGENTES };
 })(); }

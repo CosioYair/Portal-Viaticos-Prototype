@@ -1,9 +1,10 @@
 # Portal de Viáticos 2.0 — prototipo de referencia (código fuente)
 
-**Cliente:** Starmedica · **Estado (2026-10-02):**
+**Cliente:** Starmedica · **Estado (2026-10-08 · snapshot acumulado):**
 - **US-01 — Layout y navegación por rol · APPROVED · CLOSED · FULLY SYNCED**
-- **US-02 — Pantallas de Inicio · APPROVED · CLOSED · FULLY SYNCED** — Inicio compuesto por rol, ámbito, capacidad de viajero y orden definido por el cliente. Referencia: `docs/HOME_VISIBILITY_MATRIX.md`, `docs/US02_DESIGN_NOTES.md`.
-- Historias aún en revisión (REVIEW MODE · SYNC PENDING): Perfil del viajero (US-03 / US-04), US-08 Nueva solicitud de viaje, US-26 Usuarios y permisos / Bitácora, catálogos y tarifas. Su implementación vigente está incluida en el **prototipo completo** (`prototype/`) pero NO está aprobada; se portará a `src/` al finalizar cada historia.
+- **US-02 — Pantallas de Inicio · APPROVED · CLOSED · FULLY SYNCED** — referencia: `docs/HOME_VISIBILITY_MATRIX.md`, `docs/US02_DESIGN_NOTES.md`.
+- **US-03 — Administración de perfiles de viajero · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — Perfiles · Tarifas · Excepciones (`src/features/traveler-profile/`, `src/data/traveler-profiles.json`); referencia: `docs/TRAVELER_PROFILE_MODEL.md` y el PDF «Propuesta visual (US-03 - Administración de perfiles de viajero)».
+- Historias aún en revisión (REVIEW MODE · SYNC PENDING), incluidas en el **prototipo completo** (`prototype/`) pero NO aprobadas: US-04 Ficha del viajero y asignación de perfil, US-08 Creación de solicitud de viaje, US-10 Mis viajes, US-26 Usuarios y permisos / Bitácora, viajero externo, catálogos y tarifas del libro V1, composición del Inicio por rol. Se portan a `src/` al finalizar cada historia.
 
 Este proyecto es el **ÚNICO código fuente acumulado** del Portal: las historias siguientes lo extienden; nunca se rehace US-01 ni US-02.
 
@@ -11,7 +12,7 @@ Este proyecto es el **ÚNICO código fuente acumulado** del Portal: las historia
 Shell del portal (encabezado, menú lateral 284 / 72 px, barra de mensajes, área de trabajo) · navegación por rol (`navigation.json` + `canSee`) · layout consciente de la capacidad de viajero · vistas de Inicio de referencia por rol · indicador de etapas compartido (JourneyProgress) · estándar de tablas/listas con búsqueda, filtros, orden y paginación (`data-list.js`) · diseño responsivo (1440 / 1280 / 390) · tokens y activos Starmedica · reglas de negocio de visualización (Anticipo, presupuesto, perfil, folio). Las vistas de Inicio pueden seguir evolucionando con las historias funcionales posteriores.
 
 ## ¿Qué es esto?
-Prototipo visual y funcional de referencia, en HTML/CSS/JavaScript plano (sin build). **No es la aplicación de producción**: el Portal final puede ser Angular. Sirve para leer la estructura aprobada, las reglas de navegación por rol, los datos de ejemplo, los tokens visuales y el comportamiento responsive, y reproducirlos fielmente.
+Prototipo visual y funcional de referencia, en HTML/CSS/JavaScript plano (sin build). Los editores interactivos de US-03 (formularios, confirmación, éxito, bitácora) viven en `prototype/Portal Viaticos.dc.html`; sus validaciones y reglas están portadas a `src/features/traveler-profile/rules.js`. **No es la aplicación de producción**: el Portal final puede ser Angular. Sirve para leer la estructura aprobada, las reglas de navegación por rol, los datos de ejemplo, los tokens visuales y el comportamiento responsive, y reproducirlos fielmente.
 
 ## Cómo ejecutar
 Los módulos ES requieren HTTP (no `file://`).
@@ -37,6 +38,8 @@ src/
   layout/portal-layout.js       shell: estado, encabezado, menú de cuenta, avisos, barra de mensajes, estados
   layout/navigation.js          resolución de permisos (canSee / resolveNavigation) + sidebar + drawer móvil
   features/home/home.js|.css    pantalla Inicio (viaje propio, resumen según rol/ámbito, bandejas)
+  features/traveler-profile/    Administración › Perfiles de viajero (US-03): admin.js (pestañas Perfiles · Tarifas · Excepciones + simulador) · rules.js (resolver de valor efectivo, estados, validaciones, simulador) · traveler-profile.css
+  data/traveler-profiles.json   modelo único de perfiles, conceptos, tarifas, parámetros globales, taxi, reglas exceptuables, excepciones y asignaciones
   shared/journey-progress.js    ÚNICO indicador de etapas del viaje (4 etapas canónicas) — futuro componente Angular compartido
   data/users.json               usuarios de prueba + catálogo de roles
   data/navigation.json          MENÚ: grupos, ítems, iconos, rutas, visibilidad por rol, reglas de perfil

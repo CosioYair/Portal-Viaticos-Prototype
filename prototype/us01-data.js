@@ -9,7 +9,7 @@ const ROLE_KIND = { COL: 'colaborador', CHH: 'gestor', DIR: 'autorizador', CHC: 
 // hospital = Hospital / Corporativo: afiliación organizacional del colaborador que llega de SAP (solo personal hospitalario;
 // el personal corporativo no tiene valor → se muestra «Corporativo» y el panel de cuenta omite el campo).
 // El nombre de un rol funcional NO determina esta afiliación: Capital Humano es corporativo (aclaración del cliente).
-// perfil.label = client-approved vocabulary: Director · Ejecutivo · Mando medio · Operativo · DGA (never «Nivel n»).
+// perfil.label = traveler profile: Director · Ejecutivo · Mando medio · Operativo (never «Nivel n»). DGA is a ROLE (role: 'DGA'), never a profile.
 // personnelGroup = SAP personnel group of the collaborator (mock): E / ED = executive-director groups, EJ = executive, MM = mandos medios, OP = operativo.
 // ANTICIPO RULE (client, final: «Solo a Director grupo E ED»): Anticipo does NOT apply when perfil is exactly Director AND personnelGroup is E or ED. DGA is a distinct profile and does NOT inherit this rule.
 // perfil.anticipo is DERIVED below by anticipoApplies(); never hardcode it per user.
@@ -21,7 +21,7 @@ const USERS = [
   { id: 'u03', name: 'Ricardo Fuentes Ávila', employeeNumber: '102614', role: 'DIR', roleLabel: 'Dirección de Hospital', direccion: 'Dirección de Operación Hospitalaria', hospital: 'HSM Chihuahua', puesto: 'Director de Hospital', personnelGroup: 'EJ', traveler: true, perfil: { label: 'Director', representacion: false } }, // Director with group EJ → Anticipo applies
   { id: 'u04', name: 'Mónica Herrera Luna', employeeNumber: '102751', role: 'DIR', roleLabel: 'Dirección Corporativa', direccion: 'Dirección Comercial y de Negocios', puesto: 'Directora Comercial y de Negocios', personnelGroup: 'ED', traveler: true, perfil: { label: 'Director', representacion: true } }, // Director with group ED → Anticipo = No aplica
   { id: 'u05', name: 'Alfredo Cacho', employeeNumber: '102888', role: 'CHC', roleLabel: 'Capital Humano Corporativo', direccion: 'Dirección de Capital Humano', puesto: 'Director de Capital Humano Corporativo', personnelGroup: 'EJ', traveler: true, perfil: { label: 'Director', representacion: true } }, // V2: CH CO is also a traveler in the demo; group EJ → Anticipo applies
-  { id: 'u06', name: 'Pedro Medina', employeeNumber: '103025', role: 'DGA', roleLabel: 'Dirección General Adjunta', direccion: 'Corporativo', puesto: 'Director General Adjunto', personnelGroup: 'ED', traveler: true, perfil: { label: 'DGA', representacion: true } }, // unique DGA profile: Anticipo applies (the Director E/ED rule does not cover DGA)
+  { id: 'u06', name: 'Pedro Medina', employeeNumber: '103025', role: 'DGA', roleLabel: 'Dirección General Adjunta', direccion: 'Corporativo', puesto: 'Director General Adjunto', personnelGroup: 'ED', traveler: true, perfil: { label: 'Director', representacion: true } }, // ROL DGA ≠ perfil: viaja con perfil Director (grupo ED → Anticipo No aplica por la regla Director E/ED)
   { id: 'u07', name: 'Andrés Palma Cordero', employeeNumber: '103162', role: 'HH', roleLabel: 'Hotelería HSM', direccion: 'Dirección de Operación Hospitalaria', hospital: 'HSM Chihuahua', puesto: 'Coordinador de Hotelería', personnelGroup: 'MM', traveler: false },
   { id: 'u08', name: 'Verónica Ibarra Cano', employeeNumber: '103299', role: 'HC', roleLabel: 'Hotelería Corporativo', direccion: 'Corporativo', puesto: 'Coordinadora de Hotelería Corporativa', personnelGroup: 'MM', traveler: false },
   { id: 'u09', name: 'Daniel Osorio Peña', employeeNumber: '103436', role: 'VIA', roleLabel: 'Viáticos', direccion: 'Corporativo', puesto: 'Analista de Viáticos', personnelGroup: 'OP', traveler: false },
@@ -30,7 +30,7 @@ const USERS = [
   { id: 'u12', name: 'Sofía Delgado Marín', employeeNumber: '103847', role: 'ADM', roleLabel: 'Admin / Seguridad TI', direccion: 'Tecnologías de la Información', puesto: 'Administradora de Seguridad TI', personnelGroup: 'MM', traveler: false },
 ];
 USERS.forEach(u => { if (u.perfil) u.perfil.anticipo = anticipoApplies(u); });
-// ANTICIPO NO APLICA (regla 253): además de Director E/ED, todo perfil configurado con anticipo = «No» (p. ej. DGA) — lo resuelve el Portal con la
+// ANTICIPO NO APLICA (regla 253): además de Director E/ED, todo perfil configurado con anticipo = «No» — lo resuelve el Portal con la
 // configuración del perfil (usperfil-data.js › PROFILES[].anticipo), nunca con el nombre del rol en el renderizador del trayecto.
 
 // vis: map role -> '✓' | 'V' | 'VPF' | 'L' | 'P' | undefined(—). pf: perfil flag required for VPF.
@@ -41,7 +41,7 @@ const MENU = [
   { group: null, items: [{ id: 'inicio', label: 'Inicio', us: 'US-01', vis: all('✓') }] },
   { group: 'Planeación de viaje', items: [
     { id: 'creacion', label: 'Creación', us: 'US-08', fn: 'Crear solicitud de viaje', vis: travelerBase },
-    { id: 'misviajes', label: 'Mis viajes', us: 'US-11', fn: 'Expediente de folios propios', vis: travelerBase },
+    { id: 'misviajes', label: 'Mis viajes', us: 'US-11', fn: 'Detalle de folios propios', vis: travelerBase },
     { id: 'anticipo', label: 'Anticipo', us: 'US-15', vis: all('VPF'), pf: 'anticipo' },
     { id: 'hospedaje', label: 'Hospedaje', us: 'US-12', vis: travelerBase },
     { id: 'vuelo', label: 'Vuelos', us: 'US-12', vis: travelerBase },
@@ -105,12 +105,42 @@ const COUNTS = {
   u12: {}
 };
 
-// VIAJEROS EXTERNOS: entidad propia, separada del registro de usuarios del Portal. Solo atributos ya presentes en los datos
-// aprobados del prototipo (nombre · hospital de la visita · tipo · área que lo registra). Sin No. de colaborador, perfil ni sociedad.
+// VIAJEROS EXTERNOS (historia de viajero externo, 2026-10-07): REGISTRO CANÓNICO del Portal, separado del personal de SAP y de los usuarios del Portal.
+// El externo NO tiene acceso al Portal, ni No. de colaborador, puesto, sociedad, CECO ni datos de SAP. Campos de la historia:
+// identidad · identificación (tipo, número, documento) · fecha de nacimiento y nacionalidad (datos de vuelo) · contacto · tipo (Candidato | Líder sindical) ·
+// perfil de viajero (categoría «Viajero externo» del catálogo canónico) · DOBLE VÍNCULO: registradorId (usuario de Capital Humano HSM que lo registra y opera)
+// + responsableId = SIEMPRE el usuario registrador (cliente 2026-10-08; su entidad presupuestal absorbe el gasto) · autorizadorId = AUTORIZADOR PRIMER NIVEL (Director corporativo de DIRECTORES_CORP_WS) · vigencia desde/hasta · estado Activo | Inactivo (baja lógica).
+// Vigente = Activo + vigencia actual. Datos sintéticos (repositorio público): nombres, documentos y contactos inventados.
+// AUTORIZADOR PRIMER NIVEL (cliente 2026-10-08): lista de Directores corporativos que en producción entrega un WEB SERVICE (no un catálogo del Portal).
+// Simulación del servicio: mismos campos que devolvería (id · nombre · número de colaborador · puesto · dirección). u04 es usuaria del Portal; los demás son sintéticos.
+const DIRECTORES_CORP_WS = [
+  { id: 'u04', name: 'Mónica Herrera Luna', employeeNumber: '102751', puesto: 'Directora Comercial y de Negocios', direccion: 'Dirección Comercial y de Negocios' },
+  { id: 'dcw02', name: 'Arturo Villaseñor Peña', employeeNumber: '100318', puesto: 'Director de Operaciones Corporativas', direccion: 'Dirección de Operaciones' },
+  { id: 'dcw03', name: 'Claudia Ríos Montaño', employeeNumber: '100542', puesto: 'Directora de Finanzas', direccion: 'Dirección de Finanzas' },
+  { id: 'dcw04', name: 'Fernando Garza Leal', employeeNumber: '100907', puesto: 'Director Médico Corporativo', direccion: 'Dirección Médica' },
+  { id: 'dcw05', name: 'Sofía Treviño Alanís', employeeNumber: '101163', puesto: 'Directora de Tecnologías de la Información', direccion: 'Dirección de TI' }
+];
 const EXTERNALS = {
-  x01: { name: 'Mariana López Cruz', hospital: 'HSM Chihuahua', tipo: 'Externo', registradoPor: 'Capital Humano HSM' },
-  x02: { name: 'Raúl Estrada Pineda', hospital: 'HSM Monterrey', tipo: 'Externo', registradoPor: 'Capital Humano HSM' }
+  x01: { name: 'Mariana López Cruz', tipo: 'Candidato', idTipo: 'INE', idNumero: 'LOCRMR90041208M600', idDoc: 'Identificacion-Mariana-Lopez-Cruz.pdf', fechaNac: '12/04/1990', nacionalidad: 'Mexicana',
+    telefono: '614 220 4187', email: 'mariana.lopez@correo-demo.mx', perfil: 'Viajero externo', responsableId: 'u02', autorizadorId: 'u04', registradorId: 'u02', from: '01/06/2026', to: '31/12/2026', estado: 'Activo', creado: '28/05/2026 10:12' },
+  x02: { name: 'Raúl Estrada Pineda', tipo: 'Líder sindical', idTipo: 'INE', idNumero: 'ESPNRL78110319H300', idDoc: 'Identificacion-Raul-Estrada-Pineda.pdf', fechaNac: '03/11/1978', nacionalidad: 'Mexicana',
+    telefono: '614 118 9032', email: 'raul.estrada@correo-demo.mx', perfil: 'Viajero externo', responsableId: 'u02', autorizadorId: 'dcw02', registradorId: 'u02', from: '01/05/2026', to: '31/12/2026', estado: 'Activo', creado: '02/05/2026 09:40' },
+  // Datos de vuelo incompletos (sin fecha de nacimiento ni nacionalidad): aviso desde el alta; no puede solicitar avión hasta completarlos.
+  x03: { name: 'Gabriela Ruiz Salas', tipo: 'Candidato', idTipo: 'Pasaporte', idNumero: 'G48213397', idDoc: 'Identificacion-Gabriela-Ruiz-Salas.pdf', fechaNac: '', nacionalidad: '',
+    telefono: '614 305 7741', email: 'gabriela.ruiz@correo-demo.mx', perfil: 'Viajero externo', responsableId: 'u02', autorizadorId: 'u04', registradorId: 'u02', from: '15/09/2026', to: '31/12/2026', estado: 'Activo', creado: '14/09/2026 16:05' },
+  x04: { name: 'Jorge Méndez Ibarra', tipo: 'Líder sindical', idTipo: 'INE', idNumero: 'MEIBJR83072514H100', idDoc: 'Identificacion-Jorge-Mendez-Ibarra.pdf', fechaNac: '25/07/1983', nacionalidad: 'Mexicana',
+    telefono: '614 442 0965', email: 'jorge.mendez@correo-demo.mx', perfil: 'Viajero externo', responsableId: 'u02', autorizadorId: 'dcw03', registradorId: 'u02', from: '01/08/2026', to: '31/01/2027', estado: 'Activo', creado: '29/07/2026 11:30' },
+  // Inactivo (desactivado, baja lógica): conserva datos y folios; REACTIVAR vuelve a contar para el máximo.
+  x05: { name: 'Héctor Solís Vega', tipo: 'Candidato', idTipo: 'INE', idNumero: 'SOVGHC88020911H500', idDoc: 'Identificacion-Hector-Solis-Vega.pdf', fechaNac: '09/02/1988', nacionalidad: 'Mexicana',
+    telefono: '614 290 3318', email: 'hector.solis@correo-demo.mx', perfil: 'Viajero externo', responsableId: 'u02', autorizadorId: 'u04', registradorId: 'u02', from: '01/04/2026', to: '31/12/2026', estado: 'Inactivo', creado: '30/03/2026 13:15',
+    baja: { fecha: '20/07/2026 12:02', motivo: 'Proceso de selección concluido sin contratación' } },
+  // Activo con vigencia vencida: ya no cuenta como vigente; requiere actualizar la vigencia para operar.
+  x06: { name: 'Patricia Aguilar Romo', tipo: 'Líder sindical', idTipo: 'INE', idNumero: 'AGRMPT80051733M200', idDoc: 'Identificacion-Patricia-Aguilar-Romo.pdf', fechaNac: '17/05/1980', nacionalidad: 'Mexicana',
+    telefono: '614 377 5120', email: 'patricia.aguilar@correo-demo.mx', perfil: 'Viajero externo', responsableId: 'u02', autorizadorId: 'dcw02', registradorId: 'u02', from: '01/03/2026', to: '31/08/2026', estado: 'Activo', creado: '26/02/2026 10:48' }
 };
+// Catálogos del registro de externos. Tipo de externo = historia (Candidato / Líder sindical). NACIONALIDADES = semilla del prototipo:
+// la historia pide un catálogo, el catálogo oficial no está en las fuentes (pendiente del cliente; no es un catálogo autoritativo).
+const EXT_CATALOGS = { tipos: ['Candidato', 'Líder sindical'], nacionalidades: ['Mexicana', 'Estadounidense', 'Canadiense', 'Guatemalteca', 'Colombiana', 'Española', 'Otra'] };
 const S = {
   pendiente: { text: 'Pendiente', tone: 'azul', icon: 'M12 22a10 10 0 100-20 10 10 0 000 20zM12 6v6l4 2' },
   captura: { text: 'En captura', tone: 'gris', icon: 'M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z' },
@@ -160,7 +190,7 @@ const HOMES = {
     title: 'Inicio', help: 'Aquí se muestran los viajeros externos registrados por este usuario y sus pendientes. El viaje propio y sus etapas aparecen cuando existe una solicitud reciente.',
     myTrip: { folio: '00041', dest: 'Corporativo', dates: '24 – 25 jun 2026', nights: '2 días · 1 noche', motivo: 'Reunión comité', stage: 1, status: S.pendAut, next: 'Tu solicitud espera la autorización de Dirección de Hospital.', nextCta: 'Ver solicitud', nextTarget: 'misviajes',
       stages: [{ label: 'Aprobación de viaje', state: 'current', note: 'Pendiente Dirección de Hospital' }, { label: 'Anticipo', state: 'todo', note: 'Después de la aprobación' }, { label: 'Comprobación', state: 'todo', note: 'Después del viaje' }, { label: 'Cierre', state: 'todo', note: 'Contabilidad' }] },
-    summary: { scope: 'operational', title: 'Viajeros externos a tu cargo', kpis: [{ label: 'Externos activos', value: '6' }, { label: 'Con viaje en curso', value: '2', tone: 'azul' }, { label: 'Requieren actualización', value: '1', hint: 'Perfil sin vigencia', tone: 'rojo' }] },
+    summary: { scope: 'operational', title: 'Viajeros externos a tu cargo', extKpis: true, kpis: [{ label: 'Externos activos', value: '6' }, { label: 'Con viaje en curso', value: '2', tone: 'azul' }, { label: 'Requieren actualización', value: '1', hint: 'Perfil sin vigencia', tone: 'rojo' }] },
     trays: [{ title: 'Viajeros externos con pendientes', count: 2, cta: 'Ver todos los externos', target: 'externos', columns: 'externos', detalleMeaning: 'Fechas de viaje · fecha clave de la comprobación', filters: ['status'], empty: 'Sin viajeros externos con pendientes. Los externos registrados aparecen aquí cuando requieren una acción.', rows: [
       { folio: '00044', extId: 'x01', destino: 'Corporativo', asunto: 'Entrevista · candidata', detalle: 'Viaje 8 – 9 jun 2026 · Comprobación vence 15 jun 2026', status: S.enProceso, age: 'Notificado hace 1 día' },
       { folio: '00040', extId: 'x02', destino: 'HSM Monterrey', asunto: 'Reunión sindical', detalle: 'Viaje 17 – 18 jun 2026 · Comprobación abre 18 jun 2026', status: S.aprobada, age: 'Aprobada hace 3 días' } ] }]
@@ -168,7 +198,7 @@ const HOMES = {
   u03: {
     title: 'Inicio', help: 'Aquí se muestran las solicitudes por autorizar del hospital y el presupuesto de viáticos de la unidad. Las solicitudes también llegan a la APP.',
     // Organizational budget (own hospital): Planeado · Ejercido · Comprometido · PRE disponible (client V2: Ejercido added; «PRE disponible» kept as documented in the approved flow, final naming pending client confirmation)
-    summary: { scope: 'organizational', title: 'Presupuesto de viáticos · HSM Chihuahua', kpis: [{ label: 'Planeado 2026', value: '$1,200,000', hint: 'HSM Chihuahua' }, { label: 'Ejercido', value: '$612,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$912,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$288,000', hint: 'Planeado − Estimado · 76 % utilizado', tone: 'amarillo' }, { label: 'Por autorizar', value: '3', tone: 'azul' }] },
+    summary: { scope: 'organizational', title: 'Presupuesto de viáticos · HSM Chihuahua', kpis: [{ label: 'Planeado 2026', value: '$1,200,000', hint: 'HSM Chihuahua' }, { label: 'Ejercido', value: '$612,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$912,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$288,000', hint: 'Planeado − Estimado · 76 % utilizado', tone: 'amarillo' }, { label: 'Por autorizar', value: '3', tone: 'azul', countTray: 0 }] },
     // Budget severity lives in the PRE disponible KPI (rule 245): no page banner that restates it.
     trays: [{ title: 'Solicitudes por autorizar', count: 3, cta: 'Ir a Aprobación de viaje', target: 'aut-viaje', columns: 'standard', detalleMeaning: 'Línea 1: fechas del viaje · monto estimado · Línea 2: fecha de solicitud', filters: ['destino'], rows: [
       { folio: '00045', personId: 'u09', destino: 'HSM Ciudad Juárez', asunto: 'Capacitación', detalle: 'Viaje 22 – 23 jun 2026 · $6,200 est. · Solicitada 9 jun 2026', status: S.pendAut, age: 'Hace 2 h' },
@@ -188,7 +218,7 @@ const HOMES = {
     myTrip: { folio: '00048', dest: 'HSM Monterrey', dates: '6 – 7 jul 2026', nights: '2 días · 1 noche', motivo: 'Reunión comité', stage: 1, status: S.aprobada, next: 'Viaje aprobado. Confirma hospedaje y vuelo.', nextCta: 'Confirmar hospedaje', nextTarget: 'hospedaje',
       
       stages: [{ label: 'Aprobación de viaje', state: 'done', note: 'Aprobada 12 jun' }, { label: 'Anticipo', state: 'na', note: 'No aplica · Director grupo ED' }, { label: 'Comprobación', state: 'current', note: 'Al concluir el viaje · 7 jul' }, { label: 'Cierre', state: 'todo', note: 'Contabilidad' }] },
-    summary: { scope: 'organizational', monitorCta: true, title: 'Presupuesto de viáticos · Dirección Comercial y de Negocios', kpis: [{ label: 'Planeado 2026', value: '$550,000', hint: 'Dirección Comercial y de Negocios' }, { label: 'Ejercido', value: '$198,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$309,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$241,000', hint: 'Planeado − Estimado · 56 % utilizado', tone: 'verde' }, { label: 'Por autorizar', value: '5', tone: 'azul' }] },
+    summary: { scope: 'organizational', monitorCta: true, title: 'Presupuesto de viáticos · Dirección Comercial y de Negocios', kpis: [{ label: 'Planeado 2026', value: '$550,000', hint: 'Dirección Comercial y de Negocios' }, { label: 'Ejercido', value: '$198,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$309,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$241,000', hint: 'Planeado − Estimado · 56 % utilizado', tone: 'verde' }, { label: 'Por autorizar', value: '5', tone: 'azul', countTray: 0 }] },
     trays: [{ title: 'Solicitudes por autorizar', count: 5, cta: 'Ir a Aprobación de viaje', target: 'aut-viaje', columns: 'standard', detalleMeaning: 'Línea 1: fechas del viaje · monto estimado · Línea 2: fecha de solicitud', filters: ['destino'], rows: [
       { folio: '00046', personId: 'u11', destino: 'HSM Mérida', asunto: 'Proyecto', detalle: 'Viaje 23 – 25 jun 2026 · $7,100 est. · Solicitada 9 jun 2026', status: S.pendAut, age: 'Hace 40 min' },
       { folio: '00045', personId: 'u09', destino: 'HSM Ciudad Juárez', asunto: 'Capacitación', detalle: 'Viaje 22 – 23 jun 2026 · $6,200 est. · Solicitada 9 jun 2026', status: S.pendAut, age: 'Hace 2 h' },
@@ -210,7 +240,7 @@ const HOMES = {
       stages: [{ label: 'Aprobación de viaje', state: 'current', note: 'Pendiente Dirección Corporativa' }, { label: 'Anticipo', state: 'todo', note: 'Después de la aprobación' }, { label: 'Comprobación', state: 'todo', note: 'Después del viaje' }, { label: 'Cierre', state: 'todo', note: 'Contabilidad' }] },
     summaries: [
       { scope: 'organizational', monitorCta: true, chart: true, conceptDots: true, title: 'Presupuesto de viáticos · Dirección de Capital Humano', kpis: [{ label: 'Planeado 2026', value: '$420,000', hint: 'Dirección de Capital Humano' }, { label: 'Ejercido', value: '$151,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$240,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$180,000', hint: 'Planeado − Estimado · 57 % utilizado', tone: 'verde' }] },
-      { scope: 'operational', title: 'Casos escalados', kpis: [{ label: 'Escalados por autorizar', value: '2', tone: 'azul' }, { label: 'Hospitales con Dirección vacante', value: '1', hint: 'HSM Monterrey', tone: 'amarillo' }, { label: 'Excepciones aprobadas este mes', value: '4' }] }
+      { scope: 'operational', title: 'Casos escalados', kpis: [{ label: 'Escalados por autorizar', value: '2', tone: 'azul', countTray: 0 }, { label: 'Hospitales con Dirección vacante', value: '1', hint: 'HSM Monterrey', tone: 'amarillo' }, { label: 'Excepciones aprobadas este mes', value: '4' }] }
     ],
     trays: [{ title: 'Solicitudes por autorizar', count: 2, cta: 'Ir a Aprobación de viaje', target: 'aut-viaje', columns: 'standard', detalleMeaning: 'Línea 1: fechas del viaje · monto estimado · Línea 2: motivo del escalamiento', filters: ['destino'], rows: [
       { folio: '00039', personId: 'u12', destino: 'Corporativo', asunto: 'Operación', detalle: 'Viaje 19 jun 2026 · $4,300 est. · Escalada: Dirección de Hospital vacante', status: S.pendAut, age: 'Hace 5 h' },
@@ -222,7 +252,7 @@ const HOMES = {
   },
   u06: {
     title: 'Inicio', help: 'Aquí se muestran las autorizaciones de viaje pendientes, los gastos de representación por autorizar y el viaje propio. Con la autorización previa de DGA el caso continúa a Contraloría.',
-    // DGA own travel: Aprobación de viaje starts APPROVED at capture. Anticipo = NO APLICA (client 2026-09-30): el perfil DGA se configura sin anticipo;
+    // DGA own travel: Aprobación de viaje starts APPROVED at capture. Anticipo = NO APLICA: el rol DGA viaja con perfil Director grupo ED (regla 13/253);
     // el trayecto lo muestra gris «No aplica» por la configuración del perfil (regla 253), no por el nombre del rol.
     // ORDEN DEL CLIENTE (regla 252): Presupuesto de su Dirección · Perfil de viajero · Tu viaje · Autorizaciones pendientes.
     order: ['sum0', 'perfil', 'trip', 'nueva', 'sum1', 'tray0'],
@@ -320,7 +350,7 @@ const HOMES = {
   },
   u12: {
     title: 'Inicio', help: 'Administra usuarios, permisos, perfiles de viajero, catálogos, parámetros, políticas y guías. Todo cambio queda en bitácora.',
-    summary: { scope: 'operational', title: 'Configuración del portal', kpis: [{ label: 'Usuarios activos', value: '1,284' }, { label: 'Tipos de perfil configurados', value: '5', hint: 'Director · Ejecutivo · Mando medio · Operativo · DGA' }, { label: 'Políticas vigentes', value: '3', hint: '1 vence el 30 jun 2026', tone: 'amarillo' }, { label: 'Cambios en bitácora hoy', value: '14' }] },
+    summary: { scope: 'operational', title: 'Configuración del portal', kpis: [{ label: 'Usuarios activos', value: '1,284' }, { label: 'Tipos de perfil configurados', value: '5', hint: 'Director · Ejecutivo · Mando medio · Operativo · Viajero externo' }, { label: 'Cambios en bitácora hoy', value: '14' }] },
     // Bitácora tray (client V2 final): Fecha y hora · Folio · Usuario · Área · Perfil · Acción · Resultado. folio '—' when the event has none; perfil = traveler profile of the affected user/record ('—' for system/global events). Never «Nivel».
     trays: [{ title: 'Actividad reciente en bitácora', count: 14, cta: 'Ver bitácora', target: 'adm-bitacora', columns: 'bitacora', detalleMeaning: 'Acción registrada: qué cambió y sobre qué registro', filters: ['status', 'perfil'], pageSize: 5, rows: [
       { folio: '—', who: 'Sofía Delgado Marín', area: 'Perfiles de viajero', perfil: 'Mando medio', meta: 'Noches máximas por semana del perfil: 3 → 4', status: S.realizado, age: 'Hoy 09:12' },
@@ -363,6 +393,7 @@ const DEADLINES = {
 const I = {
   home: 'M3 10l9-7 9 7v10a2 2 0 01-2 2H5a2 2 0 01-2-2zM9 22V12h6v10',
   plus: 'M12 5v14M5 12h14',
+  arrowRight: 'M5 12h14M13 6l6 6-6 6',
   suitcase: 'M3 7h18v13H3zM8 7V4h8v3M8 7v13M16 7v13',
   money: 'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6',
   bed: 'M2 4v16M2 8h18a2 2 0 012 2v10M2 17h20M6 8v9',
@@ -418,6 +449,6 @@ const ROLE_MENU_ORDER = { CHC: { 'Planeación de viaje': ['creacion', 'misviajes
 // Colores definidos por el cliente para «Presupuesto de viáticos · Dirección de Capital Humano» (captura del cliente): Planeado verde · Ejercido naranja ·
 // Comprometido amarillo · PRE disponible conserva su familia celeste. Son identificadores de concepto; la severidad sigue en el % de PRE disponible.
 const BUDGET_CONCEPT_COLORS = { Planeado: '#A2C83A', Ejercido: '#F08A24', Comprometido: '#E9C200', 'PRE disponible': '#8DD3F0' };
-window.SMV_US01 = { ROLE_MENU_ORDER, BUDGET_CONCEPT_COLORS, EXTERNALS, ROLES, ROLE_KIND, USERS, MENU, COUNTS, STATUS, HOMES, NOTICES, DEADLINES, ICONS, ICON_NAMES, GLYPHS: I };
+window.SMV_US01 = { DIRECTORES_CORP_WS, ROLE_MENU_ORDER, BUDGET_CONCEPT_COLORS, EXTERNALS, EXT_CATALOGS, ROLES, ROLE_KIND, USERS, MENU, COUNTS, STATUS, HOMES, NOTICES, DEADLINES, ICONS, ICON_NAMES, GLYPHS: I };
 
 })(); }
