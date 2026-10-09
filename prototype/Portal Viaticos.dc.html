@@ -723,6 +723,10 @@ nav[data-sb] *{scrollbar-color:rgba(255,255,255,.35) transparent}nav[data-sb] *:
                     <dt style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4A4F54">Roles activos</dt>
                     <dd style="margin:0;font-size:13px;line-height:18px">{{ ficha.rolesLine }}</dd>
                   </div>
+                  <div style="display:grid;gap:4px;align-content:start">
+                    <dt style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4A4F54">Hospitales que atiende</dt>
+                    <dd style="margin:0;font-size:13px;line-height:18px">{{ ficha.hospLine }}</dd>
+                  </div>
                 </dl>
                 <sc-if value="{{ ficha.hasExcCard }}" hint-placeholder-val="{{ false }}">
                   <div style="margin-top:16px;padding:12px 14px;border:1px solid #E9A800;background:#FFF6DC;font-size:13px;line-height:18px">
@@ -3243,6 +3247,47 @@ nav[data-sb] *{scrollbar-color:rgba(255,255,255,.35) transparent}nav[data-sb] *:
             <div style="min-height:18px;margin-top:4px;font-size:12px;line-height:18px;color:{{ mf.hintColor }}">{{ mf.hint }}</div>
           </div>
         </sc-for>
+        <sc-if value="{{ modal.hasHosp }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:400;background:rgba(74,79,84,.55);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box">
+            <div role="dialog" aria-modal="true" aria-label="Hospitales que atiende" style="width:100%;max-width:560px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:#fff;border:1px solid #D9D8D6;border-radius:0;box-shadow:0 12px 32px rgba(0,0,0,.18);font-family:Roboto,sans-serif;color:#4A4F54">
+              <div style="display:flex;align-items:flex-start;gap:12px;padding:20px 24px 16px;border-bottom:1px solid #F4F4F4">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:18px;font-weight:500;letter-spacing:-.02em;line-height:24px">Hospitales que atiende</div>
+                  <div style="font-size:13px;font-weight:700;color:#0077A8;line-height:18px;margin-top:2px">{{ modal.hosp.sub }}</div>
+                </div>
+                <button onClick="{{ modal.hosp.onClose }}" aria-label="Cerrar" style="flex:none;width:36px;height:36px;border:0;border-radius:0;background:none;color:#777779;cursor:pointer;display:inline-flex;align-items:center;justify-content:center" style-hover="background:#F4F4F4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>
+              </div>
+              <div style="padding:16px 24px;display:flex;flex-direction:column;gap:12px;min-height:0;flex:1">
+                <p style="margin:0;flex:none;font-size:14px;line-height:20px;text-wrap:pretty">{{ modal.hosp.intro }}</p>
+                <label style="flex:none;display:flex;align-items:center;gap:8px;height:40px;padding:0 10px;border:1px solid #D0D2D3;border-radius:0;background:#fff">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777779" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3"></path></svg>
+                  <input type="search" value="{{ modal.hosp.q }}" onChange="{{ modal.hosp.onSearch }}" placeholder="Buscar hospital por nombre o número" aria-label="Buscar hospital" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:14px;color:#4A4F54;height:100%;font-family:inherit">
+                </label>
+                <div style="flex:none;display:flex;gap:8px;flex-wrap:wrap">
+                  <button onClick="{{ modal.hosp.onAll }}" style="height:32px;padding:0 12px;border:1px solid #D0D2D3;border-radius:0;background:#fff;color:#4A4F54;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" style-hover="border-color:#00A7E1">Seleccionar todos</button>
+                  <button onClick="{{ modal.hosp.onNone }}" style="height:32px;padding:0 12px;border:1px solid #D0D2D3;border-radius:0;background:#fff;color:#4A4F54;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit" style-hover="border-color:#00A7E1">Quitar todos</button>
+                </div>
+                <div role="group" aria-label="Hospitales" style="flex:1 1 auto;border:1px solid #D9D8D6;overflow:auto;max-height:340px;min-height:120px">
+                  <sc-for list="{{ modal.hosp.rows }}" as="hr" hint-placeholder-count="6">
+                    <button onClick="{{ hr.go }}" aria-pressed="{{ hr.checked }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:8px 12px;border:0;border-bottom:1px solid #F4F4F4;border-radius:0;background:{{ hr.bg }};color:#4A4F54;cursor:pointer;text-align:left;font-family:inherit" style-hover="background:#E6F6FC">
+                      <span aria-hidden="true" style="width:20px;height:20px;box-sizing:border-box;flex:none;display:inline-flex;align-items:center;justify-content:center;border:2px solid {{ hr.boxBorder }};background:{{ hr.boxBg }};color:{{ hr.boxFg }}"><sc-if value="{{ hr.checked }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></sc-if></span>
+                      <span style="flex:1;min-width:0;font-size:14px;line-height:18px;font-weight:{{ hr.weight }}">{{ hr.label }}</span>
+                      <span style="flex:none;font-size:12px;color:#777779;font-variant-numeric:tabular-nums">{{ hr.id }}</span>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ modal.hosp.noResults }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:14px 12px;font-size:13px;line-height:18px;color:#777779">No se encontró ningún hospital con «{{ modal.hosp.q }}».</div>
+                  </sc-if>
+                </div>
+                <div style="flex:none;font-size:13px;color:#4A4F54">{{ modal.hosp.count }}</div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;padding:16px 24px;border-top:1px solid #F4F4F4">
+                <button onClick="{{ modal.hosp.onClose }}" style="height:40px;padding:0 20px;border:1px solid #00A7E1;border-radius:0;background:#fff;color:#00A7E1;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:inherit" style-hover="background:#D2EEFA">Cerrar</button>
+                <button onClick="{{ modal.hosp.onSave }}" style="height:40px;padding:0 20px;border:0;border-radius:0;background:#00A7E1;color:#fff;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-family:inherit" style-hover="background:#0095C8">Guardar</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
         <sc-if value="{{ modal.hasImpact }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#777779;margin-bottom:8px">{{ modal.impactTitle }}</div>
@@ -3548,6 +3593,8 @@ class Component extends DCLogic {
       ch.style.visibility = fits ? 'visible' : 'hidden'; ch.setAttribute('aria-hidden', fits ? 'false' : 'true'); });
   }
   componentDidUpdate(prevProps, prevState) {
+    // Presentation embeds (PDF captures) opened directly on Creación enter it like the menu does (assigns the folio once).
+    const pp = this.props || {}; if (pp.demoUser && pp.route === 'creacion' && !this._presSV && this.state.data && this.PV && this.SV) { this._presSV = true; this.setState({ userId: pp.demoUser }, () => this.svEnter()); }
     clearTimeout(this._fm); this._fm = setTimeout(() => this.fitMicro(), 30);
     cancelAnimationFrame(this._bw); this._bw = requestAnimationFrame(() => this.syncBtnW());
     // Foco inicial en el contenedor del diálogo (no en CONTINUAR): sin contorno al abrir; Tab lleva al botón con indicador :focus-visible.
@@ -3952,6 +3999,11 @@ class Component extends DCLogic {
   }
   setU26(patch) { this.setState(s => ({ u26: { ...s.u26, ...patch } })); }
   setForm(k, v) { this.setState(s => ({ u26: { ...s.u26, form: { ...s.u26.form, [k]: v } } })); }
+  // HOSPITALES QUE ATIENDE (componente del equipo de desarrollo): hospitales del catálogo «Cat. Hospital» asignados al usuario;
+  // delimitan qué solicitudes, procesos y datos puede consultar por hospital. Catálogo único: window.SMV_CAT.HOSPITALES.
+  hospCat() { return ((window.SMV_CAT || {}).HOSPITALES || []); }
+  hospText(ids) { const c = this.hospCat(), l = (ids || []).map(id => (c.find(h => h.id === id) || {}).nombre).filter(Boolean);
+    return !l.length ? 'Sin hospitales asignados' : l.length === c.length ? 'Todos los hospitales (' + l.length + ')' : l.length > 3 ? l.slice(0, 3).join(' · ') + ' y ' + (l.length - 3) + ' más' : l.join(' · '); }
   // Usuarios = personal de SAP (base + altas recibidas en la actualización) con la configuración del Portal aplicada encima.
   // El PERFIL efectivo viene del modelo único de perfil del viajero (asignaciones con vigencia);
   // no hay un segundo catálogo de perfil por usuario. Un cambio hecho en la sesión (patch) manda.
@@ -4325,7 +4377,7 @@ class Component extends DCLogic {
         const live = t.roles.filter(r => this.tempStatus(r) !== 'Revocado' && this.tempStatus(r) !== 'Vencido');
         const codes = live.filter(r => live.some(r2 => r2 !== r ? this.overlaps(r, r2) : true)).map(r => r.code);
         const eff = this.u26Eff(t, D);
-        const formRoles = { roles: t.roles.map(r => r.code), scopes: Object.fromEntries(t.roles.map(r => [r.code, r.scope])), from: Object.fromEntries(t.roles.map(r => [r.code, r.from])), to: Object.fromEntries(t.roles.map(r => [r.code, r.to])), perfil: t.perfil, cap: this.travelerCap(t) };
+        const formRoles = { hosp: (t.hospitales || []).slice(), roles: t.roles.map(r => r.code), scopes: Object.fromEntries(t.roles.map(r => [r.code, r.scope])), from: Object.fromEntries(t.roles.map(r => [r.code, r.from])), to: Object.fromEntries(t.roles.map(r => [r.code, r.to])), perfil: t.perfil, cap: this.travelerCap(t) };
         const est = this.ESTADO_VIS[t.estado];
         const tv = t.sapInfo;
         const cap = this.travelerCap(t), src = this.travelerSource(t), exc = this.travelerExc(t);
@@ -4347,7 +4399,7 @@ class Component extends DCLogic {
           excHist: histExc ? 'Excepción anterior ' + ({ Vencido: 'vencida', Revocado: 'revocada', Programado: 'programada' }[this.tempStatus(histExc)] || '') + ' (' + this.vigText(histExc.from, histExc.to) + ')' : '',
           hasExcHist: !!histExc,
           elegBg: cap ? '#F3F8E6' : '#F4F4F4', elegBorder: cap ? '#A2C83A' : '#D9D8D6', elegFg: '#4A4F54',
-          perfilLine: (t.perfil || 'Sin perfil de viajero asignado') + (cap ? '' : ' · sin perfil vigente efectivo, no puede viajar'), rolesLine: t.roles.map(r => this.roleLabel(r.code, D)).join(' · '),
+          perfilLine: (t.perfil || 'Sin perfil de viajero asignado') + (cap ? '' : ' · sin perfil vigente efectivo, no puede viajar'), hospLine: this.hospText(t.hospitales), rolesLine: t.roles.map(r => this.roleLabel(r.code, D)).join(' · '),
           // Datos de personal de SAP: información de referencia, solo lectura; no determinan la capacidad de viajero.
           origin: (lab => [{ k: 'Hospital / Corporativo', v: t.hospitalCorp || 'Corporativo' }, { k: 'Grupo y área de personal', v: lab.grupoArea }, { k: 'Función', v: lab.funcion }, { k: 'Posición', v: lab.posicion }])(this.sapLaboral(t.id, t.puesto)),
           excNote: src === 'excepcion' ? 'Su rol no admite perfil de viajero de forma predeterminada: la excepción documentada vigente hace efectivo su perfil. Al vencer o revocarse, deja de poder viajar.'
@@ -4588,7 +4640,10 @@ class Component extends DCLogic {
         ].concat([
           { label: 'Rol(es) funcional(es) *', isToggles: true, hint: codes.length ? '' : 'Selecciona al menos un rol', hintColor: codes.length ? '#777779' : '#F25757',
             items: this.roleCatalog().map(rc => { const on = codes.includes(rc.code); return { label: rc.label, on, ...this.chk(on ? 'on' : 'off'), bg: on ? '#E6F6FC' : '#fff', border: on ? '#00A7E1' : '#D0D2D3', fg: '#4A4F54', weight: on ? 700 : 400,
-              go: () => this.setForm('roles', on ? codes.filter(c => c !== rc.code) : codes.concat([rc.code])) }; }) }
+              go: () => this.setForm('roles', on ? codes.filter(c => c !== rc.code) : codes.concat([rc.code])) }; }) },
+          { label: 'Hospitales que atiende', isToggles: true, hint: this.hospText(f.hosp), hintColor: '#777779',
+            items: [{ label: '+ Hospitales' + ((f.hosp || []).length ? ' (' + f.hosp.length + ')' : ''), on: false, bg: '#fff', border: '#00A7E1', fg: '#00A7E1', weight: 700,
+              go: () => this.setState(s2 => ({ u26: { ...s2.u26, form: { ...s2.u26.form, hospOpen: true, hospDraft: (s2.u26.form.hosp || []).slice(), hospQ: '' } } })) }] }
         ].concat([].concat.apply([], codes.map(c => {
           const rc = this.roleCfg(c) || {};
           const err = this.rangeError(rf[c], rt[c]);
@@ -4615,9 +4670,24 @@ class Component extends DCLogic {
           mo.hasBanner = true; mo.bannerTitle = 'El perfil de viajero vigente dejaría de aplicar';
           mo.bannerText = 'El rol seleccionado no permite capacidad de viajero de forma predeterminada. Para habilitarla, completa el motivo, el documento de respaldo y la vigencia de la excepción, o desmarca «Puede viajar».';
         }
+        if (f.hospOpen) {
+          const cat = this.hospCat(), draft = f.hospDraft || [], nq = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(), q = nq(f.hospQ);
+          const setD = d => this.setForm('hospDraft', cat.map(h => h.id).filter(id => d.includes(id)));
+          const vis = cat.filter(h => !q || nq(h.nombre).includes(q) || h.id.includes(q));
+          mo.hasHosp = true;
+          mo.hosp = { sub: t.name + ' · No. ' + t.employeeNumber,
+            intro: 'Marca uno o varios. Solo verá las solicitudes, procesos y datos de los hospitales asignados. Hospital de registro (SAP): ' + (t.hospitalCorp || 'Corporativo') + '.',
+            q: f.hospQ || '', onSearch: e => this.setForm('hospQ', e.target.value),
+            rows: vis.map(h => { const on = draft.includes(h.id); return { label: h.nombre, id: h.id, ...this.chk(on ? 'on' : 'off'), bg: on ? '#E6F6FC' : '#fff', weight: on ? 700 : 400, go: () => setD(on ? draft.filter(x => x !== h.id) : draft.concat([h.id])) }; }),
+            noResults: !vis.length, count: draft.length === 1 ? '1 hospital seleccionado' : draft.length + ' hospitales seleccionados',
+            onAll: () => setD(draft.concat(vis.map(h => h.id))), onNone: () => setD(draft.filter(id => !vis.some(h => h.id === id))),
+            onClose: () => this.setForm('hospOpen', false),
+            onSave: () => this.setState(s2 => ({ u26: { ...s2.u26, form: { ...s2.u26.form, hosp: s2.u26.form.hospDraft || [], hospOpen: false } } })) };
+        }
         mo.primary = 'Guardar configuración';
         mo.disabled = !codes.length || missing.length > 0 || dateErrs.length > 0;
         const applyAsig = () => this.patchUser(t.id, {
+          hospitales: (f.hosp || []).slice(),
           roles: codes.map(c => ({ code: c, scope: (f.scopes || {})[c] || '', from: rf[c], to: rt[c] })) },
           'Cambios guardados para ' + t.name + (roleImpact ? '. Su perfil de viajero vigente deja de ser efectivo con el rol asignado: requiere una excepción documentada desde Perfil del viajero.' : '.') + ' Siguiente paso: revisa sus permisos efectivos; el menú ya se recalculó.');
         // Confirmación: solo los valores que cambian + el impacto calculado.
@@ -4628,6 +4698,8 @@ class Component extends DCLogic {
         if (prevRoles !== nextRoles) chg.push({ k: 'Rol(es)', v: prevRoles + ' → ' + nextRoles });
         codes.forEach(c => { const prev = (t.roles || []).find(r => r.code === c);
           if (prev && (prev.from !== rf[c] || prev.to !== rt[c])) chg.push({ k: 'Vigencia · ' + this.roleLabel(c, D), v: this.vigText(prev.from, prev.to, true) + ' → ' + this.vigText(rf[c], rt[c]) }); });
+        const hPrev = this.hospText(t.hospitales), hNext = this.hospText(f.hosp);
+        if (hPrev !== hNext || (t.hospitales || []).length !== (f.hosp || []).length) chg.push({ k: 'Hospitales que atiende', v: hPrev + ' → ' + hNext });
         if (capAfter !== capNow) chg.push({ k: 'Capacidad de viajero (resultado del perfil)', v: (capNow ? 'Sí' : 'No') + ' → ' + (capAfter ? 'Sí' : 'No') + (capAfter && !eligNow ? ' (por excepción documentada)' : '') });
 
         mo.onPrimary = () => this.askConfirm({ title: 'Confirmar cambios de configuración', user: t.name, primary: 'Confirmar cambios', destructive: false,

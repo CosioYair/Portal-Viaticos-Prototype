@@ -4,7 +4,12 @@
 - **US-01 — Layout y navegación por rol · APPROVED · CLOSED · FULLY SYNCED**
 - **US-02 — Pantallas de Inicio · APPROVED · CLOSED · FULLY SYNCED** — referencia: `docs/HOME_VISIBILITY_MATRIX.md`, `docs/US02_DESIGN_NOTES.md`.
 - **US-03 — Administración de perfiles de viajero · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — Perfiles · Tarifas · Excepciones (`src/features/traveler-profile/`, `src/data/traveler-profiles.json`); referencia: `docs/TRAVELER_PROFILE_MODEL.md` y el PDF «Propuesta visual (US-03 - Administración de perfiles de viajero)».
-- Historias aún en revisión (REVIEW MODE · SYNC PENDING), incluidas en el **prototipo completo** (`prototype/`) pero NO aprobadas: US-04 Ficha del viajero y asignación de perfil, US-08 Creación de solicitud de viaje, US-10 Mis viajes, US-26 Usuarios y permisos / Bitácora, viajero externo, catálogos y tarifas del libro V1, composición del Inicio por rol. Se portan a `src/` al finalizar cada historia.
+- **US-04 — Ficha del viajero y asignación de perfil · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — Colaboradores · ficha · asignación individual y masiva (`src/features/traveler-profile/collaborators.js`); PDF «Propuesta visual (US-04 - Ficha del viajero y asignación de perfil)».
+- **US-05 — Viajeros externos · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — registro, ficha, alta/edición, desactivar/reactivar y selección en Creación (`src/features/external-travelers/externals.js`, `src/data/externals.json`); PDF «Propuesta visual (US-05 - Viajeros externos)».
+- **US-08 — Creación de solicitud de viaje · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — `src/features/travel-request/request.js`; PDF «Propuesta visual (US-08 - Creación de solicitud de viaje)».
+- **US-10 — Mis viajes · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — `src/features/my-trips/trips.js`; PDF «Propuesta visual (US-10 - Mis viajes)».
+- **US-25 — Usuarios y permisos / Bitácora (histórico US-26) · APPROVED · CLOSED · FULLY SYNCED (2026-10-09)** — `src/features/users-permissions/access.js`; incluye Composición del Inicio por rol y Hospitales que atiende; PDF «Propuesta visual (US-25 - Usuarios y permisos / Bitácora)».
+- Historias aún en revisión (REVIEW MODE · SYNC PENDING), incluidas en el **prototipo completo** (`prototype/`) pero NO aprobadas: US-08 Creación de solicitud de viaje, US-10 Mis viajes, US-26 Usuarios y permisos / Bitácora, catálogos y tarifas del libro V1, composición del Inicio por rol. Se portan a `src/` al finalizar cada historia.
 
 Este proyecto es el **ÚNICO código fuente acumulado** del Portal: las historias siguientes lo extienden; nunca se rehace US-01 ni US-02.
 

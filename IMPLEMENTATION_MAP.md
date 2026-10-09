@@ -1,4 +1,4 @@
-# IMPLEMENTATION_MAP — elemento aprobado → archivo (US-01 + US-02 + US-03 · APPROVED · FULLY SYNCED · 2026-10-08)
+# IMPLEMENTATION_MAP — elemento aprobado → archivo (US-01 + US-02 + US-03 + US-04 + US-05 + US-08 + US-10 + US-25 · APPROVED · FULLY SYNCED · 2026-10-08)
 
 | Elemento aprobado | Archivo(s) |
 |---|---|
@@ -81,3 +81,43 @@ Angular: `HomeComponent` (+ `TravelerProfileSummaryComponent`, `TripCardComponen
 
 Integra con: Inicio y Mi perfil de viajero (resumen y reglas efectivas por el mismo resolver), Creación de solicitud (estimado con las tarifas máximas), Mis viajes (perfil aplicado al folio), Bitácora (eventos «Catálogos y tarifas»).
 Angular: `TravelerProfileAdminModule` (ProfilesTab · TariffsTab con TariffMatrix / GlobalRules / CostSimulator · ExceptionsTab) + `TravelerRulesService` (resolver único compartido) + componentes compartidos DataList · DateField · PersonSearch · FileField · ConfirmDialog · SuccessModal.
+
+## Added in US-04 — Ficha del viajero y asignación de perfil (APPROVED · CLOSED · FULLY SYNCED, 2026-10-08)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Lista Colaboradores (búsqueda nombre/número/CECO/puesto, filtros Perfil · Estado · Hospital / Corporativo, orden, paginación, tarjetas) | `features/traveler-profile/collaborators.js › collaboratorRows` · `shared/data-list.js` · prototype `pvRender (tab colaboradores)` |
+| Estado del perfil por colaborador (Sin perfil · Programado · Vigente · Vencido) y capacidad de viajero = perfil vigente | `collaborators.js › assignmentState / travelerCapability` |
+| Perfil propuesto desde el grupo de personal | `collaborators.js › proposedProfile` (mapeo sintético, tabla oficial pendiente) |
+| Asignar / cambiar perfil (validación, cierre de la vigencia anterior, origen automático / libre) | `collaborators.js › validateAssignment / applyAssignment` · prototype `pvOpenAssign` |
+| Asignación masiva con vista previa y exclusiones | `collaborators.js › massPreview` · prototype `pvOpenMass` |
+| Ficha: datos SAP, reglas efectivas con origen, historial, datos bancarios enmascarados, exportar ficha | prototype `pvRender (sel)` · `pvExportFicha` · `rules.js › effectiveValue` |
+| Consulta solo lectura (Viáticos y roles con consulta) · perfil propio | prototype ruta `perfil` (modo consulta / propio) |
+
+## Added in US-05 — Viajeros externos (APPROVED · CLOSED · FULLY SYNCED, 2026-10-08)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Registro canónico del externo | `data/externals.json` (prototype `us01-data.js › EXTERNALS`) |
+| Vigente · límite de 5 · duplicados · validación · desactivar/reactivar · gate de solicitud · cadena · anticipo | `features/external-travelers/externals.js` |
+| Lista, ficha, formulario, confirmación, éxito, bitácora | prototype `extRender · extNew · extEdit · extSave · extToggle · sharedConfirm` |
+| Selección del externo en Nueva solicitud de viaje | prototype Creación (`whoExt`); el resto del formulario sigue en su propia historia |
+
+## Added in US-08 — Creación de solicitud de viaje (APPROVED · CLOSED · FULLY SYNCED, 2026-10-08)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Precondiciones · hospedaje derivado · ruta · normalización · alimentos · estimado · presupuesto · tarjeta · hora | `features/travel-request/request.js` |
+| Formulario, panel, confirmación, éxito, cancelación, acompañantes, externos | prototype `svRender · svEval · svNormalize · svChain · svSubmit · svCancel` |
+| Catálogos V1 y mensajes | prototype `uscat-data.js`, `us08-data.js` |
+
+## Added in US-10 — Mis viajes (APPROVED · CLOSED · FULLY SYNCED, 2026-10-08)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Composición del listado · saldo · búsqueda · orden · acción de turno · cancelación · plazo | `features/my-trips/trips.js` |
+| Listado, detalle, trayecto, etapas/subprocesos, seguimiento, cancelar, exportar | prototype `mvTrips · mvRender · journey · journeyCta · buildList` |
+
+## Added in US-25 — Usuarios y permisos / Bitácora (histórico US-26 · APPROVED · CLOSED · FULLY SYNCED, 2026-10-09)
+| Elemento aprobado | Archivo(s) |
+|---|---|
+| Vigencias · resolver de acceso · elegibilidad de ajustes · hospitales que atiende · validación de composición del Inicio · rango de bitácora | `features/users-permissions/access.js` |
+| Lista, ficha, Editar asignaciones, diálogo Hospitales que atiende, Ajustar permisos, Restaurar default, Actualizar desde SAP, Matriz general, Configuración por rol, Composición del Inicio, Bitácora | prototype `u26Render · resolveAccess · homeBlocksDefault/Of/For · hospCat · hospText` |
+| Datos | `prototype/us26-data.js` (roles, usuarios, SAP feed, eventos) · `prototype/uscat-data.js › HOSPITALES` (Cat. Hospital) |
+| Integración | Inicio (composición por rol, `cfgOrd`) · navegación (mismo resolver) · Perfil del viajero (capacidad de viajero) |
