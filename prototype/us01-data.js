@@ -42,7 +42,7 @@ const MENU = [
   { group: 'Planeación de viaje', items: [
     { id: 'creacion', label: 'Creación', us: 'US-08', fn: 'Crear solicitud de viaje', vis: travelerBase },
     { id: 'misviajes', label: 'Mis viajes', us: 'US-11', fn: 'Detalle de folios propios', vis: travelerBase },
-    { id: 'anticipo', label: 'Anticipo', us: 'US-15', vis: all('VPF'), pf: 'anticipo' },
+    { id: 'anticipo', label: 'Anticipo', us: 'US-14', fn: 'Solicitar y seguir el anticipo de un viaje aprobado (monto propuesto por el sistema)', vis: all('VPF'), pf: 'anticipo' },
     { id: 'hospedaje', label: 'Hospedaje', us: 'US-12', vis: travelerBase },
     { id: 'vuelo', label: 'Vuelos', us: 'US-12', vis: travelerBase },
     { id: 'comprobacion', label: 'Comprobación', us: 'US-19', vis: travelerBase },
@@ -51,11 +51,19 @@ const MENU = [
   { group: null, items: [{ id: 'perfil', label: 'Perfil del viajero', us: 'US-04', fn: 'Consulta y actualización del perfil de viajero (Viáticos: consulta en solo lectura)', vis: { ...all('V'), COL: '✓', VIA: 'L' } }] },
   { group: null, items: [{ id: 'externos', label: 'Viajeros externos', us: 'US-05', fn: 'Gestión de colaboradores externos', vis: { CHH: '✓', VIA: 'L' } }] },
   { group: 'Presupuesto', items: [
-    { id: 'pres-monitor', label: 'Monitor', us: 'US-06', vis: { DIR: '✓', CHC: '✓', DGA: '✓', VIA: '✓', CON: '✓', CTR: '✓', ADM: 'P' } },
-    { id: 'pres-act', label: 'Actualización', us: 'US-07', vis: { CON: '✓', CTR: 'L', DIR: 'P' } }
+    // PRESUPUESTO = UNA sola opción de navegación (corrección de navegación aprobada con US-06 / US-07, 2026-10-09): la antigua
+    // «Actualización» (pres-act) dejó de ser opción de menú y es una CAPACIDAD interna del Monitor. vis = Consultar (navegación);
+    // actVis = default por ACCIÓN cuando difiere de vis: Editar (cargar archivo, liberación manual, cerrar vigencia) = Contabilidad ✓ ·
+    // Dirección por ajuste individual (P), los mismos defaults que tenía Actualización. Contraloría conserva su lectura con Consultar.
+    // MP = Movimientos presupuestales (Carga inicial · Suplemento · Bloqueo): todos los roles del Monitor EXCEPTO Viáticos (cliente 2026-10-13).
+    // La autorización de suplementos (AU) se eliminó: el suplemento llega por carga ya autorizado (documento de autorización).
+    { id: 'pres-monitor', label: 'Monitor', us: 'US-06', fn: 'Monitor de presupuesto: consulta por alcance y administración según permisos', vis: { DIR: '✓', CHC: '✓', DGA: '✓', VIA: '✓', CON: '✓', CTR: '✓', ADM: 'P' }, actVis: { ED: { CON: '✓', DIR: 'P' }, MP: { DIR: '✓', CHC: '✓', DGA: '✓', CON: '✓', CTR: '✓', ADM: 'P' } } }
   ] },
   { group: 'Autorización', items: [
-    { id: 'aut-viaje', label: 'Aprobación de viaje', us: 'US-09', vis: { DIR: '✓', CHC: '✓', DGA: '✓' } },
+    // Viáticos (cliente 2026-10-15): Consultar + CE «Cambiar estatus» por default (Aprobada → Rechazada sin movimientos posteriores · Rechazada → Aprobada); nunca Autorizar.
+    { id: 'aut-viaje', label: 'Aprobación de viaje', us: 'US-09', vis: { DIR: '✓', CHC: '✓', DGA: '✓', VIA: '✓' }, actVis: { AU: { DIR: '✓', CHC: '✓', DGA: '✓' }, CE: { VIA: '✓' } } },
+    // US-15: autorización del ANTICIPO (Director inmediato → Dirección Corporativa). Población = firmante en turno; misma letra que Aprobación de viaje.
+    { id: 'aut-ant', label: 'Anticipos', us: 'US-15', fn: 'Autorización de anticipos (Director inmediato → Dirección Corporativa)', vis: { DIR: '✓', CHC: '✓', DGA: '✓' } },
     { id: 'aut-rep', label: 'Gastos de representación', us: 'US-20', vis: { DGA: '✓', CTR: '✓' } },
     { id: 'aut-comp', label: 'Comprobaciones', us: 'US-20', fn: 'Evidencias de gastos de representación (DGA)', vis: { DGA: '✓' } }
   ] },
@@ -66,7 +74,8 @@ const MENU = [
   { group: 'Gestión', items: [{ id: 'ges-comp', label: 'Comprobaciones', us: 'US-21', fn: 'Validación de comprobaciones', vis: { VIA: '✓' } }] },
   { group: 'Contabilización', items: [
     { id: 'con-plan', label: 'Planeación de viaje', us: 'US-11', vis: { CON: '✓' } },
-    { id: 'con-ant', label: 'Solicitud de anticipo', us: 'US-16', vis: { CON: '✓' } },
+    // US-15: Consultar · Validar (tomar, contabilizar, rechazar / cancelar) · Procesar pago (propuesta de pago, confirmar transferencia, devolución bancaria).
+    { id: 'con-ant', label: 'Solicitud de anticipo', us: 'US-15', fn: 'Contabilización, propuesta de pago, transferencia y depósito de anticipos', vis: { CON: '✓' } },
     { id: 'con-comp', label: 'Comprobación', us: 'US-22', vis: { CON: '✓' } },
     { id: 'con-rep', label: 'Gastos de representación', us: 'US-22', vis: { CON: '✓' } }
   ] },
@@ -100,7 +109,7 @@ const COUNTS = {
   u07: { 'res-hsm': 2 },
   u08: { encuestas: 6, 'res-hotel': 2 },
   u09: { 'res-hotel': 5, 'ges-comp': 9 },
-  u10: { 'con-ant': 2, 'con-comp': 7 },
+  u10: { 'con-comp': 7 },
   u11: { 'aut-rep': 2 },
   u12: {}
 };
@@ -198,7 +207,8 @@ const HOMES = {
   u03: {
     title: 'Inicio', help: 'Aquí se muestran las solicitudes por autorizar del hospital y el presupuesto de viáticos de la unidad. Las solicitudes también llegan a la APP.',
     // Organizational budget (own hospital): Planeado · Ejercido · Comprometido · PRE disponible (client V2: Ejercido added; «PRE disponible» kept as documented in the approved flow, final naming pending client confirmation)
-    summary: { scope: 'organizational', title: 'Presupuesto de viáticos · HSM Chihuahua', kpis: [{ label: 'Planeado 2026', value: '$1,200,000', hint: 'HSM Chihuahua' }, { label: 'Ejercido', value: '$612,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$912,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$288,000', hint: 'Planeado − Estimado · 76 % utilizado', tone: 'amarillo' }, { label: 'Por autorizar', value: '3', tone: 'azul', countTray: 0 }] },
+    // presEntity: las cifras (Planeado · Ejercido · Comprometido · PRE disponible) se calculan del modelo canónico de presupuesto (uspres-data.js).
+    summary: { scope: 'organizational', monitorCta: true, presEntity: 'HSM Chihuahua', title: 'Presupuesto de viáticos · HSM Chihuahua', kpis: [{ label: 'Por autorizar', value: '3', tone: 'azul', countTray: 0 }] },
     // Budget severity lives in the PRE disponible KPI (rule 245): no page banner that restates it.
     trays: [{ title: 'Solicitudes por autorizar', count: 3, cta: 'Ir a Aprobación de viaje', target: 'aut-viaje', columns: 'standard', detalleMeaning: 'Línea 1: fechas del viaje · monto estimado · Línea 2: fecha de solicitud', filters: ['destino'], rows: [
       { folio: '00045', personId: 'u09', destino: 'HSM Ciudad Juárez', asunto: 'Capacitación', detalle: 'Viaje 22 – 23 jun 2026 · $6,200 est. · Solicitada 9 jun 2026', status: S.pendAut, age: 'Hace 2 h' },
@@ -218,7 +228,7 @@ const HOMES = {
     myTrip: { folio: '00048', dest: 'HSM Monterrey', dates: '6 – 7 jul 2026', nights: '2 días · 1 noche', motivo: 'Reunión comité', stage: 1, status: S.aprobada, next: 'Viaje aprobado. Confirma hospedaje y vuelo.', nextCta: 'Confirmar hospedaje', nextTarget: 'hospedaje',
       
       stages: [{ label: 'Aprobación de viaje', state: 'done', note: 'Aprobada 12 jun' }, { label: 'Anticipo', state: 'na', note: 'No aplica · Director grupo ED' }, { label: 'Comprobación', state: 'current', note: 'Al concluir el viaje · 7 jul' }, { label: 'Cierre', state: 'todo', note: 'Contabilidad' }] },
-    summary: { scope: 'organizational', monitorCta: true, title: 'Presupuesto de viáticos · Dirección Comercial y de Negocios', kpis: [{ label: 'Planeado 2026', value: '$550,000', hint: 'Dirección Comercial y de Negocios' }, { label: 'Ejercido', value: '$198,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$309,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$241,000', hint: 'Planeado − Estimado · 56 % utilizado', tone: 'verde' }, { label: 'Por autorizar', value: '5', tone: 'azul', countTray: 0 }] },
+    summary: { scope: 'organizational', monitorCta: true, presEntity: 'Dirección Comercial y de Negocios', title: 'Presupuesto de viáticos · Dirección Comercial y de Negocios', kpis: [{ label: 'Por autorizar', value: '5', tone: 'azul', countTray: 0 }] },
     trays: [{ title: 'Solicitudes por autorizar', count: 5, cta: 'Ir a Aprobación de viaje', target: 'aut-viaje', columns: 'standard', detalleMeaning: 'Línea 1: fechas del viaje · monto estimado · Línea 2: fecha de solicitud', filters: ['destino'], rows: [
       { folio: '00046', personId: 'u11', destino: 'HSM Mérida', asunto: 'Proyecto', detalle: 'Viaje 23 – 25 jun 2026 · $7,100 est. · Solicitada 9 jun 2026', status: S.pendAut, age: 'Hace 40 min' },
       { folio: '00045', personId: 'u09', destino: 'HSM Ciudad Juárez', asunto: 'Capacitación', detalle: 'Viaje 22 – 23 jun 2026 · $6,200 est. · Solicitada 9 jun 2026', status: S.pendAut, age: 'Hace 2 h' },
@@ -239,7 +249,7 @@ const HOMES = {
     myTrip: { folio: '00047', dest: 'HSM Guadalajara', dates: '2 – 3 jul 2026', nights: '2 días · 1 noche', motivo: 'Reunión comité', stage: 1, status: S.pendAut, next: 'Tu solicitud espera la autorización de Dirección Corporativa.', nextCta: 'Ver solicitud', nextTarget: 'misviajes',
       stages: [{ label: 'Aprobación de viaje', state: 'current', note: 'Pendiente Dirección Corporativa' }, { label: 'Anticipo', state: 'todo', note: 'Después de la aprobación' }, { label: 'Comprobación', state: 'todo', note: 'Después del viaje' }, { label: 'Cierre', state: 'todo', note: 'Contabilidad' }] },
     summaries: [
-      { scope: 'organizational', monitorCta: true, chart: true, conceptDots: true, title: 'Presupuesto de viáticos · Dirección de Capital Humano', kpis: [{ label: 'Planeado 2026', value: '$420,000', hint: 'Dirección de Capital Humano' }, { label: 'Ejercido', value: '$151,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$240,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$180,000', hint: 'Planeado − Estimado · 57 % utilizado', tone: 'verde' }] },
+      { scope: 'organizational', monitorCta: true, chart: true, conceptDots: true, presEntity: 'Dirección de Capital Humano', title: 'Presupuesto de viáticos · Dirección de Capital Humano', kpis: [] },
       { scope: 'operational', title: 'Casos escalados', kpis: [{ label: 'Escalados por autorizar', value: '2', tone: 'azul', countTray: 0 }, { label: 'Hospitales con Dirección vacante', value: '1', hint: 'HSM Monterrey', tone: 'amarillo' }, { label: 'Excepciones aprobadas este mes', value: '4' }] }
     ],
     trays: [{ title: 'Solicitudes por autorizar', count: 2, cta: 'Ir a Aprobación de viaje', target: 'aut-viaje', columns: 'standard', detalleMeaning: 'Línea 1: fechas del viaje · monto estimado · Línea 2: motivo del escalamiento', filters: ['destino'], rows: [
@@ -260,7 +270,7 @@ const HOMES = {
       stages: [{ label: 'Aprobación de viaje', state: 'done', note: 'Aprobada al capturar · 20 jun' }, { label: 'Anticipo', state: 'na', note: 'No aplica · reembolso al comprobar' }, { label: 'Comprobación', state: 'todo', note: 'Después del viaje' }, { label: 'Cierre', state: 'todo', note: 'Contabilidad' }] },
     summaries: [
       // DATO DEMO: presupuesto de la Dirección General Adjunta (valores sintéticos; mismo componente y umbrales que Dirección).
-      { scope: 'organizational', monitorCta: true, title: 'Presupuesto de viáticos · Dirección General Adjunta', kpis: [{ label: 'Planeado 2026', value: '$800,000', hint: 'Dirección General Adjunta' }, { label: 'Ejercido', value: '$296,000', hint: 'Gasto comprobado y contabilizado' }, { label: 'Comprometido', value: '$472,000', hint: 'Incluye lo ejercido y las reservas vigentes' }, { label: 'PRE disponible', value: '$328,000', hint: 'Planeado − Estimado · 59 % utilizado', tone: 'verde' }] },
+      { scope: 'organizational', monitorCta: true, presEntity: 'Dirección General Adjunta', title: 'Presupuesto de viáticos · Dirección General Adjunta', kpis: [] },
       { scope: 'operational', title: 'Autorizaciones pendientes', kpis: [{ label: 'Autorizaciones de viaje pendientes', value: '1', tone: 'azul' }, { label: 'Representación por autorizar', value: '2', tone: 'azul' }, { label: 'Comprobaciones DGA por revisar', value: '1' }] }
     ],
     trays: [{ title: 'Pendientes de autorización', count: 4, cta: 'Ver todos', target: 'aut-rep', columns: 'operationalOrg', detalleMeaning: 'Tipo de autorización · concepto · fecha · monto', filters: ['status', 'org'], rows: [
@@ -371,9 +381,9 @@ const NOTICES = {
     { id: 'n3', text: 'Vuelo del folio 00043 confirmado. Descarga tu itinerario.', target: 'vuelo', when: '11 jun', unread: false, tone: 'verde' }
   ],
   u02: [{ id: 'n1', text: 'La solicitud folio 00044 de Mariana López Cruz (viajero externo) está pendiente de comprobación; vence en 3 días.', target: 'externos', when: 'ayer 17:30', unread: true, tone: 'amarillo' }],
-  u03: [{ id: 'n1', text: 'Nueva solicitud folio 00045 de Fernando Miranda Ruiz por autorizar.', target: 'aut-viaje', when: 'Hace 2 h', unread: true, tone: 'azul' }, { id: 'n2', text: 'Presupuesto de HSM Chihuahua al 76 % de utilización.', target: 'pres-monitor', when: 'hoy 07:00', unread: true, tone: 'amarillo' }],
+  u03: [{ id: 'n1', text: 'Nueva solicitud folio 00045 de Fernando Miranda Ruiz por autorizar.', target: 'aut-viaje', when: 'Hace 2 h', unread: true, tone: 'azul' }, { id: 'n2', text: 'Presupuesto de HSM Chihuahua al 76 % de utilización.', target: 'pres-monitor', presEntity: 'HSM Chihuahua', when: 'hoy 07:00', unread: true, tone: 'amarillo' }],
   u04: [{ id: 'n1', text: 'Nueva solicitud folio 00046 de Denisse Pérez Arango por autorizar.', target: 'aut-viaje', when: 'Hace 40 min', unread: true, tone: 'azul' }],
-  u05: [{ id: 'n1', text: 'Solicitud folio 00039 escalada: Dirección de HSM Monterrey vacante.', target: 'aut-viaje', when: 'Hace 5 h', unread: true, tone: 'azul' }],
+  u05: [], // aviso fijo de vacante retirado (2026-10-13): los avisos de autorización salen del modelo canónico (US-09).
   u06: [{ id: 'n1', text: 'Gasto de representación folio 00036 de Mónica Herrera Luna requiere tu autorización previa.', target: 'aut-rep', when: 'Hace 3 h', unread: true, tone: 'azul' }],
   u07: [{ id: 'n1', text: 'Nueva solicitud de hospedaje folio 00045 para el 22 jun.', target: 'res-hsm', when: 'Hace 2 h', unread: true, tone: 'azul' }],
   u08: [],
@@ -432,15 +442,15 @@ const I = {
 };
 const ICONS = {
   inicio: I.home, creacion: I.plus, misviajes: I.suitcase, anticipo: I.money, hospedaje: I.bed, vuelo: I.plane, comprobacion: I.fileCheck, representacion: I.receipt,
-  perfil: I.user, externos: I.userPlus, 'pres-monitor': I.chart, 'pres-act': I.refresh,
-  'aut-viaje': I.checkCircle, 'aut-rep': I.receipt, 'aut-comp': I.fileCheck,
+  perfil: I.user, externos: I.userPlus, 'pres-monitor': I.chart,
+  'aut-viaje': I.checkCircle, 'aut-ant': I.money, 'aut-rep': I.receipt, 'aut-comp': I.fileCheck,
   'res-hsm': I.hospital, 'res-hotel': I.hotel, 'ges-comp': I.fileCheck,
   'con-plan': I.list, 'con-ant': I.money, 'con-comp': I.fileCheck, 'con-rep': I.receipt,
   encuestas: I.survey, dashboard: I.grid, reportes: I.fileText,
   'adm-perfiles': I.users, 'adm-catalogos': I.book, 'adm-politicas': I.shield, 'adm-usuarios': I.key, 'adm-bitacora': I.history,
   'ayu-politicas': I.shield, 'ayu-guia': I.help, 'ayu-encuesta': I.survey
 };
-const ICON_NAMES = { inicio:'home', creacion:'plus', misviajes:'briefcase', anticipo:'dollar-sign', hospedaje:'bed', vuelo:'plane', comprobacion:'file-check', representacion:'receipt', perfil:'user', externos:'user-plus', 'pres-monitor':'bar-chart', 'pres-act':'refresh-cw', 'aut-viaje':'check-circle', 'aut-rep':'receipt', 'aut-comp':'file-check', 'res-hsm':'hospital', 'res-hotel':'hotel', 'ges-comp':'file-check', 'con-plan':'list', 'con-ant':'dollar-sign', 'con-comp':'file-check', 'con-rep':'receipt', encuestas:'message-square-dots', dashboard:'layout-grid', reportes:'file-text', 'adm-perfiles':'users', 'adm-catalogos':'book-open', 'adm-politicas':'shield', 'adm-usuarios':'key', 'adm-bitacora':'history', 'ayu-politicas':'shield', 'ayu-guia':'help-circle', 'ayu-encuesta':'message-square-dots' };
+const ICON_NAMES = { inicio:'home', creacion:'plus', misviajes:'briefcase', anticipo:'dollar-sign', hospedaje:'bed', vuelo:'plane', comprobacion:'file-check', representacion:'receipt', perfil:'user', externos:'user-plus', 'pres-monitor':'bar-chart', 'aut-viaje':'check-circle', 'aut-ant':'dollar-sign', 'aut-rep':'receipt', 'aut-comp':'file-check', 'res-hsm':'hospital', 'res-hotel':'hotel', 'ges-comp':'file-check', 'con-plan':'list', 'con-ant':'dollar-sign', 'con-comp':'file-check', 'con-rep':'receipt', encuestas:'message-square-dots', dashboard:'layout-grid', reportes:'file-text', 'adm-perfiles':'users', 'adm-catalogos':'book-open', 'adm-politicas':'shield', 'adm-usuarios':'key', 'adm-bitacora':'history', 'ayu-politicas':'shield', 'ayu-guia':'help-circle', 'ayu-encuesta':'message-square-dots' };
 
 // GLYPHS = catálogo local de iconos por nombre (un solo origen para toda la interfaz; sin CDN ni dependencias externas).
 // ORDEN DEL MENÚ POR ROL (solo presentación; regla 265): reordena opciones dentro de un grupo. No cambia permisos, rutas ni visibilidad.

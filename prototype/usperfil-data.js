@@ -189,7 +189,9 @@ const REGLAS_EXC = [
   { id: 'r5', label: 'Semanas máximas por mes', kind: 'int', unidad: 'semanas', policy: 'semanasMes' },
   { id: 'r7', label: 'Días máximos por viaje', kind: 'int', unidad: 'días', policy: 'diasMax' },
   // Antelación mínima para solicitar: su valor base es el PARÁMETRO GLOBAL (no el perfil); la excepción individual vigente lo sustituye (manager 2026-10-05).
-  { id: 'r12', label: 'Antelación mínima para solicitar', kind: 'int', unidad: 'días', policy: 'antelacion', base: 'global' }
+  { id: 'r12', label: 'Antelación mínima para solicitar', kind: 'int', unidad: 'días', policy: 'antelacion', base: 'global' },
+  // US-14 (alineación 25/09/2026): «Monto máximo = tarifa Anticipo del perfil o la excepción vigente» → excepción individual del tope del anticipo.
+  { id: 'r14', label: 'Monto máximo de anticipo', kind: 'money', unidad: 'monto máximo autorizado', policy: 'tarifa:c4' }
 ];
 const EXCEPCIONES = [
   { id: 'e1', userId: 'u01', regla: 'r1', politica: 5, valor: 10,
@@ -207,7 +209,11 @@ const EXCEPCIONES = [
   // DEMO: excepción individual de antelación (parámetro global 5 → 2 días) para demostrar la precedencia excepción > parámetro global.
   { id: 'e5', userId: 'u02', regla: 'r12', politica: 5, valor: 2,
     from: '01/10/2026', to: '31/12/2026', motivo: 'Coberturas de supervisión que se programan con aviso corto',
-    documento: 'Autorización-CHCO-2026-022.pdf', by: 'Sofía Delgado Marín', when: '30/09/2026 10:15', revoked: false }
+    documento: 'Autorización-CHCO-2026-022.pdf', by: 'Sofía Delgado Marín', when: '30/09/2026 10:15', revoked: false },
+  // DEMO US-14: excepción individual del tope del anticipo (Operativo 8,000 → 9,000): el origen «Excepción individual» se ve en la propuesta.
+  { id: 'e6', userId: 'u09', regla: 'r14', politica: 8000, valor: 9000,
+    from: '01/10/2026', to: '31/12/2026', motivo: 'Auditorías en sitio con agendas de semana completa',
+    documento: 'Autorización-DGA-2026-027.pdf', by: 'Sofía Delgado Marín', when: '30/09/2026 12:40', revoked: false }
 ];
 
 // ---------------------------------------------------------------------------

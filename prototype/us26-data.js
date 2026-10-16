@@ -61,8 +61,8 @@ const SECTIONS = [
 const SECTION_OF = {
   inicio: null, cerrar: null,
   creacion: 's1', misviajes: 's1', anticipo: 's1', hospedaje: 's1', vuelo: 's1', comprobacion: 's1', representacion: 's1',
-  perfil: 's2', externos: 's3', 'pres-monitor': 's4', 'pres-act': 's4',
-  'aut-viaje': 's5', 'aut-rep': 's5', 'aut-comp': 's5', 'res-hsm': 's6', 'res-hotel': 's6', 'ges-comp': 's7',
+  perfil: 's2', externos: 's3', 'pres-monitor': 's4',
+  'aut-viaje': 's5', 'aut-ant': 's5', 'aut-rep': 's5', 'aut-comp': 's5', 'res-hsm': 's6', 'res-hotel': 's6', 'ges-comp': 's7',
   'con-plan': 's8', 'con-ant': 's8', 'con-comp': 's8', 'con-rep': 's8', encuestas: 's9',
   dashboard: 's10', reportes: 's10',
   'adm-perfiles': 's11', 'adm-catalogos': 's11', 'adm-politicas': 's11', 'adm-usuarios': 's11', 'adm-bitacora': 's12',
@@ -75,13 +75,19 @@ const ACTIONS = [
   { code: 'CO', label: 'Consultar' }, { code: 'CR', label: 'Crear' }, { code: 'ED', label: 'Editar' },
   { code: 'EL', label: 'Eliminar' }, { code: 'AU', label: 'Autorizar' },
   // Acciones especializadas que SÍ corresponden a una operación propia del negocio:
-  { code: 'VA', label: 'Validar' }, { code: 'CF', label: 'Configurar' }
+  { code: 'VA', label: 'Validar' }, { code: 'CF', label: 'Configurar' },
+  // Presupuesto › Monitor: ver Movimientos presupuestales (Carga inicial · Suplemento · Bloqueo). Viáticos no la tiene (cliente 2026-10-13).
+  { code: 'MP', label: 'Ver movimientos presupuestales' },
+  // Contabilización › Solicitud de anticipo (US-15): propuesta de pago a Tesorería, confirmación de transferencias y devoluciones bancarias.
+  { code: 'PG', label: 'Procesar pago' },
+  // Autorización › Aprobación de viaje (cliente 2026-10-15): Viáticos cambia el estatus de una solicitud resuelta (Aprobada ↔ Rechazada) con motivo y bitácora.
+  { code: 'CE', label: 'Cambiar estatus' }
 ];
 // Desglose de los antiguos «Gestionar» y «Administrar»:
 // · Reservaciones (HSM / hotel y vuelos) → registrar y corregir reservas = Crear + Editar.
 // · Gestión de comprobaciones y Contabilidad → revisar y dar por buena la documentación = Validar
 //   (verbo del flujo aprobado: revisión de comprobaciones), con Consultar para la consulta.
-// · Actualización presupuestal → cargar y corregir cifras = Editar.
+// · Presupuesto · Monitor (única opción; incluye la antigua Actualización) → Consultar + Editar (cargar archivo, liberación manual, cerrar vigencia) + Ver movimientos presupuestales.
 // · Encuestas → publicar y corregir cuestionarios = Crear + Editar.
 // · Viajeros externos → alta, corrección y baja del registro = Crear + Editar + Eliminar.
 // · Módulos de administración → «Administrar» era configuración del módulo = Configurar
@@ -91,10 +97,10 @@ const ITEM_ACTIONS = {
   creacion: ['CO', 'CR'], misviajes: ['CO'], anticipo: ['CO', 'CR'], hospedaje: ['CO', 'CR'], vuelo: ['CO', 'CR'], comprobacion: ['CO', 'CR'], representacion: ['CO', 'CR'],
   perfil: ['CO'],
   externos: ['CO', 'CR', 'ED', 'EL'],
-  'pres-monitor': ['CO'], 'pres-act': ['CO', 'ED'],
-  'aut-viaje': ['CO', 'AU'], 'aut-rep': ['CO', 'AU'], 'aut-comp': ['CO', 'AU'],
+  'pres-monitor': ['CO', 'ED', 'MP'],
+  'aut-viaje': ['CO', 'AU', 'CE'], 'aut-ant': ['CO', 'AU'], 'aut-rep': ['CO', 'AU'], 'aut-comp': ['CO', 'AU'],
   'res-hsm': ['CO', 'CR', 'ED'], 'res-hotel': ['CO', 'CR', 'ED'], 'ges-comp': ['CO', 'VA'],
-  'con-plan': ['CO', 'VA'], 'con-ant': ['CO', 'VA'], 'con-comp': ['CO', 'VA'], 'con-rep': ['CO', 'VA'], encuestas: ['CO', 'CR', 'ED'],
+  'con-plan': ['CO', 'VA'], 'con-ant': ['CO', 'VA', 'PG'], 'con-comp': ['CO', 'VA'], 'con-rep': ['CO', 'VA'], encuestas: ['CO', 'CR', 'ED'],
   dashboard: ['CO'], reportes: ['CO'], 'adm-bitacora': ['CO'],
   'adm-perfiles': ['CO', 'CR', 'ED', 'CF'], 'adm-catalogos': ['CO', 'CR', 'ED', 'CF'], 'adm-politicas': ['CO', 'CR', 'ED', 'CF'], 'adm-usuarios': ['CO', 'CR', 'ED', 'CF'],
   'ayu-politicas': ['CO'], 'ayu-guia': ['CO'], 'ayu-encuesta': ['CO', 'CR']

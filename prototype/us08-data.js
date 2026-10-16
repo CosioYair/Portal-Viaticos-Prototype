@@ -66,16 +66,8 @@ function estados() { return CAT().ESTADOS_VIGENTES || []; }
 // CONCEPTOS DEL GASTO ESTIMADO = columna «Solicitud» del catálogo de documentos (CLIENT CONFIRMED). Ver uscat-data.js › CONCEPTOS_SOLICITUD.
 function conceptos() { return CAT().CONCEPTOS_SOLICITUD || []; }
 
-// PRE disponible por entidad presupuestal — SOLO para validar el envío (estimado + pendiente de aprobación ≤ disponible).
-// Nunca se muestra al colaborador: el monitor de presupuesto pertenece a los roles con responsabilidad presupuestal.
-const PRE_DISPONIBLE = {
-  'Dirección Comercial y de Negocios': 18000,
-  'HSM Chihuahua': 60000,
-  'Dirección de Capital Humano': 45000,
-  'Dirección de Operación Hospitalaria': 50000,
-  'Tecnologías de la Información': 30000,
-  'Corporativo': 80000
-};
+// PRE disponible por entidad: ya NO vive aquí. La fuente única es el modelo canónico de presupuesto (uspres-data.js › window.SMV_PRES),
+// que también alimenta el Inicio y el Monitor. El colaborador nunca ve cifras de la entidad (solo si admite nuevas solicitudes).
 
 // Hospitales con Dirección de Hospital vacante (la solicitud se dirige a Capital Humano Corporativo / «CH Central»).
 const DIRECCION_VACANTE = [];
@@ -93,7 +85,9 @@ const MENSAJES = {
   hospedajeHotel: 'El hospedaje se solicita en hotel; Viáticos lo gestiona al aprobarse la solicitud.',
   otroDestinoHotel: 'Con «Otro destino» el hospedaje es en hotel: al aprobarse se genera en automático la solicitud de hospedaje a Viáticos.',
   presupuestoEnvio: 'Al enviar, el estimado queda como pendiente de aprobación dentro del presupuesto de tu entidad; al aprobarse pasa a comprometido.',
-  presupuestoBloqueo: 'El estimado de tu viaje supera el disponible de tu entidad presupuestal (considerando las solicitudes pendientes de aprobación). La solicitud sigue En proceso con su folio: solicita a tu área un suplemento o cancélala.',
+  presupuestoBloqueo: 'El estimado de tu viaje supera el disponible de tu entidad presupuestal (considerando las solicitudes pendientes de aprobación). La solicitud no se envió y sigue En proceso con su folio y todos sus datos. Avisa a tu Director para que gestione un suplemento: cuando se aplique recibirás un aviso y podrás retomarla.',
+  presupuestoCambio: 'Al enviar se revalidó el presupuesto con el saldo de ese momento: durante la captura otra operación de tu entidad utilizó parte del disponible y el estimado de este viaje ya no cabe. La solicitud no se envió y sigue En proceso con su folio y todos sus datos. Avisa a tu Director para que gestione un suplemento.',
+  presupuestoNoDisponible: 'No fue posible consultar la disponibilidad presupuestal en este momento. La solicitud no se envió sin validar: sigue En proceso con su folio y todos sus datos. Vuelve a intentar la validación.',
   sinCuentaAlternativa: '',
   pagoAlternativa: 'Se registran únicamente los datos requeridos para identificar la cuenta alternativa. El Portal nunca solicita CVV, NIP ni contraseñas.',
   pagoCorporativa: 'Los gastos del viaje se pagan con la tarjeta corporativa del colaborador.',
@@ -115,7 +109,13 @@ const SEED_REQS = [
       { n: 2, desde: { id: 'h1104', label: 'HSM Ciudad Juárez' }, hasta: { id: 'h1125', label: 'HSM Monterrey' } } ] },
     gastos: [{ concepto: 'Hospedaje', importe: 5600, origen: 'tarifa' }, { concepto: 'Alimentos', importe: 1600, origen: 'tarifa' }, { concepto: 'Gasolina', importe: 1800, origen: 'captura' }, { concepto: 'Casetas', importe: 900, origen: 'captura' }],
     dest: 'HSM Ciudad Juárez · HSM Monterrey', fechas: '13/10/2026 – 15/10/2026', nights: '3 días · 2 noches', total: 9900, hasta: false,
-    firstLabel: 'Dirección Corporativa', exceso: false, when: '25/09/2026 12:40', at: 1, perfilFolio: 'Director',
+    firstLabel: 'Dirección Corporativa', exceso: false, when: '25/09/2026 12:40', at: 1, perfilFolio: 'Director', entidad: 'HSM Chihuahua',
+    pago: { metodo: 'debito', label: 'Tarjeta de débito', origen: 'SAP', referencia: '•••• 9054', texto: 'Tarjeta de débito · •••• 9054' },
+    justificacion: 'Supervisión de la operación de hospedaje y alimentos en HSM Ciudad Juárez y HSM Monterrey con el equipo de la red norte; el recorrido en auto permite visitar ambas unidades en la misma semana.',
+    observaciones: 'Salida 06:00 desde HSM Chihuahua; regreso por carretera federal 45.',
+    // DESVIACIÓN DEMO: hotel externo en HSM Monterrey con perfil cuyo hospedaje es en hospital → documento de autorización del excedente (evidencia de US-08).
+    excesos: ['Hospedaje: el perfil indica hospedaje en hospital; la solicitud pide hotel externo en los 2 destinos (ocupación de habitaciones del hospital por remodelación).'],
+    evidencia: [{ key: 'ev1', name: 'Agenda-supervision-red-norte.pdf' }, { key: 'exc', name: 'Autorizacion-hotel-externo-remodelacion-HSM.pdf' }],
     // VIAJE EN GRUPO (cliente 2026-10-06): cada acompañante interno tiene SU PROPIA solicitud ligada por grupo.
     grupo: 'G-00050', rolGrupo: 'origen', participantes: [{ personId: 'u01', folio: '00051' }, { personId: 'u02', folio: '00052' }],
     acompanantes: [{ personId: 'u02', addedAt: '25/09/2026 12:31', addedBy: 'u03' }, { personId: 'u01', addedAt: '25/09/2026 12:32', addedBy: 'u03' }] },
@@ -130,7 +130,7 @@ const SEED_REQS = [
     dest: 'HSM Ciudad Juárez · HSM Monterrey', fechas: '13/10/2026 – 15/10/2026', nights: '3 días · 2 noches', motivo: 'Operación', motivoCode: 'OPER', acompanantes: [],
     grupo: 'G-00050', rolGrupo: 'acompanante', origenFolio: '00050', origenUid: 'u03',
     gastos: [{ concepto: 'Hospedaje', importe: 0, origen: 'tarifa' }, { concepto: 'Alimentos', importe: 1600, origen: 'tarifa' }], total: 1600, hasta: false, perfilFolio: 'Mando medio', entidad: 'Dirección Comercial y de Negocios',
-    firstLabel: '', cadena: [], exceso: false, when: '25/09/2026 12:40', at: 2 },
+    firstLabel: '', cadena: [], exceso: false, when: '25/09/2026 12:40', at: 2, pago: { metodo: 'debito', label: 'Tarjeta de débito', origen: 'SAP', referencia: '•••• 2205', texto: 'Tarjeta de débito · •••• 2205' }, justificacion: 'Acompaña la supervisión de la red norte para el seguimiento comercial en ambas unidades.' },
   { folio: '00052', uid: 'u02', userId: 'u02', status: 'pendAut', segmentos: [
       { n: 1, tipo: 'hospital', id: 'h1104', hospId: '1104', label: 'HSM Ciudad Juárez', inicio: '13/10/2026', fin: '14/10/2026', dias: 2, noches: 1, medio: 'Auto particular', comidas: ['Cena'], hospAlim: true, hospedaje: 'hospital' },
       { n: 2, tipo: 'hospital', id: 'h1125', hospId: '1125', label: 'HSM Monterrey', inicio: '14/10/2026', fin: '15/10/2026', dias: 2, noches: 1, medio: 'Auto particular', comidas: ['Cena'], hospAlim: true, hospedaje: 'hospital' } ],
@@ -140,7 +140,9 @@ const SEED_REQS = [
     dest: 'HSM Ciudad Juárez · HSM Monterrey', fechas: '13/10/2026 – 15/10/2026', nights: '3 días · 2 noches', motivo: 'Operación', motivoCode: 'OPER', acompanantes: [],
     grupo: 'G-00050', rolGrupo: 'acompanante', origenFolio: '00050', origenUid: 'u03',
     gastos: [{ concepto: 'Hospedaje', importe: 0, origen: 'tarifa' }, { concepto: 'Alimentos', importe: 1600, origen: 'tarifa' }], total: 1600, hasta: false, perfilFolio: 'Mando medio', entidad: 'HSM Chihuahua',
-    firstLabel: 'Dirección de Hospital', cadena: [{ label: 'Dirección de Hospital', person: 'Fernando Miranda Ruiz' }], exceso: false, when: '26/09/2026 09:10', at: 3 },
+    // Cadena por estructura de SAP (HSM Chihuahua 1114: director u03 → autorizador corporativo ZA02 u04); corregido 2026-10-13 (antes nombraba a una persona inexistente en el registro).
+    firstLabel: 'Dirección de Hospital (Ricardo Fuentes Ávila)', cadena: [{ label: 'Dirección de Hospital', person: 'Ricardo Fuentes Ávila' }, { label: 'Dirección Corporativa', person: 'Mónica Herrera Luna' }], cadenaIds: ['u03', 'u04'],
+    cadenaInfo: [{ ctx: 'HSM Chihuahua · director del hospital (función 80001076)' }, { ctx: 'Dirección Comercial y de Negocios · autorizador corporativo de la unidad organizativa (ZA02)' }], decisiones: [], exceso: false, when: '26/09/2026 09:10', at: 3, pago: { metodo: 'debito', label: 'Tarjeta de débito', origen: 'SAP', referencia: '•••• 6612', texto: 'Tarjeta de débito · •••• 6612' }, justificacion: 'Acompaña la supervisión de la red norte para el seguimiento de capital humano en ambas unidades.', evidencia: [{ key: 'ev1', name: 'Agenda-supervision-red-norte.pdf' }] },
   // SOLICITUDES A NOMBRE DE VIAJEROS EXTERNOS (mismo modelo de solicitud/segmentos): uid = travelerId = id del registro de externos (nunca un usuario del Portal),
   // createdBy = usuario de Capital Humano HSM que captura y opera · respId = colaborador responsable (entidad presupuestal) · dirCorpId = Dirección Corporativa elegida en pantalla.
   // Sin anticipo (etapa «No aplica · viajero externo»); cadena Dirección de Hospital → Dirección Corporativa seleccionada → Capital Humano Corporativo.
@@ -163,5 +165,5 @@ const SEED_REQS = [
 const COMPROBACION_TRANSPORTE_ACOMPANANTE = ['Taxi'];
 
 return { COMPROBACION_TRANSPORTE_ACOMPANANTE, PARAMS, get MOTIVOS() { return motivos(); }, motivoCode, MOTIVOS_HOSPITAL_FORZOSO, MOTIVOS_OTRO_DESTINO, hospedajeDe, CAPACITACION_PERFILES,
-  get DESTINOS() { return destinos(); }, get ESTADOS_DESTINO() { return estadosDestino(); }, get ESTADOS() { return estados(); }, get CONCEPTOS() { return conceptos(); }, PRE_DISPONIBLE, DIRECCION_VACANTE, MENSAJES, SEED_REQS, FORMAS_PAGO, TIPOS_TARJETA, CUENTA_ALT_DIGITOS };
+  get DESTINOS() { return destinos(); }, get ESTADOS_DESTINO() { return estadosDestino(); }, get ESTADOS() { return estados(); }, get CONCEPTOS() { return conceptos(); }, DIRECCION_VACANTE, MENSAJES, SEED_REQS, FORMAS_PAGO, TIPOS_TARJETA, CUENTA_ALT_DIGITOS };
 })();

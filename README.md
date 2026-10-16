@@ -1,15 +1,11 @@
 # Portal de Viáticos 2.0 — prototipo de referencia (código fuente)
 
-**Cliente:** Starmedica · **Estado (2026-10-08 · snapshot acumulado):**
-- **US-01 — Layout y navegación por rol · APPROVED · CLOSED · FULLY SYNCED**
-- **US-02 — Pantallas de Inicio · APPROVED · CLOSED · FULLY SYNCED** — referencia: `docs/HOME_VISIBILITY_MATRIX.md`, `docs/US02_DESIGN_NOTES.md`.
-- **US-03 — Administración de perfiles de viajero · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — Perfiles · Tarifas · Excepciones (`src/features/traveler-profile/`, `src/data/traveler-profiles.json`); referencia: `docs/TRAVELER_PROFILE_MODEL.md` y el PDF «Propuesta visual (US-03 - Administración de perfiles de viajero)».
-- **US-04 — Ficha del viajero y asignación de perfil · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — Colaboradores · ficha · asignación individual y masiva (`src/features/traveler-profile/collaborators.js`); PDF «Propuesta visual (US-04 - Ficha del viajero y asignación de perfil)».
-- **US-05 — Viajeros externos · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — registro, ficha, alta/edición, desactivar/reactivar y selección en Creación (`src/features/external-travelers/externals.js`, `src/data/externals.json`); PDF «Propuesta visual (US-05 - Viajeros externos)».
-- **US-08 — Creación de solicitud de viaje · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — `src/features/travel-request/request.js`; PDF «Propuesta visual (US-08 - Creación de solicitud de viaje)».
-- **US-10 — Mis viajes · APPROVED · CLOSED · FULLY SYNCED (2026-10-08)** — `src/features/my-trips/trips.js`; PDF «Propuesta visual (US-10 - Mis viajes)».
-- **US-25 — Usuarios y permisos / Bitácora (histórico US-26) · APPROVED · CLOSED · FULLY SYNCED (2026-10-09)** — `src/features/users-permissions/access.js`; incluye Composición del Inicio por rol y Hospitales que atiende; PDF «Propuesta visual (US-25 - Usuarios y permisos / Bitácora)».
-- Historias aún en revisión (REVIEW MODE · SYNC PENDING), incluidas en el **prototipo completo** (`prototype/`) pero NO aprobadas: US-08 Creación de solicitud de viaje, US-10 Mis viajes, US-26 Usuarios y permisos / Bitácora, catálogos y tarifas del libro V1, composición del Inicio por rol. Se portan a `src/` al finalizar cada historia.
+**Cliente:** Starmedica · **Estado (2026-10-15 · snapshot acumulado):**
+- **US-01 Layout y navegación por rol · US-02 Inicio · US-03 Perfiles de viajero · US-04 Ficha del viajero · US-05 Viajeros externos · US-08 Creación de solicitud · US-10 Mis viajes · US-25 Usuarios y permisos / Bitácora** — APPROVED · CLOSED · FULLY SYNCED.
+- **US-06 — Disponibilidad presupuestal y bloqueo de creación de viaje · APPROVED · CLOSED (2026-10-15) · SYNCED en este snapshot** — PDF «Propuesta visual (US-06 …)».
+- **US-07 — Administración del presupuesto: carga, suplementos y monitor · APPROVED · CLOSED (2026-10-15) · SYNCED en este snapshot** — PDF «Propuesta visual (US-07 …)».
+  Modelo canónico: `src/features/budget/budget-model.js` (= `prototype/uspres-data.js`, `window.SMV_PRES`); referencia `docs/BUDGET_MODEL.md`.
+- **En revisión (REVIEW MODE · SYNC PENDING)** — incluidas en `prototype/` pero NO aprobadas: **US-09 Aprobación de viaje** (`prototype/us09-data.js`), **US-14 / US-15 Anticipo** (`prototype/us14-data.js`), propuestas del equipo de desarrollo 2026-10-07, corrección semántica DGA (reglas 323–326), catálogos y tarifas del libro V1, estándares globales 305–315/327/389–391. Estar en el snapshot NO las aprueba.
 
 Este proyecto es el **ÚNICO código fuente acumulado** del Portal: las historias siguientes lo extienden; nunca se rehace US-01 ni US-02.
 
@@ -32,7 +28,7 @@ npm run start:python       # alternativa Python 3
 ## Dónde está cada cosa
 ```
 index.html                      documento de entrada (estilos + src/app.js)
-prototype/                      SNAPSHOT del prototipo aprobado/vigente: Portal Viaticos.dc.html + datos (us01/us26/usperfil/us08/uscat-data.js) + imágenes; referencia de todo lo no portado a src/
+prototype/                      SNAPSHOT del prototipo vigente (2026-10-15): Portal Viaticos.dc.html + datos (us01/us26/usperfil/us08/us09/us14/uspres/uscat-data.js) + imágenes; referencia de todo lo no portado a src/
 public/assets/branding/         logo-starmedica.png — logo REAL (no redibujar ni sustituir)
 public/assets/icons/*.svg       un archivo por icono (mismos nombres que src/config/icons.js)
 public/assets/users/            demo-profile-user.jpg — fotografía DEMO proporcionada por el cliente para la maqueta
@@ -43,6 +39,7 @@ src/
   layout/portal-layout.js       shell: estado, encabezado, menú de cuenta, avisos, barra de mensajes, estados
   layout/navigation.js          resolución de permisos (canSee / resolveNavigation) + sidebar + drawer móvil
   features/home/home.js|.css    pantalla Inicio (viaje propio, resumen según rol/ámbito, bandejas)
+  features/budget/budget-model.js  modelo canónico de presupuesto (US-06/US-07): entidades, bolsas por llave de carga, movimientos presupuestales y de bolsa, disponibilidad mensual, alertas
   features/traveler-profile/    Administración › Perfiles de viajero (US-03): admin.js (pestañas Perfiles · Tarifas · Excepciones + simulador) · rules.js (resolver de valor efectivo, estados, validaciones, simulador) · traveler-profile.css
   data/traveler-profiles.json   modelo único de perfiles, conceptos, tarifas, parámetros globales, taxi, reglas exceptuables, excepciones y asignaciones
   shared/journey-progress.js    ÚNICO indicador de etapas del viaje (4 etapas canónicas) — futuro componente Angular compartido
