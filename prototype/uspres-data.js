@@ -26,7 +26,7 @@ const CONFIG = {
 };
 
 // --- Catálogos de apoyo para la carga de bolsas (DATOS DEMO centralizados; los catálogos oficiales de CECO, cuentas y tipo de
-// empleado vienen de SAP y están PENDIENTES). Selectores dependientes: sociedad → entidad (Hospital / Dirección Corporativa) → CECO.
+// empleado vienen del ERP y están PENDIENTES). Selectores dependientes: sociedad → entidad (Hospital / Dirección Corporativa) → CECO.
 const CECOS = {
   'HSM Chihuahua': ['CECO 2001-HSMCH', 'CECO 2210-HSMCH', 'CECO 2305-HSMCH'],
   'HSM Querétaro': ['CECO 2001-HSMQRO', 'CECO 2210-HSMQRO'],
@@ -39,7 +39,7 @@ const CECOS = {
 // CATÁLOGO DE ENTIDADES PARA ALTA DE BOLSAS = el MISMO de las demás pantallas: hospitales de «Cat. Hospital» (uscat-data.js ›
 // HOSPITALES, confirmado por el cliente; se muestran con su alias) + las Direcciones Corporativas del modelo. Sociedad = «Cat. RFC»
 // (uscat-data.js › SOCIEDADES). La sociedad de cada hospital del catálogo es 1100 (Star Médica S.A. de C.V.) — supuesto DEMO
-// centralizado aquí: la relación oficial sociedad → hospital / dirección viene de SAP y está PENDIENTE.
+// centralizado aquí: la relación oficial sociedad → hospital / dirección viene del ERP y está PENDIENTE.
 const CAT = () => window.SMV_CAT || {};
 function entidadesCatalogo() {
   const hs = (CAT().HOSPITALES || []).filter(h => h.tipo === 'hospital').map(h => ({ id: h.alias, tipo: 'Hospital', sociedad: '1100', director: null, hospId: h.id }));
@@ -50,7 +50,7 @@ function entidadesCatalogo() {
 function cecosDe(entidad) {
   if (CECOS[entidad]) return CECOS[entidad];
   const e = entidadesCatalogo().find(x => x.id === entidad); if (!e) return [];
-  // CECO demo con la clave del hospital del catálogo (catálogo oficial de CECO de SAP PENDIENTE).
+  // CECO demo con la clave del hospital del catálogo (catálogo oficial de CECO del ERP PENDIENTE).
   return e.hospId ? ['CECO 2001-' + e.hospId, 'CECO 2210-' + e.hospId] : [];
 }
 const CUENTAS = ['6101-001 · Viáticos nacionales', '6101-002 · Viáticos internacionales'];
@@ -65,7 +65,7 @@ const BLOQUEOS = [
 
 // --- Entidades presupuestales: Hospital y Dirección Corporativa son entidades DISTINTAS (nunca un campo mixto) ---
 // director = destinatario de «Avisar a mi Director» y de las alertas de la entidad (SUPUESTO DEMO centralizado: la regla
-// exacta de destinatario — estructura de SAP / línea de reporte — está pendiente).
+// exacta de destinatario — estructura del ERP / línea de reporte — está pendiente).
 const ENTIDADES = [
   { id: 'HSM Chihuahua', tipo: 'Hospital', sociedad: '1100', director: 'u03' },
   { id: 'HSM Querétaro', tipo: 'Hospital', sociedad: '1100', director: null },
@@ -138,7 +138,7 @@ BOLSAS.forEach(b => { const v = vigenciaDe(b); b.desde = v.desde; b.hasta = b.es
 // Llave única de bolsa (combinación de la carga por ejercicio).
 const llave = b => [b.sociedad, b.division, b.ceco, b.ctaMayor, b.posPpto, b.cebe, b.anio].map(x => String(x || '').trim().toUpperCase()).join('|');
 // División → entidad presupuestal: hospital = su hospital del «Cat. Hospital» (por clave de división o por Nombre de la Div.);
-// la división corporativa (11NM · SM CORPO) se reparte por CeBe/CECO a las Direcciones Corporativas (tabla DEMO; la oficial viene de SAP).
+// la división corporativa (11NM · SM CORPO) se reparte por CeBe/CECO a las Direcciones Corporativas (tabla DEMO; la oficial viene del ERP).
 const DIVISIONES = { '14CH': 'HSM Chihuahua', '13QR': 'HSM Querétaro' };
 const CORP_CEBE = { ADS: 'Dirección General Adjunta', CEP: 'Dirección Comercial y de Negocios', CEG: 'Dirección de Capital Humano', DAD: 'Corporativo', TIN: 'Tecnologías de la Información' };
 function entidadDeCarga(r) {
@@ -168,18 +168,18 @@ const MOVIMIENTOS = [
   { id: 'M-0009', when: '28/01/2026 11:02', bolsa: 'B-COM-01', tipo: 'Liberación por cancelación', importe: -15500, folio: '00024', uid: 'u01', evento: 'Cancelación del folio', actor: 'Proceso automático', actorRol: 'Sistema', fuente: 'Portal', origen: 'Proceso' },
   { id: 'M-0010', when: '02/03/2026 10:45', bolsa: 'B-COM-01', tipo: 'Reserva', importe: 8700, folio: '00031', uid: 'u01', evento: 'Aprobación de la planeación del viaje', actor: 'Mónica Herrera Luna', actorRol: 'Dirección Corporativa', fuente: 'Portal', origen: 'APP' },
   { id: 'M-0011', when: '12/03/2026 13:30', bolsa: 'B-CHI-01', tipo: 'Reserva', importe: 7800, folio: '00027', uid: 'u03', evento: 'Aprobación de la planeación del viaje', actor: 'Proceso automático', actorRol: 'Sistema', fuente: 'Portal', origen: 'Proceso' },
-  { id: 'M-0012', when: '28/03/2026 18:10', bolsa: 'B-COM-01', tipo: 'Comprobación', importe: 8700, folio: '00031', uid: 'u01', evento: 'Contabilización de la comprobación', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'SAP', origen: 'Web' },
-  { id: 'M-0013', when: '08/04/2026 12:00', bolsa: 'B-CHI-01', tipo: 'Comprobación', importe: 7650, folio: '00027', uid: 'u03', evento: 'Contabilización de la comprobación', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'SAP', origen: 'Web' },
+  { id: 'M-0012', when: '28/03/2026 18:10', bolsa: 'B-COM-01', tipo: 'Comprobación', importe: 8700, folio: '00031', uid: 'u01', evento: 'Contabilización de la comprobación', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'ERP', origen: 'Web' },
+  { id: 'M-0013', when: '08/04/2026 12:00', bolsa: 'B-CHI-01', tipo: 'Comprobación', importe: 7650, folio: '00027', uid: 'u03', evento: 'Contabilización de la comprobación', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'ERP', origen: 'Web' },
   { id: 'M-0014', when: '10/06/2026 16:25', bolsa: 'B-COM-01', tipo: 'Reserva', importe: 9090, folio: '00043', uid: 'u01', evento: 'Aprobación de la planeación del viaje', actor: 'Mónica Herrera Luna', actorRol: 'Dirección Corporativa', fuente: 'Portal', origen: 'Web' },
-  { id: 'M-0015', when: '12/06/2026 09:40', bolsa: 'B-COM-01', tipo: 'Anticipo', importe: 9090, folio: '00043', uid: 'u01', evento: 'Transferencia del anticipo', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'SAP', origen: 'Web' },
+  { id: 'M-0015', when: '12/06/2026 09:40', bolsa: 'B-COM-01', tipo: 'Anticipo', importe: 9090, folio: '00043', uid: 'u01', evento: 'Transferencia del anticipo', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'ERP', origen: 'Web' },
   { id: 'M-0016', when: '12/06/2026 17:05', bolsa: 'B-COM-01', tipo: 'Reserva', importe: 6300, folio: '00048', uid: 'u04', evento: 'Aprobación de la planeación del viaje', actor: 'Pedro Medina', actorRol: 'DGA', fuente: 'Portal', origen: 'Web' },
   { id: 'M-0017', when: '14/06/2026 10:15', bolsa: 'B-CHI-02', tipo: 'Reserva', importe: 800, folio: '00040', ext: 'x02', evento: 'Aprobación de la planeación del viaje', actor: 'Ricardo Fuentes Ávila', actorRol: 'Dirección de Hospital', fuente: 'Portal', origen: 'Web' },
   { id: 'M-0018', when: '20/06/2026 08:30', bolsa: 'B-DGA-01', tipo: 'Reserva', importe: 7400, folio: '00035', uid: 'u06', evento: 'Aprobación al capturar (DGA, sin superior)', actor: 'Proceso automático', actorRol: 'Sistema', fuente: 'Portal', origen: 'Proceso' },
   { id: 'M-0019', when: '04/07/2026 12:50', bolsa: 'B-COR-01', tipo: 'Reserva', importe: 6800, folio: '00034', uid: 'u13', evento: 'Aprobación de la planeación del viaje', actor: 'Alfredo Cacho', actorRol: 'Capital Humano Corporativo', fuente: 'Portal', origen: 'Web' },
-  { id: 'M-0020', when: '05/07/2026 09:20', bolsa: 'B-COR-01', tipo: 'Anticipo', importe: 1240, folio: '00034', uid: 'u13', evento: 'Transferencia del anticipo', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'SAP', origen: 'Web' },
+  { id: 'M-0020', when: '05/07/2026 09:20', bolsa: 'B-COR-01', tipo: 'Anticipo', importe: 1240, folio: '00034', uid: 'u13', evento: 'Transferencia del anticipo', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'ERP', origen: 'Web' },
   { id: 'M-0021', when: '25/09/2026 13:00', bolsa: 'B-QRO-01', tipo: 'Suplemento', importe: 60000, folio: '—', periodo: 'Septiembre 2026', carga: 'CAR-0002', archivo: 'ajustes-presupuesto-2026-09.csv', doc: 'autorizacion-suplemento-SM-QUERETARO-sep-2026.pdf', evento: 'Carga CAR-0002 · renglón 1 · Septiembre', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'Portal', origen: 'Web' },
   { id: 'M-0024', when: '25/09/2026 13:00', bolsa: 'B-COM-01', tipo: 'Bloqueo', importe: -10000, folio: '—', periodo: 'Diciembre 2026', carga: 'CAR-0002', archivo: 'ajustes-presupuesto-2026-09.csv', doc: 'autorizacion-bloqueo-SM-CORPO-CEP-dic-2026.pdf', evento: 'Carga CAR-0002 · renglón 2 · Diciembre', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'Portal', origen: 'Web' },
-  { id: 'M-0025', when: '20/07/2026 12:10', bolsa: 'B-COR-01', tipo: 'Comprobación', importe: 1180, folio: '00034', uid: 'u13', evento: 'Contabilización de la comprobación', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'SAP', origen: 'Web' },
+  { id: 'M-0025', when: '20/07/2026 12:10', bolsa: 'B-COR-01', tipo: 'Comprobación', importe: 1180, folio: '00034', uid: 'u13', evento: 'Contabilización de la comprobación', actor: 'Claudia Reyna Ortega', actorRol: 'Contabilidad / Tesorería', fuente: 'ERP', origen: 'Web' },
   { id: 'M-0022', when: '25/09/2026 13:20', bolsa: 'B-QRO-01', tipo: 'Reserva', importe: 9800, folio: '00026', evento: 'Aprobación de la planeación del viaje (folio desbloqueado tras el suplemento de septiembre)', actor: 'Alfredo Cacho', actorRol: 'Capital Humano Corporativo', fuente: 'Portal', origen: 'Web' },
   { id: 'M-0023', when: '30/09/2026 18:05', bolsa: 'B-COR-01', tipo: 'Reserva', importe: 7300, folio: '00022', uid: 'u13', evento: 'Aprobación de la planeación del viaje', actor: 'Alfredo Cacho', actorRol: 'Capital Humano Corporativo', fuente: 'Portal', origen: 'APP' }
 ];
@@ -227,7 +227,7 @@ function capMes(b, rows) {
     const add = (tipo, imp, k, fx, extra) => { if (!fx) folio++; const cut = b.anio < HOY.y ? 11 : HOY.k, wk = Math.min(k, cut), dd = 2 + Math.floor(rnd() * 25);
       const g = { id: 'G-' + b.id + '-' + folio, when: pad(dd) + '/' + pad(wk + 1) + '/' + b.anio + ' ' + pad(9 + Math.floor(rnd() * 9)) + ':' + pad(Math.floor(rnd() * 6) * 10), bolsa: b.id, tipo, importe: imp, folio: '00' + folio, viajeroNom: NOMBRES[Math.floor(rnd() * NOMBRES.length)], periodo: MESES[k] + ' ' + b.anio,
         evento: tipo === 'Anticipo' ? 'Transferencia del anticipo · pendiente de comprobar' : tipo === 'Comprobación' ? 'Contabilización de la comprobación' : 'Aprobación de la planeación del viaje',
-        actor: tipo === 'Reserva' ? 'Proceso automático' : 'Claudia Reyna Ortega', actorRol: tipo === 'Reserva' ? 'Sistema' : 'Contabilidad / Tesorería', fuente: tipo === 'Reserva' ? 'Portal' : 'SAP', origen: tipo === 'Reserva' ? 'Proceso' : 'Web', ...(extra || {}) };
+        actor: tipo === 'Reserva' ? 'Proceso automático' : 'Claudia Reyna Ortega', actorRol: tipo === 'Reserva' ? 'Sistema' : 'Contabilidad / Tesorería', fuente: tipo === 'Reserva' ? 'Portal' : 'ERP', origen: tipo === 'Reserva' ? 'Proceso' : 'Web', ...(extra || {}) };
       MOVIMIENTOS.push(g); };
     // Llenado cronológico mes a mes SIN exceder el presupuesto del mes: primero lo ejercido, luego lo en tránsito y al final las reservas.
     for (let k = 0; k < 12 && needE + needT + needR > 0; k++) {

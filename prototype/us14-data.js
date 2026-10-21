@@ -6,14 +6,14 @@ if (!window.SMV_ANT) { (function(){
 // en la semilla solo se declaran los importes que difieren de la propuesta (sol / aprobado).
 const SEG = (n, id, label, tipo, inicio, fin, dias, noches, medio, hospedaje, comidas, extra) => ({ n, tipo, id: 'h' + id, hospId: id, label, inicio, fin, dias, noches, medio, hospedaje, comidas, hospAlim: tipo === 'hospital', ...(extra || {}) });
 const RUTA = (origen, segs) => ({ origen, tramos: segs.map((s, i) => ({ n: s.n, desde: i ? { id: segs[i - 1].id, label: segs[i - 1].label } : origen, hasta: { id: s.id, label: s.label } })) });
-const DEB = ref => ({ metodo: 'debito', label: 'Tarjeta de débito', origen: 'SAP', referencia: '•••• ' + ref, texto: 'Tarjeta de débito · •••• ' + ref });
+const DEB = ref => ({ metodo: 'debito', label: 'Tarjeta de débito', origen: 'ERP', referencia: '•••• ' + ref, texto: 'Tarjeta de débito · •••• ' + ref });
 const CHI = { id: 'h1114', label: 'HSM Chihuahua' }, COR = { id: 'h1100', label: 'Corporativo' };
 const AV = (h, r) => ({ horaVueloAprox: h, vuelo: { tipo: 'redondo', horaRegreso: r, equipaje: 'mano' } });
 const CH_HOSP = { cadena: [{ label: 'Dirección de Hospital', person: 'Ricardo Fuentes Ávila' }, { label: 'Dirección Corporativa', person: 'Mónica Herrera Luna' }], cadenaIds: ['u03', 'u04'],
   cadenaInfo: [{ ctx: 'HSM Chihuahua · director del hospital (función 80001076)' }, { ctx: 'Dirección Comercial y de Negocios · autorizador corporativo de la unidad organizativa (ZA02)' }], firstLabel: 'Dirección de Hospital (Ricardo Fuentes Ávila)' };
 const CH_U01 = { cadena: [{ label: 'Director inmediato', person: 'Mónica Herrera Luna' }, { label: 'DGA', person: 'Pedro Medina' }], cadenaIds: ['u04', 'u06'],
-  cadenaInfo: [{ ctx: 'Directora Comercial y de Negocios · grupo E ED · estructura de SAP' }, { ctx: 'Dirección General Adjunta · el director inmediato es E ED' }], firstLabel: 'Director inmediato (Mónica Herrera Luna)' };
-const CH_U09 = { cadena: [{ label: 'Director inmediato', person: 'Alfredo Cacho' }], cadenaIds: ['u05'], cadenaInfo: [{ ctx: 'Director de Capital Humano Corporativo · grupo E EJ · estructura de SAP' }], firstLabel: 'Director inmediato (Alfredo Cacho)' };
+  cadenaInfo: [{ ctx: 'Directora Comercial y de Negocios · grupo E ED · estructura del ERP' }, { ctx: 'Dirección General Adjunta · el director inmediato es E ED' }], firstLabel: 'Director inmediato (Mónica Herrera Luna)' };
+const CH_U09 = { cadena: [{ label: 'Director inmediato', person: 'Alfredo Cacho' }], cadenaIds: ['u05'], cadenaInfo: [{ ctx: 'Director de Capital Humano Corporativo · grupo E EJ · estructura del ERP' }], firstLabel: 'Director inmediato (Alfredo Cacho)' };
 const OK2 = (a, b, w1, w2) => [{ paso: 0, res: 'aprobada', byId: a, when: w1, canal: 'Portal web · escritorio' }, { paso: 1, res: 'aprobada', byId: b, when: w2, canal: 'Portal web · escritorio' }];
 const OK1 = (a, w1) => [{ paso: 0, res: 'aprobada', byId: a, when: w1, canal: 'Portal web · escritorio' }];
 const R = (o) => ({ status: 'aprobada', proyecto: '', acompanantes: [], hasta: false, exceso: false, excesos: [], evidencia: [], ...o, userId: o.userId || o.uid });
@@ -84,25 +84,24 @@ const SEED_REQS = [
 // porTransferir (incluido en propuesta de pago) · realizado (ANT_Realizado: depósito confirmado → En tránsito) · devuelto (transferencia devuelta, reabierto) · rechazado · cancelado.
 // sol / aprobado = solo los conceptos que difieren de la propuesta calculada. decisiones = append-only por paso (igual que US-09).
 const ANTICIPOS = [
-  { id: 'ANT-00072', folio: '00072', uid: 'u07', estado: 'pendAut', sol: { Taxi: 1200 }, enviado: '13/10/2026 18:20', cadenaIds: ['u03', 'u04'], decisiones: [] },
-  { id: 'ANT-00073', folio: '00073', uid: 'u02', estado: 'autorizado', enviado: '08/10/2026 10:00', cadenaIds: ['u03', 'u04'],
-    decisiones: [{ paso: 0, res: 'aprobada', byId: 'u03', when: '12/10/2026 10:00', canal: 'Portal web · escritorio' }, { paso: 1, res: 'aprobada', byId: 'u04', when: '12/10/2026 16:30', canal: 'Portal web · teléfono' }] },
-  { id: 'ANT-00074', folio: '00074', uid: 'u09', estado: 'contabilizado', enviado: '07/10/2026 09:00', cadenaIds: ['u05'], decisiones: [{ paso: 0, res: 'aprobada', byId: 'u05', when: '08/10/2026 12:00', canal: 'Portal web · escritorio' }],
-    contab: { byId: 'u10', when: '13/10/2026 12:00', poliza: 'PZ-2026-10-0412' } },
-  { id: 'ANT-00075', folio: '00075', uid: 'u09', estado: 'realizado', sol: { Taxi: 1340 }, enviado: '01/10/2026 11:00', cadenaIds: ['u05'], decisiones: [{ paso: 0, res: 'aprobada', byId: 'u05', when: '02/10/2026 09:30', canal: 'Portal web · escritorio' }],
-    contab: { byId: 'u10', when: '05/10/2026 10:00', poliza: 'PZ-2026-10-0388' }, pp: { id: 'PP-0005', when: '06/10/2026 09:00', byId: 'u10' },
-    transfers: [{ n: 1, tipo: 'Anticipo', importe: 6000, fecha: '09/10/2026', referencia: 'SPEI-4471209', estado: 'aplicada', byId: 'u10', when: '09/10/2026 13:10' },
+  // Cliente 2026-10-19: sin cadena de Director; Contabilidad valida y contabiliza con el importe SOLICITADO (inmutable) o RECHAZA. Sin «Por programar».
+  { id: 'ANT-00072', folio: '00072', uid: 'u07', estado: 'autorizado', sol: { Taxi: 1200 }, enviado: '13/10/2026 18:20' },
+  { id: 'ANT-00073', folio: '00073', uid: 'u02', estado: 'autorizado', enviado: '08/10/2026 10:00' },
+  { id: 'ANT-00074', folio: '00074', uid: 'u09', estado: 'porTransferir', enviado: '07/10/2026 09:00',
+    contab: { byId: 'u10', when: '13/10/2026 12:00', poliza: 'PZ-2026-10-0412' }, pp: { when: '13/10/2026 12:00', byId: 'u10' } },
+  { id: 'ANT-00075', folio: '00075', uid: 'u09', estado: 'realizado', sol: { Taxi: 1340 }, enviado: '01/10/2026 11:00',
+    contab: { byId: 'u10', when: '05/10/2026 10:00', poliza: 'PZ-2026-10-0388' }, pp: { when: '05/10/2026 10:00', byId: 'u10', fechaPago: { fecha: '09/10/2026', dia: 'jueves' } },
+    transfers: [{ n: 1, tipo: 'Anticipo', importe: 6000, fecha: '09/10/2026', referencia: 'ERP-TRF-4471209', estado: 'aplicada', auto: true, byId: 'u10', when: '09/10/2026 12:00' },
       { n: 2, tipo: 'Ajuste por cambio de hospedaje', importe: 850, motivo: 'Cambio de hotel por saturación de la sede (US-16): diferencia de tarifa de 1 noche', estado: 'porTransferir', when: '13/10/2026 17:00' }] },
-  { id: 'ANT-00076', folio: '00076', uid: 'u07', estado: 'rechazado', enviado: '09/10/2026 12:00', cadenaIds: ['u03', 'u04'],
-    decisiones: [{ paso: 0, res: 'rechazada', motivoTipo: 'Importe no justificado para la agenda', motivo: 'La agenda en HSM Mérida es de medio día; reprograma el viaje o solicita el anticipo con la agenda definitiva.', byId: 'u03', when: '12/10/2026 11:40', canal: 'Portal web · teléfono' }] },
-  { id: 'ANT-00077', folio: '00077', uid: 'u02', estado: 'devuelto', enviado: '02/10/2026 09:00', cadenaIds: ['u03', 'u04'],
-    decisiones: [{ paso: 0, res: 'aprobada', byId: 'u03', when: '03/10/2026 10:00', canal: 'Portal web · escritorio' }, { paso: 1, res: 'aprobada', byId: 'u04', when: '05/10/2026 09:00', canal: 'Portal web · escritorio' }],
-    contab: { byId: 'u10', when: '07/10/2026 11:00', poliza: 'PZ-2026-10-0397' }, pp: { id: 'PP-0006', when: '08/10/2026 09:00', byId: 'u10' },
-    transfers: [{ n: 1, tipo: 'Anticipo', importe: 4410, fecha: '12/10/2026', referencia: 'SPEI-4480017', estado: 'devuelta', byId: 'u10', when: '12/10/2026 12:30', devolucion: { causa: 'Cuenta bloqueada por el banco receptor', when: '13/10/2026 10:15', byId: 'u10' } }] },
-  { id: 'ANT-00081', folio: '00081', uid: 'u09', estado: 'autorizado', enviado: '10/10/2026 08:30', cadenaIds: ['u05'], decisiones: [{ paso: 0, res: 'aprobada', byId: 'u05', when: '12/10/2026 09:15', canal: 'Portal web · escritorio' }],
-    lock: { byId: 'u13', when: '14/10/2026 08:40' } },
-  { id: 'ANT-00082', folio: '00082', uid: 'u01', estado: 'porTransferir', enviado: '02/10/2026 12:00', cadenaIds: ['u04'], decisiones: [{ paso: 0, res: 'aprobada', byId: 'u04', when: '05/10/2026 16:00', canal: 'Portal web · escritorio' }],
-    contab: { byId: 'u10', when: '12/10/2026 10:30', poliza: 'PZ-2026-10-0405' }, pp: { id: 'PP-0007', when: '13/10/2026 09:30', byId: 'u10' } }
+  // Importe incorrecto ⇒ Contabilidad RECHAZA (no ajusta); el colaborador vuelve a solicitar con el importe correcto.
+  { id: 'ANT-00076', folio: '00076', uid: 'u07', estado: 'rechazado', enviado: '09/10/2026 12:00', motivo: 'El importe de Taxi no corresponde a la agenda de medio día en HSM Mérida',
+    rechazoCon: { byId: 'u10', when: '12/10/2026 11:40', motivo: 'El importe de Taxi no corresponde a la agenda de medio día en HSM Mérida' } },
+  { id: 'ANT-00077', folio: '00077', uid: 'u02', estado: 'devuelto', enviado: '02/10/2026 09:00',
+    contab: { byId: 'u10', when: '07/10/2026 11:00', poliza: 'PZ-2026-10-0397' }, pp: { when: '07/10/2026 11:00', byId: 'u10', fechaPago: { fecha: '13/10/2026', dia: 'martes' } },
+    transfers: [{ n: 1, tipo: 'Anticipo', importe: 4410, fecha: '12/10/2026', referencia: 'ERP-TRF-4480017', estado: 'devuelta', auto: true, byId: 'u10', when: '12/10/2026 12:30', devolucion: { causa: 'Cuenta bloqueada por el banco receptor', when: '13/10/2026 10:15', byId: 'u10' } }] },
+  { id: 'ANT-00081', folio: '00081', uid: 'u09', estado: 'autorizado', enviado: '10/10/2026 08:30', lock: { byId: 'u13', when: '14/10/2026 08:40' } },
+  { id: 'ANT-00082', folio: '00082', uid: 'u01', estado: 'porTransferir', enviado: '02/10/2026 12:00',
+    contab: { byId: 'u10', when: '12/10/2026 10:30', poliza: 'PZ-2026-10-0405' }, pp: { when: '12/10/2026 10:30', byId: 'u10' } }
 ];
 
 // PARÁMETROS (historia US-14 / US-15). editables = conceptos parametrizados que admiten edición A LA BAJA (historia: «ej. taxi/autobús»).
@@ -110,12 +109,13 @@ const ANTICIPOS = [
 const PARAMS = { antelacionDias: 5, editables: ['Taxi', 'Autobús'], propinaMaxPct: 10, unAbierto: true, plazoIniciar: 7, plazoConcluir: 7, motivoMax: 500, abiertos: ['pendAut', 'autorizado', 'contabilizado', 'porTransferir', 'realizado', 'devuelto'] };
 // Catálogos DEMO (la historia pide «catálogo + texto libre»; el catálogo oficial es decisión del cliente).
 const MOTIVOS_RECHAZO = ['Importe no justificado para la agenda', 'Viaje sujeto a cambios de fecha', 'Anticipos previos sin comprobar', 'Información incompleta o incorrecta', 'Otro motivo'];
-const MOTIVOS_CONTAB = ['Datos bancarios no vigentes', 'Viaje cancelado o reprogramado', 'Anticipo duplicado', 'Importe aprobado sin soporte', 'Otro motivo'];
 const CAUSAS_DEVOLUCION = ['Cuenta bloqueada por el banco receptor', 'Cuenta cancelada', 'Titular no coincide', 'CLABE o cuenta inexistente', 'Otra causa'];
-// Banco de la cuenta de nómina (dato de SAP, simulado): agrupa la propuesta de pago por sociedad y banco.
-const BANCO_SAP = { u01: 'BBVA', u02: 'Santander', u07: 'Banorte', u09: 'BBVA', u03: 'BBVA', u05: 'Banorte', u10: 'BBVA', u12: 'Santander' };
-// Cuentas NO vigentes en SAP (vacío en la demo; MODO DEMO «Cuenta bancaria (SAP)» simula el caso).
+// Banco de la cuenta de nómina (dato del ERP, simulado): agrupa la propuesta de pago por sociedad y banco.
+const BANCO_ERP = { u01: 'BBVA', u02: 'Santander', u07: 'Banorte', u09: 'BBVA', u03: 'BBVA', u05: 'Banorte', u10: 'BBVA', u12: 'Santander' };
+// Cuentas NO vigentes en el ERP (vacío en la demo; MODO DEMO «Cuenta bancaria (ERP)» simula el caso).
 const CUENTA_NO_VIGENTE = [];
+// Vigencia de la cuenta = fecha que regresa el ERP (o la de la tabla de modificación de la política); sin vigencia propia del Portal. Convención abierta: 31/12/9999.
+const VIGENCIA_CUENTA = {}; const VIGENCIA_ERP_DEFAULT = '31/12/9999';
 
-window.SMV_ANT = { SEED_REQS, ANTICIPOS, PARAMS, MOTIVOS_RECHAZO, MOTIVOS_CONTAB, CAUSAS_DEVOLUCION, BANCO_SAP, CUENTA_NO_VIGENTE };
+window.SMV_ANT = { SEED_REQS, ANTICIPOS, PARAMS, MOTIVOS_RECHAZO, CAUSAS_DEVOLUCION, BANCO_ERP, CUENTA_NO_VIGENTE, VIGENCIA_CUENTA, VIGENCIA_ERP_DEFAULT };
 })(); }

@@ -6,11 +6,11 @@ const ROLES = {
 };
 const ROLE_KIND = { COL: 'colaborador', CHH: 'gestor', DIR: 'autorizador', CHC: 'autorizador', DGA: 'autorizador', HH: 'gestor', HC: 'gestor', VIA: 'gestor', CON: 'gestor', CTR: 'autorizador', ADM: 'administrador' };
 
-// hospital = Hospital / Corporativo: afiliación organizacional del colaborador que llega de SAP (solo personal hospitalario;
+// hospital = Hospital / Corporativo: afiliación organizacional del colaborador que llega del ERP (solo personal hospitalario;
 // el personal corporativo no tiene valor → se muestra «Corporativo» y el panel de cuenta omite el campo).
 // El nombre de un rol funcional NO determina esta afiliación: Capital Humano es corporativo (aclaración del cliente).
 // perfil.label = traveler profile: Director · Ejecutivo · Mando medio · Operativo (never «Nivel n»). DGA is a ROLE (role: 'DGA'), never a profile.
-// personnelGroup = SAP personnel group of the collaborator (mock): E / ED = executive-director groups, EJ = executive, MM = mandos medios, OP = operativo.
+// personnelGroup = ERP personnel group of the collaborator (mock): E / ED = executive-director groups, EJ = executive, MM = mandos medios, OP = operativo.
 // ANTICIPO RULE (client, final: «Solo a Director grupo E ED»): Anticipo does NOT apply when perfil is exactly Director AND personnelGroup is E or ED. DGA is a distinct profile and does NOT inherit this rule.
 // perfil.anticipo is DERIVED below by anticipoApplies(); never hardcode it per user.
 const NO_ANTICIPO_GROUPS = ['E', 'ED'];
@@ -43,8 +43,7 @@ const MENU = [
     { id: 'creacion', label: 'Creación', us: 'US-08', fn: 'Crear solicitud de viaje', vis: travelerBase },
     { id: 'misviajes', label: 'Mis viajes', us: 'US-11', fn: 'Detalle de folios propios', vis: travelerBase },
     { id: 'anticipo', label: 'Anticipo', us: 'US-14', fn: 'Solicitar y seguir el anticipo de un viaje aprobado (monto propuesto por el sistema)', vis: all('VPF'), pf: 'anticipo' },
-    { id: 'hospedaje', label: 'Hospedaje', us: 'US-12', vis: travelerBase },
-    { id: 'vuelo', label: 'Vuelos', us: 'US-12', vis: travelerBase },
+    { id: 'hospedaje', label: 'Hotel y vuelos', us: 'US-11', fn: 'Hospedaje y vuelo de los viajes aprobados (una vista por folio)', vis: travelerBase },
     { id: 'comprobacion', label: 'Comprobación', us: 'US-19', vis: travelerBase },
     { id: 'representacion', label: 'Gastos de representación', us: 'US-20', vis: { ...all('VPF'), DGA: '✓' }, pf: 'representacion' }
   ] },
@@ -62,20 +61,21 @@ const MENU = [
   { group: 'Autorización', items: [
     // Viáticos (cliente 2026-10-15): Consultar + CE «Cambiar estatus» por default (Aprobada → Rechazada sin movimientos posteriores · Rechazada → Aprobada); nunca Autorizar.
     { id: 'aut-viaje', label: 'Aprobación de viaje', us: 'US-09', vis: { DIR: '✓', CHC: '✓', DGA: '✓', VIA: '✓' }, actVis: { AU: { DIR: '✓', CHC: '✓', DGA: '✓' }, CE: { VIA: '✓' } } },
-    // US-15: autorización del ANTICIPO (Director inmediato → Dirección Corporativa). Población = firmante en turno; misma letra que Aprobación de viaje.
-    { id: 'aut-ant', label: 'Anticipos', us: 'US-15', fn: 'Autorización de anticipos (Director inmediato → Dirección Corporativa)', vis: { DIR: '✓', CHC: '✓', DGA: '✓' } },
+    // US-15 (cliente 2026-10-16): el anticipo ya NO tiene autorización de Director; solo pasa por Contabilización › Solicitud de anticipo (opción «Autorización › Anticipos» retirada).
     { id: 'aut-rep', label: 'Gastos de representación', us: 'US-20', vis: { DGA: '✓', CTR: '✓' } },
     { id: 'aut-comp', label: 'Comprobaciones', us: 'US-20', fn: 'Evidencias de gastos de representación (DGA)', vis: { DGA: '✓' } }
   ] },
   { group: 'Reservaciones', items: [
     { id: 'res-hsm', label: 'Hospedaje HSM', us: 'US-13', vis: { HH: '✓' } },
+    // Cliente 2026-10-20: segundo nivel de hospedaje = Hotelería Corporativo (recibe los rechazos de Hotelería HSM; su rechazo pasa a Viáticos).
+    { id: 'res-hc', label: 'Hospedaje Corporativo', us: 'US-12', fn: 'Solicitudes de hospedaje rechazadas por Hotelería HSM (segundo nivel)', vis: { HC: '✓' } },
     { id: 'res-hotel', label: 'Hotel y vuelos', us: 'US-14', fn: 'Hotel externo y ciclo de vuelos', vis: { VIA: '✓' } }
   ] },
   { group: 'Gestión', items: [{ id: 'ges-comp', label: 'Comprobaciones', us: 'US-21', fn: 'Validación de comprobaciones', vis: { VIA: '✓' } }] },
   { group: 'Contabilización', items: [
     { id: 'con-plan', label: 'Planeación de viaje', us: 'US-11', vis: { CON: '✓' } },
-    // US-15: Consultar · Validar (tomar, contabilizar, rechazar / cancelar) · Procesar pago (propuesta de pago, confirmar transferencia, devolución bancaria).
-    { id: 'con-ant', label: 'Solicitud de anticipo', us: 'US-15', fn: 'Contabilización, propuesta de pago, transferencia y depósito de anticipos', vis: { CON: '✓' } },
+    // US-15 (cliente 2026-10-19): Consultar · Validar (contabilizar uno/varios/todos o RECHAZAR; solo Contabilidad rechaza el anticipo) · PG (complemento y devolución bancaria). El pago lo procesa el ERP.
+    { id: 'con-ant', label: 'Solicitud de anticipo', us: 'US-15', fn: 'Validación, contabilización y consulta del estatus de pago (ERP) de anticipos', vis: { CON: '✓' } },
     { id: 'con-comp', label: 'Comprobación', us: 'US-22', vis: { CON: '✓' } },
     { id: 'con-rep', label: 'Gastos de representación', us: 'US-22', vis: { CON: '✓' } }
   ] },
@@ -114,8 +114,8 @@ const COUNTS = {
   u12: {}
 };
 
-// VIAJEROS EXTERNOS (historia de viajero externo, 2026-10-07): REGISTRO CANÓNICO del Portal, separado del personal de SAP y de los usuarios del Portal.
-// El externo NO tiene acceso al Portal, ni No. de colaborador, puesto, sociedad, CECO ni datos de SAP. Campos de la historia:
+// VIAJEROS EXTERNOS (historia de viajero externo, 2026-10-07): REGISTRO CANÓNICO del Portal, separado del personal del ERP y de los usuarios del Portal.
+// El externo NO tiene acceso al Portal, ni No. de colaborador, puesto, sociedad, CECO ni datos del ERP. Campos de la historia:
 // identidad · identificación (tipo, número, documento) · fecha de nacimiento y nacionalidad (datos de vuelo) · contacto · tipo (Candidato | Líder sindical) ·
 // perfil de viajero (categoría «Viajero externo» del catálogo canónico) · DOBLE VÍNCULO: registradorId (usuario de Capital Humano HSM que lo registra y opera)
 // + responsableId = SIEMPRE el usuario registrador (cliente 2026-10-08; su entidad presupuestal absorbe el gasto) · autorizadorId = AUTORIZADOR PRIMER NIVEL (Director corporativo de DIRECTORES_CORP_WS) · vigencia desde/hasta · estado Activo | Inactivo (baja lógica).
@@ -291,7 +291,7 @@ const HOMES = {
     ],
     trays: [{ title: 'Solicitudes de hospedaje · {hospital}', count: 4, cta: 'Ir a Hospedaje HSM', target: 'res-hsm', columns: 'operationalOrg', detalleMeaning: 'Fechas de estancia · noches · tipo de habitación', filters: ['status'], rows: [
       { folio: '00043', personId: 'u01', meta: '15 – 18 jun 2026 · 3 noches · Habitación individual', status: S.pendAut, age: 'Llega en 6 días' },
-      { folio: '00045', personId: 'u09', meta: '22 – 23 jun 2026 · 1 noche · Habitación compartida', status: S.pendAut, age: 'Llega en 13 días' },
+      { folio: '00045', personId: 'u09', meta: '22 – 23 jun 2026 · 1 noche · Habitación individual', status: S.pendAut, age: 'Llega en 13 días' },
       { folio: '00040', extId: 'x02', meta: '17 – 18 jun 2026 · 1 noche · Habitación individual', status: S.asignado, age: 'Hab. 413 asignada' },
       { folio: '00036', personId: 'u11', meta: '16 – 19 jun 2026 · 3 noches · Habitación individual', status: S.asignado, age: 'Hab. 407 asignada' } ] }]
   },
@@ -300,7 +300,7 @@ const HOMES = {
     summary: { scope: 'operational', title: 'Encuestas de hospedaje', kpis: [{ label: 'Encuestas pendientes de respuesta', value: '6', tone: 'azul' }, { label: 'Respondidas este mes', value: '18' }, { label: 'Satisfacción promedio', value: '4.3 / 5', tone: 'verde' }] },
     trays: [
       // BANDEJA DE TRABAJO (cliente 2026-09-30): solicitudes de hospedaje RECHAZADAS por Hotelería HSM que siguen el flujo de Hotelería Corporativo. Datos demo.
-      { title: 'Bandeja de trabajo · Rechazadas por Hotelería HSM', count: 2, cta: 'Ir a Hotel y vuelos', target: 'res-hotel', columns: 'collabOrg', detalleMeaning: 'Línea 1: fechas de estancia · Línea 2: noches solicitadas', filters: ['destino'], rows: [
+      { title: 'Bandeja de trabajo · Rechazadas por Hotelería HSM', count: 2, cta: 'Ir a Hospedaje Corporativo', target: 'res-hc', columns: 'collabOrg', detalleMeaning: 'Línea 1: fechas de estancia · Línea 2: noches solicitadas', filters: ['destino'], rows: [
         { folio: '00052', personId: 'u13', destino: 'HSM Guadalajara', meta: '6 – 8 oct 2026', metaSub: '2 noches', status: S.rechazada, statusSub: 'Rechazada por HSM hace 2 h', age: 'Viaja en 6 días' },
         { folio: '00053', personId: 'u02', destino: 'HSM Monterrey', meta: '13 – 14 oct 2026', metaSub: '1 noche', status: S.rechazada, statusSub: 'Rechazada por HSM hace 1 día', age: 'Viaja en 13 días' } ] },
       { title: 'Encuestas sin responder', count: 6, cta: 'Ir a Gestión de encuestas', target: 'encuestas', columns: 'operationalOrg', detalleMeaning: 'Estancia evaluada · fechas · recordatorios enviados', filters: ['status', 'org'], rows: [
@@ -332,11 +332,12 @@ const HOMES = {
     ]
   },
   u10: {
-    title: 'Inicio', help: 'Anticipos autorizados por transferir y contabilizaciones de lo que Viáticos ya validó y aprobó. Cada movimiento actualiza el presupuesto en tiempo real.',
-    summary: { scope: 'operational', title: 'Contabilización', kpis: [{ label: 'Anticipos por transferir', value: '2', hint: '$10,250', tone: 'azul' }, { label: 'Contabilizaciones pendientes', value: '7', tone: 'azul' }] },
+    title: 'Inicio', help: 'Solicitudes de anticipo por contabilizar o en pago y contabilizaciones de lo que Viáticos ya validó y aprobó. Cada movimiento actualiza el presupuesto en tiempo real.',
+    summary: { scope: 'operational', title: 'Contabilización', kpis: [{ label: 'Anticipos en proceso', value: '2', hint: '$10,250', tone: 'azul' }, { label: 'Contabilizaciones pendientes', value: '7', tone: 'azul' }] },
     trays: [
-      // ANTICIPOS AUTORIZADOS: solo anticipos ya autorizados; Estatus Pendiente de transferencia / Transferido. Detalle: CECO · monto · fecha de autorización.
-      { title: 'Anticipos autorizados', count: 3, cta: 'Ir a Solicitud de anticipo', target: 'con-ant', columns: 'anticipos', detalleMeaning: 'Línea 1: CECO · monto · Línea 2: fecha de autorización de la solicitud', filters: ['status'], rows: [
+      // SOLICITUDES DE ANTICIPO (cliente 2026-10-19: el anticipo ya no tiene autorización; supersede «Anticipos autorizados»): la MISMA población canónica de Contabilización › Solicitud de anticipo
+      // (por contabilizar · programados para pago · devueltos · depositados). Detalle: CECO · monto · fecha de envío o de contabilización + póliza. Las filas de abajo las reemplaza antHomeRows.
+      { title: 'Solicitudes de anticipo', count: 3, cta: 'Ir a Solicitud de anticipo', target: 'con-ant', columns: 'anticipos', detalleMeaning: 'Línea 1: CECO · monto · Línea 2: fecha de envío o de contabilización (con póliza)', filters: ['status'], rows: [
       { folio: '00045', personId: 'u09', meta: 'CECO CHI11000 · Por transferir: $6,200', metaSub: 'Autorizada 10 jun 2026', status: S.pendTransf, age: 'Autorizado hace 1 h' },
       { folio: '00041', personId: 'u02', meta: 'CECO CHI12000 · Por transferir: $4,050', metaSub: 'Autorizada 10 jun 2026', status: S.pendTransf, age: 'Autorizado hace 5 h' },
       { folio: '00039', personId: 'u12', meta: 'CECO MTY11000 · Transferido: $4,300', metaSub: 'Autorizada 9 jun 2026', status: S.transferido, age: 'Transferido hace 2 h' } ] },
@@ -388,7 +389,7 @@ const NOTICES = {
   u07: [{ id: 'n1', text: 'Nueva solicitud de hospedaje folio 00045 para el 22 jun.', target: 'res-hsm', when: 'Hace 2 h', unread: true, tone: 'azul' }],
   u08: [],
   u09: [{ id: 'n1', text: 'Comprobación del folio 00029 con plazo vencido hace 2 días.', target: 'ges-comp', when: 'hoy 07:00', unread: true, tone: 'emergencia' }, { id: 'n2', text: 'HSM Mérida rechazó hospedaje del folio 00046. Gestiona hotel externo.', target: 'res-hotel', when: 'Hace 4 h', unread: true, tone: 'azul' }],
-  u10: [{ id: 'n1', text: 'Anticipo del folio 00045 autorizado por Dirección Corporativa. Procesa la transferencia.', target: 'con-ant', when: 'Hace 1 h', unread: true, tone: 'azul' }],
+  u10: [{ id: 'n1', text: 'Anticipo del folio 00045 por contabilizar.', target: 'con-ant', when: 'Hace 1 h', unread: true, tone: 'azul' }],
   u11: [],
   u12: []
 };
@@ -444,7 +445,7 @@ const ICONS = {
   inicio: I.home, creacion: I.plus, misviajes: I.suitcase, anticipo: I.money, hospedaje: I.bed, vuelo: I.plane, comprobacion: I.fileCheck, representacion: I.receipt,
   perfil: I.user, externos: I.userPlus, 'pres-monitor': I.chart,
   'aut-viaje': I.checkCircle, 'aut-ant': I.money, 'aut-rep': I.receipt, 'aut-comp': I.fileCheck,
-  'res-hsm': I.hospital, 'res-hotel': I.hotel, 'ges-comp': I.fileCheck,
+  'res-hsm': I.hospital, 'res-hc': I.hospital, 'res-hotel': I.hotel, 'ges-comp': I.fileCheck,
   'con-plan': I.list, 'con-ant': I.money, 'con-comp': I.fileCheck, 'con-rep': I.receipt,
   encuestas: I.survey, dashboard: I.grid, reportes: I.fileText,
   'adm-perfiles': I.users, 'adm-catalogos': I.book, 'adm-politicas': I.shield, 'adm-usuarios': I.key, 'adm-bitacora': I.history,

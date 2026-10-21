@@ -3,7 +3,7 @@ if (!window.SMV_PERFIL) { (function(){
 // asignaciones, viajes y saldo aplicable). DEMO ONLY (datos sintéticos).
 // UN SOLO MODELO: el catálogo y las asignaciones de aquí son la fuente del perfil efectivo que consumen
 // el Inicio del colaborador, la ficha del colaborador y la resolución de permisos condicionados a perfil.
-// El personal (identidad, puesto, datos de personal) sigue llegando de SAP y vive en us26-data.js (solo lectura).
+// El personal (identidad, puesto, datos de personal) sigue llegando del ERP y vive en us26-data.js (solo lectura).
 // Vocabulario de perfil aprobado (5): Director · Ejecutivo · Mando medio · Operativo · Viajero externo (PERFILES_VIAJERO). DGA es ROL FUNCIONAL, nunca perfil (2026-10-06). Nunca «Nivel n».
 
 const TODAY = '18/09/2026'; // referencia con la que se sembraron los registros (el prototipo usa la fecha real del navegador)
@@ -38,8 +38,8 @@ const GLOBAL = {
 // La cadena de autorización distingue colaborador de hospital y de corporativo (flujo aprobado).
 // HOSPEDAJE (cliente 2026-10-05): Director/Ejecutivo (Niveles 1-2) → Hotel · Mando medio/Operativo y viajero externo (Niveles 3-5) → Hospital.
 // Con motivo Operación o Cubrir vacante el hospedaje es forzosamente en el hospital destino salvo rechazo; «Hotel de convenio» para todos QUEDA SUPERSEDIDO.
-// CADENA DE AUTORIZACIÓN: desde 2026-10-05 el perfil NO es la fuente (la define la estructura de SAP: función 80001076, enlace ZA02, jefe E EJ/E ED → DGA);
-// cadenaHospital/cadenaCorporativo se conservan solo como TEXTO INFORMATIVO de política y no alimentan ningún cálculo (ver ESTRUCTURA_SAP).
+// CADENA DE AUTORIZACIÓN: desde 2026-10-05 el perfil NO es la fuente (la define la estructura del ERP: función 80001076, enlace ZA02, jefe E EJ/E ED → DGA);
+// cadenaHospital/cadenaCorporativo se conservan solo como TEXTO INFORMATIVO de política y no alimentan ningún cálculo (ver ESTRUCTURA_ERP).
 // ---------------------------------------------------------------------------
 // IMÁGENES DE REFERENCIA entregadas por el cliente, asociadas al PERFIL existente (no al colaborador).
 // MODOS de transporte permitidos (≠ tarifas: los importes de vuelos, gasolina y casetas son conceptos de tarifa propios).
@@ -63,14 +63,14 @@ const PROFILES = [
     doc: 'Política-de-viaje-2026-Ejecutivo.pdf', colaboradores: 2 },
   { id: 'pf-mm', perfil: 'Mando medio', estado: 'Vigente', from: '01/01/2026', to: '31/12/2026',
     semanasMes: 2, nochesSemana: 5, diasMax: 12, diasComprobar: 7,
-    anticipo: 'Sí', hospedaje: 'Hospital', habitacion: ['Individual', 'Compartida'], alimentos: ['Desayuno', 'Comida', 'Cena'],
+    anticipo: 'Sí', hospedaje: 'Hospital', habitacion: ['Individual'], // cliente 2026-10-20: habitación de unidad hospitalaria siempre individual alimentos: ['Desayuno', 'Comida', 'Cena'],
     representacion: 'No',
     transporte: ['Avión', 'Camioneta SM', 'Autobús', 'Auto particular'],
     cadenaHospital: 'Dirección de Hospital → Dirección Corporativa', cadenaCorporativo: 'Director inmediato → Dirección Corporativa',
     doc: 'Política-de-viaje-2026-Mando-medio.pdf', colaboradores: 6 },
   { id: 'pf-op', perfil: 'Operativo', estado: 'Vigente', from: '01/01/2026', to: '31/12/2026',
     semanasMes: 2, nochesSemana: 4, diasMax: 8, diasComprobar: 7,
-    anticipo: 'Sí', hospedaje: 'Hospital', habitacion: ['Compartida'], alimentos: ['Desayuno', 'Comida', 'Cena'],
+    anticipo: 'Sí', hospedaje: 'Hospital', habitacion: ['Individual'], // cliente 2026-10-20: habitación de unidad hospitalaria siempre individual alimentos: ['Desayuno', 'Comida', 'Cena'],
     representacion: 'No',
     transporte: ['Autobús', 'Camioneta SM', 'Auto particular'],
     cadenaHospital: 'Dirección de Hospital → Dirección Corporativa', cadenaCorporativo: 'Director inmediato → Dirección Corporativa',
@@ -85,7 +85,7 @@ const PROFILES = [
     doc: 'Política-de-viaje-2027-Mando-medio.pdf', colaboradores: 6 }
 ];
 
-// PERFIL AUTOMÁTICO propuesto por el ÁREA DE PERSONAL de SAP (tabla del cliente, Word 2026-10-05 «Validaciones asociadas a perfil»):
+// PERFIL AUTOMÁTICO propuesto por el ÁREA DE PERSONAL del ERP (tabla del cliente, Word 2026-10-05 «Validaciones asociadas a perfil»):
 // Nivel 1 · ED Directivo → Director · Nivel 2 · EJ Ejecutivo → Ejecutivo · Nivel 3 · GR Gerente / SG Subgerente / LI Jefe → Mando medio ·
 // Nivel 4 · resto (CO SU PR EN TE OE SS ES SO RS) → Operativo. «Nivel n» es nomenclatura interna: la interfaz usa el nombre del perfil (regla 28).
 // Viajero externo no está en la tabla (flujo propio). DGA no es un resultado posible: es rol funcional, no perfil. SUPERSEDE el mapeo anterior por área de personal (E/ED/EJ/MM/OP).
@@ -240,15 +240,15 @@ const ASSIGN = {
 };
 
 // ---------------------------------------------------------------------------
-// DATOS DE SAP COMPLEMENTARIOS del encabezado del perfil (solo lectura):
-// sociedad · CECO · unidad organizativa · grupoPersonal + areaPersonal (códigos de SAP; ≠ perfil de viajero y ≠ personnelGroup,
+// DATOS DE ERP COMPLEMENTARIOS del encabezado del perfil (solo lectura):
+// sociedad · CECO · unidad organizativa · grupoPersonal + areaPersonal (códigos del ERP; ≠ perfil de viajero y ≠ personnelGroup,
 // que es la clasificación interna E/ED/EJ/MM/OP usada solo para proponer el perfil) · funcionId + funcionNombre · posicionId (el
 // nombre de la posición es el puesto canónico USERS.puesto) — demo, sin catálogo ni regla derivada · datos bancarios enmascarados (visibles solo a roles autorizados).
-// sociedad = CÓDIGO de sociedad de SAP (dato de personal simulado; CLIENT CLARIFICATION: viene de SAP, NUNCA se deriva de hospital, rol, perfil
+// sociedad = CÓDIGO de sociedad del ERP (dato de personal simulado; CLIENT CLARIFICATION: viene del ERP, NUNCA se deriva de hospital, rol, perfil
 // o CECO). La razón social se resuelve del catálogo confirmado uscat-data.js › SOCIEDADES cuando la pantalla la necesita.
-// areaPersonal = código SAP del área de personal (base del perfil propuesto, tabla del cliente 2026-10-05). u01 «A · GR» es dato del cliente; el resto es DEMO.
+// areaPersonal = código ERP del área de personal (base del perfil propuesto, tabla del cliente 2026-10-05). u01 «A · GR» es dato del cliente; el resto es DEMO.
 // ---------------------------------------------------------------------------
-const SAP_EXTRA = {
+const ERP_EXTRA = {
   u01: { sociedad: '1100', unidadOrg: 'Estrategias Comerciales', ceco: 'CECO 4102-CO', grupoPersonal: 'A', areaPersonal: 'GR', funcionId: '80000626', funcionNombre: 'Gerencia comercial', posicionId: '70007351', banco: '**** **** **** 4417', clabe: '0141 **** **** **** 27' },
   u02: { sociedad: '1100', unidadOrg: 'Capital Humano HSM Chihuahua', ceco: 'CECO 2210-HSMCH', areaPersonal: 'LI', funcionId: '80000412', funcionNombre: 'Coordinación de Capital Humano', posicionId: '70004120', banco: '**** **** **** 8802', clabe: '0141 **** **** **** 55' },
   u03: { sociedad: '1100', unidadOrg: 'Dirección HSM Chihuahua', ceco: 'CECO 2001-HSMCH', areaPersonal: 'ED', funcionId: '80000201', funcionNombre: 'Dirección de hospital', posicionId: '70002015', banco: '**** **** **** 1190', clabe: '0141 **** **** **** 03' },
@@ -270,14 +270,14 @@ const SAP_EXTRA = {
 // status = clave de window.SMV_US01.STATUS. uuid = folio fiscal de la factura principal del folio.
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-// DATOS PERSONALES Y ESTRUCTURA DE SAP (SIMULADOS · solo lectura · cliente 2026-10-05). Ninguno se configura en el Portal.
+// DATOS PERSONALES Y ESTRUCTURA DE ERP (SIMULADOS · solo lectura · cliente 2026-10-05). Ninguno se configura en el Portal.
 //   fechaNacimiento · cuentaBancaria (enmascarada; la clabe completa nunca viaja al prototipo) · tarjetaCorporativa (colaboradores.tarjetacorpo)
 //   medida: última medida de personal (alta / reingreso / cambio organizativo) con fecha — base de la elegibilidad de Capacitación (N1-3). DEMO.
-// ESTRUCTURA_SAP = de dónde sale la cadena de autorización (Word «Proceso de autorización»): dirHospitalFn = ID función del director del hospital
+// ESTRUCTURA_ERP = de dónde sale la cadena de autorización (Word «Proceso de autorización»): dirHospitalFn = ID función del director del hospital
 //   (80001076) · autorizadorCorp = enlace temporal ZA02 «Autorizador Corporativo de Viáticos» de la unidad organizativa (resuelto a un usuario canónico)
 //   · jefe = director inmediato (corporativo) con su grupo (E EJ / E ED; E ED → DGA). Los ids de persona son del registro canónico (us01-data.js › USERS).
 // ---------------------------------------------------------------------------
-const SAP_PERSONAL = {
+const ERP_PERSONAL = {
   u01: { fechaNacimiento: '14/03/1988', cuentaBancaria: '**** **** **** 4417', tarjetaCorporativa: false, medida: null },
   u02: { fechaNacimiento: '02/11/1990', cuentaBancaria: '**** **** **** 8802', tarjetaCorporativa: false, medida: { tipo: 'Cambio organizativo', fecha: '28/09/2026' } },
   u03: { fechaNacimiento: '21/07/1975', cuentaBancaria: '**** **** **** 1190', tarjetaCorporativa: true, medida: null },
@@ -295,7 +295,7 @@ const SAP_PERSONAL = {
 };
 // Hospital HSM Chihuahua (1114): director = u03 (función 80001076); su unidad organizativa reporta por ZA02 a la Dirección Comercial y de Negocios (u04).
 // Corporativo: jefe inmediato por unidad organizativa (DEMO). u06 es DGA (sin superior).
-const ESTRUCTURA_SAP = {
+const ESTRUCTURA_ERP = {
   dirHospitalFn: '80001076', enlaceCorp: 'ZA02 · Autorizador Corporativo de Viáticos',
   hospital: { '1114': { director: 'u03', autorizadorCorp: 'u04' } },
   corporativo: { u01: { jefe: 'u04', jefeGrupo: 'E ED' }, u05: { jefe: 'u06', jefeGrupo: 'E ED' }, u08: { jefe: 'u05', jefeGrupo: 'E EJ' }, u09: { jefe: 'u05', jefeGrupo: 'E EJ' }, u10: { jefe: 'u11', jefeGrupo: 'E EJ' },
@@ -354,7 +354,7 @@ const BUDGET = {
 // cancel {fecha, motivo, punto} · gastos[[concepto, importe]] · hist[[fecha, evento, usuario, detalle, resultado, tono]].
 const DET = (o) => o;
 const TRIP_DETAIL = {
-  '00043': DET({ origen: 'Corporativo', pago: { tipo: 'debito', texto: 'Tarjeta de débito · SAP · terminación 4417' }, just: 'Supervisión del arranque operativo del nuevo módulo de imagenología.', obs: 'Se requiere acceso temprano al área de imagenología el primer día.', docs: [['Evidencia adicional', 'Agenda-supervision-Puebla.pdf', '03/05/2026']], segs: [['HSM Chihuahua', '15/06/2026', '18/06/2026', 'Avión', 'hospital', ['Cena'], '07:40']],
+  '00043': DET({ origen: 'Corporativo', pago: { tipo: 'debito', texto: 'Tarjeta de débito · ERP · terminación 4417' }, just: 'Supervisión del arranque operativo del nuevo módulo de imagenología.', obs: 'Se requiere acceso temprano al área de imagenología el primer día.', docs: [['Evidencia adicional', 'Agenda-supervision-Puebla.pdf', '03/05/2026']], segs: [['HSM Chihuahua', '15/06/2026', '18/06/2026', 'Avión', 'hospital', ['Cena'], '07:40']],
     cadena: [['Director inmediato', 'Mónica Herrera Luna', 'Aprobada', '10/06/2026 11:20']],
     hos: ['Confirmado', 'verde', [['Unidad', 'HSM Chihuahua · habitación 214'], ['Fechas', '15/06/2026 – 18/06/2026 · 3 noches'], ['Confirmación', 'Hotelería HSM · 11/06/2026'], ['Documento', 'Confirmacion-HSM-Chihuahua-00043.pdf', 'doc']]],
     vue: ['Emitido', 'verde', [['Ida', 'CDMX → Chihuahua · 15/06/2026 · 07:40'], ['Regreso', 'Chihuahua → CDMX · 18/06/2026 · 18:10'], ['Gestión', 'Viáticos · 11/06/2026'], ['Documento', 'Itinerario-Vuelo-00043.pdf', 'doc']]],
@@ -374,7 +374,7 @@ const TRIP_DETAIL = {
     gastos: [['Alimentos', 1950], ['Propinas', 470], ['Vuelo (referencia)', 5000]],
     hist: [['02/05/2026 09:40', 'Envió la solicitud de viaje a autorización', 'Elizabeth Sánchez Gómez', 'HSM Querétaro', 'Enviado', 'azul'], ['04/05/2026 13:02', 'Aprobó la solicitud de viaje', 'Mónica Herrera Luna', 'Aprobada', 'Aprobado', 'verde'],
       ['06/05/2026 10:00', 'Depositó el anticipo', 'Contabilidad / Tesorería', '$7,420', 'Realizado', 'verde'], ['18/05/2026 12:30', 'Validó la comprobación', 'Viáticos', 'Comprobado $7,420', 'Realizado', 'verde'], ['20/05/2026 17:00', 'Cerró el folio', 'Contabilidad / Tesorería', 'Finalizado', 'Cerrado', 'verde']] }),
-  '00031': DET({ origen: 'Corporativo', pago: { tipo: 'debito', texto: 'Tarjeta de débito · SAP · terminación 4417' }, proyecto: 'Expansión Sureste 2026', just: 'Levantamiento de requerimientos del proyecto de expansión con la dirección del hospital.', docs: [['Evidencia adicional', 'Minuta-kickoff-Merida.pdf', '12/03/2026']], segs: [['HSM Mérida', '23/03/2026', '27/03/2026', 'Avión', 'hospital', ['Desayuno', 'Comida', 'Cena'], '06:50']],
+  '00031': DET({ origen: 'Corporativo', pago: { tipo: 'debito', texto: 'Tarjeta de débito · ERP · terminación 4417' }, proyecto: 'Expansión Sureste 2026', just: 'Levantamiento de requerimientos del proyecto de expansión con la dirección del hospital.', docs: [['Evidencia adicional', 'Minuta-kickoff-Merida.pdf', '12/03/2026']], segs: [['HSM Mérida', '23/03/2026', '27/03/2026', 'Avión', 'hospital', ['Desayuno', 'Comida', 'Cena'], '06:50']],
     cadena: [['Director inmediato', 'Mónica Herrera Luna', 'Aprobada', '16/03/2026 10:14']],
     hos: ['Confirmado', 'verde', [['Unidad', 'HSM Mérida · habitación 302'], ['Fechas', '23/03/2026 – 27/03/2026 · 4 noches']]],
     vue: ['Emitido', 'verde', [['Ida', 'CDMX → Mérida · 23/03/2026 · 06:50'], ['Regreso', 'Mérida → CDMX · 27/03/2026 · 20:05']]],
@@ -383,7 +383,7 @@ const TRIP_DETAIL = {
     cie: ['Cerrado', 'verde', [['Fecha de cierre', '28/04/2026'], ['Estatus final', 'Finalizado'], ['Área', 'Contabilidad / Tesorería']]],
     gastos: [['Alimentos', 3640], ['Propinas', 620], ['Vuelo (referencia)', 7600]],
     hist: [['13/03/2026 09:10', 'Envió la solicitud de viaje a autorización', 'Elizabeth Sánchez Gómez', 'HSM Mérida', 'Enviado', 'azul'], ['16/03/2026 10:14', 'Aprobó la solicitud de viaje', 'Mónica Herrera Luna', 'Aprobada', 'Aprobado', 'verde'], ['18/03/2026 10:00', 'Depositó el anticipo', 'Contabilidad / Tesorería', '$11,860', 'Realizado', 'verde'], ['31/03/2026 12:00', 'Validó la comprobación', 'Viáticos', 'Comprobado $11,860', 'Realizado', 'verde'], ['28/04/2026 17:00', 'Cerró el folio', 'Contabilidad / Tesorería', 'Finalizado', 'Cerrado', 'verde']] }),
-  '00024': DET({ origen: 'Corporativo', pago: { tipo: 'debito', texto: 'Tarjeta de débito · SAP · terminación 4417' }, just: 'Participación en el comité de calidad del hospital.', segs: [['HSM Veracruz', '26/01/2026', '28/01/2026', 'Avión', 'hospital', ['Cena'], '09:30']],
+  '00024': DET({ origen: 'Corporativo', pago: { tipo: 'debito', texto: 'Tarjeta de débito · ERP · terminación 4417' }, just: 'Participación en el comité de calidad del hospital.', segs: [['HSM Veracruz', '26/01/2026', '28/01/2026', 'Avión', 'hospital', ['Cena'], '09:30']],
     cadena: [['Director inmediato', 'Mónica Herrera Luna', 'Aprobada', '19/01/2026 16:40']],
     cancel: { fecha: '21/01/2026', motivo: 'El comité se reprogramó sin fecha', punto: 'Aprobada · antes de solicitar el anticipo' },
     gastos: [['Alimentos', 800], ['Vuelo (referencia)', 4300]],
@@ -407,15 +407,15 @@ const TRIP_DETAIL = {
     hist: [['21/11/2025 11:30', 'Envió la solicitud de viaje a autorización', 'Elizabeth Sánchez Gómez', 'Corporativo', 'Enviado', 'azul'], ['25/11/2025 12:10', 'Aprobó la solicitud de viaje', 'Fernando Miranda Ruiz', 'Aprobada', 'Aprobado', 'verde'], ['28/11/2025 10:00', 'Depositó el anticipo', 'Contabilidad / Tesorería', '$4,150', 'Realizado', 'verde'], ['09/12/2025 13:00', 'Validó la comprobación', 'Viáticos', 'Comprobado $4,150', 'Realizado', 'verde'], ['12/12/2025 17:00', 'Cerró el folio', 'Contabilidad / Tesorería', 'Finalizado', 'Cerrado', 'verde']] }),
   '00041': DET({ just: 'Reunión de planeación anual con la Dirección Corporativa.', origen: 'HSM Chihuahua', segs: [['Corporativo', '24/06/2026', '25/06/2026', 'Avión', 'hotel', ['Comida'], '07:00']], cadena: [['Dirección de Hospital', 'Fernando Miranda Ruiz', 'Pendiente', '']], gastos: [['Hospedaje', 1800], ['Alimentos', 400], ['Vuelo (referencia)', 1100]],
     hist: [['18/06/2026 09:45', 'Envió la solicitud de viaje a autorización', 'Laura Miranda Torres', 'Corporativo', 'Enviado', 'azul']] }),
-  '00029': DET({ pago: { tipo: 'debito', texto: 'Tarjeta de débito · SAP · terminación 8820' }, just: 'Auditoría operativa programada.', origen: 'HSM Chihuahua', segs: [['HSM Mérida', '09/03/2026', '11/03/2026', 'Avión', 'hospital', ['Cena'], '06:30']], cadena: [['Dirección de Hospital', 'Fernando Miranda Ruiz', 'Aprobada', '02/03/2026 09:30']],
+  '00029': DET({ pago: { tipo: 'debito', texto: 'Tarjeta de débito · ERP · terminación 8820' }, just: 'Auditoría operativa programada.', origen: 'HSM Chihuahua', segs: [['HSM Mérida', '09/03/2026', '11/03/2026', 'Avión', 'hospital', ['Cena'], '06:30']], cadena: [['Dirección de Hospital', 'Fernando Miranda Ruiz', 'Aprobada', '02/03/2026 09:30']],
     hos: ['Confirmado', 'verde', [['Unidad', 'HSM Mérida · 2 noches']]], vue: ['Emitido', 'verde', [['Ida', 'Chihuahua → Mérida · 09/03/2026'], ['Regreso', 'Mérida → Chihuahua · 11/03/2026']]],
     ant: ['Depositado', 'verde', [['Monto depositado', '$5,640'], ['Fecha de depósito', '04/03/2026']]], com: ['Validada', 'verde', [['Monto comprobado', '$5,640'], ['Saldo', '$0']]],
     cie: ['Cerrado', 'verde', [['Fecha de cierre', '20/03/2026'], ['Estatus final', 'Finalizado'], ['Área', 'Contabilidad / Tesorería']]], gastos: [['Alimentos', 1200], ['Vuelo (referencia)', 4440]],
     hist: [['27/02/2026 10:20', 'Envió la solicitud de viaje a autorización', 'Laura Miranda Torres', 'HSM Mérida', 'Enviado', 'azul'], ['02/03/2026 09:30', 'Aprobó la solicitud de viaje', 'Fernando Miranda Ruiz', 'Aprobada', 'Aprobado', 'verde'], ['04/03/2026 10:00', 'Depositó el anticipo', 'Contabilidad / Tesorería', '$5,640', 'Realizado', 'verde'], ['17/03/2026 12:00', 'Validó la comprobación', 'Viáticos', 'Comprobado $5,640', 'Realizado', 'verde'], ['20/03/2026 17:00', 'Cerró el folio', 'Contabilidad / Tesorería', 'Finalizado', 'Cerrado', 'verde']] }),
-  '00040': DET({ pago: { tipo: 'debito', texto: 'Tarjeta de débito · SAP · terminación 5531' }, just: 'Revisión presupuestal del tercer trimestre en Corporativo.', origen: 'Corporativo', segs: [['Corporativo', '22/06/2026', '23/06/2026', 'Camioneta SM', 'hotel', ['Comida', 'Cena']]], cadena: [['Dirección Corporativa', 'Dirección Corporativa', 'Aprobada', '15/06/2026 10:00']],
+  '00040': DET({ pago: { tipo: 'debito', texto: 'Tarjeta de débito · ERP · terminación 5531' }, just: 'Revisión presupuestal del tercer trimestre en Corporativo.', origen: 'Corporativo', segs: [['Corporativo', '22/06/2026', '23/06/2026', 'Camioneta SM', 'hotel', ['Comida', 'Cena']]], cadena: [['Dirección Corporativa', 'Dirección Corporativa', 'Aprobada', '15/06/2026 10:00']],
     hos: ['En gestión', 'azul', [['Hotel', 'Hotel externo · 1 noche · Hotelería Corporativo']]], gastos: [['Hospedaje', 3200], ['Alimentos', 1300], ['Propinas', 400], ['Paquetería y mensajería', 1500]],
     hist: [['12/06/2026 11:00', 'Envió la solicitud de viaje a autorización', 'Ricardo Fuentes Ávila', 'Corporativo', 'Enviado', 'azul'], ['15/06/2026 10:00', 'Aprobó la solicitud de viaje', 'Dirección Corporativa', 'Aprobada', 'Aprobado', 'verde']] }),
-  '00027': DET({ pago: { tipo: 'debito', texto: 'Tarjeta de débito · SAP · terminación 5531' }, just: 'Visita de seguimiento al comité operativo del hospital.', origen: 'Corporativo', segs: [['HSM Querétaro', '17/02/2026', '19/02/2026', 'Avión', 'hotel', ['Comida', 'Cena'], '08:00']], cadena: [['Dirección Corporativa', 'Dirección Corporativa', 'Aprobada', '10/02/2026 12:00']],
+  '00027': DET({ pago: { tipo: 'debito', texto: 'Tarjeta de débito · ERP · terminación 5531' }, just: 'Visita de seguimiento al comité operativo del hospital.', origen: 'Corporativo', segs: [['HSM Querétaro', '17/02/2026', '19/02/2026', 'Avión', 'hotel', ['Comida', 'Cena'], '08:00']], cadena: [['Dirección Corporativa', 'Dirección Corporativa', 'Aprobada', '10/02/2026 12:00']],
     hos: ['Confirmado', 'verde', [['Hotel', 'Hotel externo · 2 noches']]], vue: ['Emitido', 'verde', [['Ida', 'CDMX → Querétaro · 17/02/2026'], ['Regreso', 'Querétaro → CDMX · 19/02/2026']]],
     ant: ['Depositado', 'verde', [['Monto depositado', '$9,250']]], com: ['Validada', 'verde', [['Monto comprobado', '$9,250'], ['Saldo', '$0']]],
     cie: ['Cerrado', 'verde', [['Fecha de cierre', '03/03/2026'], ['Estatus final', 'Finalizado'], ['Área', 'Contabilidad / Tesorería']]], gastos: [['Hospedaje', 6400], ['Alimentos', 1300], ['Vuelo (referencia)', 1550]],
@@ -457,6 +457,6 @@ const PERFILES_VIAJERO = [
 ];
 const perfilCap = (perfil, cap) => { const p = PERFILES_VIAJERO.find(x => x.id === (perfil && perfil.label ? perfil.label : perfil)); return !!(p && p.capacidades[cap]); };
 const VIG_MAX = '31/12/9999'; // vigencia máxima admitida; en lecturas se muestra «sin fecha de cierre»
-window.SMV_PERFIL = { POLITICA_EXTERNO, PERFILES_VIAJERO, perfilCap, VIG_MAX, TRIP_DETAIL, COMPROBACIONES, TODAY, GLOBAL, PROFILES, AUTO_BY_GROUP, AUTO_BY_AREA, AREA_PERSONAL_NOMBRE, SAP_PERSONAL, ESTRUCTURA_SAP, VIG_LIBRO, CONCEPTOS, TARIFAS, TARIFAS_EXTERNO, TARIFA_CATEGORIAS, TARIFA_HEREDA, TARIFA_VIG, TARIFA_VIG_ESP, TARIFA_NOTAS, TAXI, REGLAS_EXC, EXCEPCIONES, ASSIGN, SAP_EXTRA, TRIPS, INDICADORES, BUDGET, TRANSPORTES };
+window.SMV_PERFIL = { POLITICA_EXTERNO, PERFILES_VIAJERO, perfilCap, VIG_MAX, TRIP_DETAIL, COMPROBACIONES, TODAY, GLOBAL, PROFILES, AUTO_BY_GROUP, AUTO_BY_AREA, AREA_PERSONAL_NOMBRE, ERP_PERSONAL, ESTRUCTURA_ERP, VIG_LIBRO, CONCEPTOS, TARIFAS, TARIFAS_EXTERNO, TARIFA_CATEGORIAS, TARIFA_HEREDA, TARIFA_VIG, TARIFA_VIG_ESP, TARIFA_NOTAS, TAXI, REGLAS_EXC, EXCEPCIONES, ASSIGN, ERP_EXTRA, TRIPS, INDICADORES, BUDGET, TRANSPORTES };
 
 })(); }

@@ -1,13 +1,13 @@
 if (!window.SMV_US09) { (function(){
 // US-09 · APROBACIÓN DE VIAJE — datos DEMO (sintéticos; repositorio público).
 // SEED = solicitudes ENVIADAS con el MISMO modelo que genera Creación (us08-data.js › SEED_REQS + sv.reqs de la sesión):
-// cadena por estructura de SAP (svChain / svChainExt) guardada al enviar en cadenaIds + cadenaInfo, y DECISIONES append-only por paso
+// cadena por estructura del ERP (svChain / svChainExt) guardada al enviar en cadenaIds + cadenaInfo, y DECISIONES append-only por paso
 // { paso, res: 'aprobada' | 'rechazada', motivoTipo, motivo, byId, when, canal }. Nunca se sobrescriben; «resueltas por mí» se reconstruye de ellas.
 // Escenarios: A 00061 normal hospital · B 00062 multidestino (origen de grupo) · C 00063 viajero externo (nivel 2) · D 00065 acompañante ·
 // E 00066 contexto presupuestal (ámbar; fuera del alcance de Monitor del autorizador) · F 00067 rechazada · H 00069 escalada a CH CO por excedente.
 const SEG = (n, id, label, tipo, inicio, fin, dias, noches, medio, hospedaje, comidas, extra) => ({ n, tipo, id: 'h' + id, hospId: id, label, inicio, fin, dias, noches, medio, hospedaje, comidas, hospAlim: tipo === 'hospital', ...(extra || {}) });
 const RUTA = (origen, segs) => ({ origen, tramos: segs.map((s, i) => ({ n: s.n, desde: i ? { id: segs[i - 1].id, label: segs[i - 1].label } : origen, hasta: { id: s.id, label: s.label } })) });
-const DEB = ref => ({ metodo: 'debito', label: 'Tarjeta de débito', origen: 'SAP', referencia: '•••• ' + ref, texto: 'Tarjeta de débito · •••• ' + ref });
+const DEB = ref => ({ metodo: 'debito', label: 'Tarjeta de débito', origen: 'ERP', referencia: '•••• ' + ref, texto: 'Tarjeta de débito · •••• ' + ref });
 const CHI = { id: 'h1114', label: 'HSM Chihuahua' }, COR = { id: 'h1100', label: 'Corporativo' };
 
 const sA = [SEG(1, '1100', 'Corporativo', 'corporativo', '27/10/2026', '28/10/2026', 2, 1, 'Autobús', 'hotel', ['Comida', 'Cena'])];
@@ -31,7 +31,7 @@ const SEED = [
     acompanantes: [{ personId: 'u05', addedAt: '12/10/2026 16:32', addedBy: 'u01' }], grupo: 'G-00062', rolGrupo: 'origen', participantes: [{ personId: 'u05', folio: '00065' }],
     pago: DEB('2205'), perfilFolio: 'Mando medio', entidad: 'Dirección Comercial y de Negocios', justificacion: 'Visitas a tres unidades para presentar el programa comercial 2027 a los equipos directivos.', evidencia: [{ key: 'ev1', name: 'Agenda-visitas-comerciales-noviembre.pdf' }],
     cadena: [{ label: 'Director inmediato', person: 'Mónica Herrera Luna' }, { label: 'DGA', person: 'Pedro Medina' }], cadenaIds: ['u04', 'u06'],
-    cadenaInfo: [{ ctx: 'Directora Comercial y de Negocios · grupo E ED · estructura de SAP' }, { ctx: 'Dirección General Adjunta · el director inmediato es E ED' }],
+    cadenaInfo: [{ ctx: 'Directora Comercial y de Negocios · grupo E ED · estructura del ERP' }, { ctx: 'Dirección General Adjunta · el director inmediato es E ED' }],
     firstLabel: 'Director inmediato (Mónica Herrera Luna)', decisiones: [], exceso: false, excesos: [], when: '12/10/2026 16:40', at: 62 },
   { folio: '00063', uid: 'x01', travelerType: 'externo', travelerId: 'x01', userId: 'u02', createdBy: 'u02', respId: 'u02', status: 'pendAut', motivo: 'Entrevista', motivoCode: null, proyecto: '', segmentos: sC,
     ruta: RUTA({ id: '', label: 'Ciudad Juárez, Chihuahua' }, sC), origenTexto: 'Ciudad Juárez, Chihuahua',
@@ -44,7 +44,7 @@ const SEED = [
   { folio: '00065', uid: 'u05', userId: 'u05', status: 'pendAut', motivo: 'Proyecto', motivoCode: 'PROY', proyecto: 'Expansión comercial Noreste y Bajío', segmentos: sB, ruta: RUTA(COR, sB),
     gastos: [{ concepto: 'Hospedaje', importe: 2400, origen: 'tarifa' }, { concepto: 'Alimentos', importe: 3300, origen: 'tarifa' }], dest: 'HSM Monterrey · HSM Guadalajara · HSM Querétaro', fechas: '03/11/2026 – 07/11/2026', nights: '5 días · 4 noches', total: 5700, hasta: false, acompanantes: [],
     grupo: 'G-00062', rolGrupo: 'acompanante', origenFolio: '00062', origenUid: 'u01', pago: DEB('7731'), perfilFolio: 'Director', entidad: 'Dirección de Capital Humano', justificacion: 'Acompaña las visitas comerciales para presentar el plan de capital humano 2027 a los equipos directivos.', evidencia: [{ key: 'ev1', name: 'Agenda-visitas-comerciales-noviembre.pdf' }],
-    cadena: [{ label: 'Director inmediato', person: 'Pedro Medina' }], cadenaIds: ['u06'], cadenaInfo: [{ ctx: 'Director General Adjunto · grupo E ED · estructura de SAP' }],
+    cadena: [{ label: 'Director inmediato', person: 'Pedro Medina' }], cadenaIds: ['u06'], cadenaInfo: [{ ctx: 'Director General Adjunto · grupo E ED · estructura del ERP' }],
     firstLabel: 'Director inmediato (Pedro Medina)', decisiones: [], exceso: false, excesos: [], when: '13/10/2026 08:30', at: 65 },
   { folio: '00066', uid: 'u03', userId: 'u03', status: 'pendAut', motivo: 'Reunión comité', motivoCode: 'COM', proyecto: '', segmentos: sE, ruta: RUTA(CHI, sE),
     gastos: [{ concepto: 'Hospedaje', importe: 4800, origen: 'tarifa' }, { concepto: 'Alimentos', importe: 3150, origen: 'tarifa' }], dest: 'Corporativo', fechas: '20/10/2026 – 22/10/2026', nights: '3 días · 2 noches', total: 7950, hasta: false, acompanantes: [],
@@ -65,7 +65,7 @@ const SEED = [
     pago: DEB('3170'), perfilFolio: 'Director', entidad: 'Dirección Comercial y de Negocios', justificacion: 'Arranque del programa comercial con los socios médicos de la región Sureste; la agenda exige permanecer la semana completa.',
     evidencia: [{ key: 'exc', name: 'Autorizacion-excedente-noches-semana.pdf' }],
     cadena: [{ label: 'Director inmediato', person: 'Pedro Medina' }, { label: 'Capital Humano Corporativo', person: 'Alfredo Cacho' }], cadenaIds: ['u06', 'u05'],
-    cadenaInfo: [{ ctx: 'Director General Adjunto · grupo E ED · estructura de SAP' }, { ctx: 'Escalamiento por excepción de límites del perfil', kind: 'esc', causa: 'excedente' }],
+    cadenaInfo: [{ ctx: 'Director General Adjunto · grupo E ED · estructura del ERP' }, { ctx: 'Escalamiento por excepción de límites del perfil', kind: 'esc', causa: 'excedente' }],
     firstLabel: 'Director inmediato (Pedro Medina)', decisiones: [{ paso: 0, res: 'aprobada', byId: 'u06', when: '12/10/2026 10:30', canal: 'Portal web · escritorio' }],
     exceso: true, excesos: ['Noches por semana: el perfil Director permite 3 noches por semana; la solicitud tiene 5.'], when: '11/10/2026 09:00', at: 59 }
 ];

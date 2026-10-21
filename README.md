@@ -1,11 +1,14 @@
 # Portal de Viáticos 2.0 — prototipo de referencia (código fuente)
 
-**Cliente:** Starmedica · **Estado (2026-10-15 · snapshot acumulado):**
+**Cliente:** Starmedica · **Estado (2026-10-21 · snapshot acumulado):**
 - **US-01 Layout y navegación por rol · US-02 Inicio · US-03 Perfiles de viajero · US-04 Ficha del viajero · US-05 Viajeros externos · US-08 Creación de solicitud · US-10 Mis viajes · US-25 Usuarios y permisos / Bitácora** — APPROVED · CLOSED · FULLY SYNCED.
 - **US-06 — Disponibilidad presupuestal y bloqueo de creación de viaje · APPROVED · CLOSED (2026-10-15) · SYNCED en este snapshot** — PDF «Propuesta visual (US-06 …)».
 - **US-07 — Administración del presupuesto: carga, suplementos y monitor · APPROVED · CLOSED (2026-10-15) · SYNCED en este snapshot** — PDF «Propuesta visual (US-07 …)».
   Modelo canónico: `src/features/budget/budget-model.js` (= `prototype/uspres-data.js`, `window.SMV_PRES`); referencia `docs/BUDGET_MODEL.md`.
-- **En revisión (REVIEW MODE · SYNC PENDING)** — incluidas en `prototype/` pero NO aprobadas: **US-09 Aprobación de viaje** (`prototype/us09-data.js`), **US-14 / US-15 Anticipo** (`prototype/us14-data.js`), propuestas del equipo de desarrollo 2026-10-07, corrección semántica DGA (reglas 323–326), catálogos y tarifas del libro V1, estándares globales 305–315/327/389–391. Estar en el snapshot NO las aprueba.
+- **US-09 Aprobación de viaje** — APPROVED · CLOSED · SYNCED en este snapshot (`src/features/travel-approval/`).
+- **US-11 Hospedaje y vuelo del colaborador · US-12 Hospedaje HSM · US-13 Gestión de Viáticos: hotel externo y ciclo de vuelo** — APPROVED · CLOSED (2026-10-21) · SYNCED (`src/features/lodging-flight/`, `docs/LODGING_FLIGHT_MODEL.md`).
+- **US-14 Solicitud de anticipo · US-15 Anticipo: contabilización, transferencia y depósito** — APPROVED · CLOSED (2026-10-21) · SYNCED (`src/features/advance/`, `docs/ADVANCE_MODEL.md`).
+- **En revisión (REVIEW MODE · SYNC PENDING)** — incluidas en `prototype/` pero NO aprobadas: propuestas del equipo de desarrollo 2026-10-07, corrección semántica DGA, catálogos y tarifas del libro V1, estándares globales de prototipo. Estar en el snapshot NO las aprueba.
 
 Este proyecto es el **ÚNICO código fuente acumulado** del Portal: las historias siguientes lo extienden; nunca se rehace US-01 ni US-02.
 

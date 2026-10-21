@@ -8,7 +8,7 @@ if (!window.SMV_CAT) { (function(){
 
 // ---------------------------------------------------------------------------
 // HOSPITALES · «Cat. Hospital» (CLIENT CONFIRMED — GREEN WORKBOOK). 22 registros.
-// id = idhospital de SAP · nombre = hnombre oficial · alias = etiqueta corta ya usada en el Portal (presentación, no un segundo registro)
+// id = idhospital del ERP · nombre = hnombre oficial · alias = etiqueta corta ya usada en el Portal (presentación, no un segundo registro)
 // conAlimentos = «Con alimentos» (X) · tipoBanco / cuentaBancaria vienen VACÍOS en el libro y se conservan vacíos (no se inventan).
 // Vigencia del catálogo: 01/08/2026 – 31/12/9999 (31/12/9999 = «Sin fecha de cierre»).
 // ---------------------------------------------------------------------------
@@ -45,7 +45,7 @@ const hospByAlias = v => { const s = String(v || '').trim(); if (!s) return null
 const hospLabel = (id, full) => { const h = hospById(id); return h ? (full ? h.id + ' · ' + h.nombre : h.alias) : ''; };
 
 // ---------------------------------------------------------------------------
-// SOCIEDADES · «Cat. RFC» (CLIENT CONFIRMED — GREEN WORKBOOK). La SOCIEDAD del colaborador es dato de personal de SAP
+// SOCIEDADES · «Cat. RFC» (CLIENT CONFIRMED — GREEN WORKBOOK). La SOCIEDAD del colaborador es dato de personal del ERP
 // (código); este catálogo solo la ENRIQUECE con razón social y RFC cuando una pantalla lo necesita (comprobación, contabilidad).
 // Nunca se infiere la sociedad de una persona a partir de su hospital, rol, perfil o CECO.
 // ---------------------------------------------------------------------------
