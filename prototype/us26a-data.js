@@ -1,0 +1,29 @@
+if (!window.SMV_AYU) { (function(){
+// US-26 · AYUDA + US-24 · ADMINISTRACIÓN › POLÍTICAS Y GUÍAS — MODELO DOCUMENTAL (manager 2026-10-29: solo subir documentos y consultarlos;
+// sin contenido estructurado ni editores, para no extender el alcance de backend).
+// Cada documento = { id (clave del documento), tipo 'politica' | 'guia', titulo, version, desde, hasta (31/12/9999 = abierta), publicada,
+//   doc (archivo PDF), roles ('todos' | códigos de rol funcional), descripcion (opcional), nota (cambios, opcional), byId }.
+// Visibilidad por ROL FUNCIONAL (Usuarios y permisos), nunca por perfil de viajero. Solo se publican documentos confirmados por el cliente.
+const AUT = ['DIR', 'CHC', 'DGA'];
+const DOCS = [
+  { id: 'pol-viajes', tipo: 'politica', titulo: 'Política de viajes y viáticos', version: 'v2', desde: '01/01/2026', hasta: '31/08/2026', publicada: '01/01/2026', doc: 'Politica-viajes-viaticos-v2.pdf', roles: 'todos', descripcion: 'Autorización, tarifas por perfil, anticipo, hospedaje y vuelo.' },
+  { id: 'pol-viajes', tipo: 'politica', titulo: 'Política de viajes y viáticos', version: 'v3', desde: '01/09/2026', hasta: '31/12/9999', publicada: '01/09/2026', doc: 'Politica-viajes-viaticos-v3.pdf', roles: 'todos', descripcion: 'Autorización, tarifas por perfil, anticipo, hospedaje y vuelo.' },
+  { id: 'pol-comp', tipo: 'politica', titulo: 'Lineamientos de comprobación de gastos', version: 'v1', desde: '01/01/2026', hasta: '19/10/2026', publicada: '01/01/2026', doc: 'Lineamientos-comprobacion-v1.pdf', roles: 'todos', descripcion: 'Documentos por concepto, plazos, saldo y reintegro de anticipo.' },
+  { id: 'pol-comp', tipo: 'politica', titulo: 'Lineamientos de comprobación de gastos', version: 'v2', desde: '20/10/2026', hasta: '31/12/9999', publicada: '20/10/2026', doc: 'Lineamientos-comprobacion-v2.pdf', roles: 'todos', descripcion: 'Documentos por concepto, plazos, saldo y reintegro de anticipo.', nota: 'Saldo a favor / en contra del colaborador, reintegro de anticipo y visto bueno de Dirección para excedentes de taxi, casetas y gasolina.' },
+  { id: 'pol-rep', tipo: 'politica', titulo: 'Lineamientos de gastos de representación', version: 'v1', desde: '28/10/2026', hasta: '31/12/9999', publicada: '28/10/2026', doc: 'Lineamientos-gastos-representacion-v1.pdf', roles: ['DIR', 'DGA', 'CTR', 'CON', 'ADM'], descripcion: 'Comprobación por evento, plazo y cadena de autorización.', nota: 'Nueva comprobación separada de gastos de representación.' },
+  { id: 'gui-viajero', tipo: 'guia', titulo: 'Guía del viajero', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-del-viajero-v1.pdf', roles: 'todos', descripcion: 'Crear una solicitud, anticipo, hotel y vuelo, comprobación y cierre.' },
+  { id: 'gui-aut', tipo: 'guia', titulo: 'Guía de Dirección y autorizadores', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-direccion-autorizadores-v1.pdf', roles: AUT, descripcion: 'Aprobación de viaje, monitor de presupuesto, dashboard y reportes.' },
+  { id: 'gui-chh', tipo: 'guia', titulo: 'Guía de Capital Humano HSM', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-capital-humano-hsm-v1.pdf', roles: ['CHH'], descripcion: 'Registro de viajeros externos y sus solicitudes y comprobaciones.' },
+  { id: 'gui-hot', tipo: 'guia', titulo: 'Guía de Hotelería', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-hoteleria-v1.pdf', roles: ['HH', 'HC'], descripcion: 'Confirmación de hospedaje HSM, hospedaje corporativo y encuesta.' },
+  { id: 'gui-via', tipo: 'guia', titulo: 'Guía de Viáticos', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-viaticos-v1.pdf', roles: ['VIA'], descripcion: 'Hotel externo, vuelos y validación de comprobaciones.' },
+  { id: 'gui-con', tipo: 'guia', titulo: 'Guía de Contabilidad / Tesorería', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-contabilidad-tesoreria-v1.pdf', roles: ['CON'], descripcion: 'Anticipos, contabilización, reembolsos, reintegros, IT0014 y cierre.' },
+  { id: 'gui-ctr', tipo: 'guia', titulo: 'Guía de Contraloría', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-contraloria-v1.pdf', roles: ['CTR'], descripcion: 'Gastos de representación y reportes de control.' },
+  { id: 'gui-adm', tipo: 'guia', titulo: 'Guía del Administrador', version: 'v1', desde: '26/10/2026', hasta: '31/12/9999', publicada: '26/10/2026', doc: 'Guia-administrador-v1.pdf', roles: ['ADM'], descripcion: 'Usuarios y permisos, perfiles de viajero, políticas y guías, bitácora.' }
+];
+const SOPORTE_CAT = ['Error en una pantalla', 'No puedo guardar o enviar', 'Datos o importes incorrectos', 'Acceso o permisos', 'Documentos y archivos', 'Otro'];
+const SOPORTE_SEED = [
+  { id: 'SOP-2026-0041', uid: 'u01', folio: '00101', pantalla: 'Comprobación', categoria: 'Documentos y archivos', descripcion: 'El XML de la factura del hotel marca error fiscal aunque la factura es correcta.', adjunto: null, creado: '20/10/2026 10:12', estado: 'resuelto', hist: [['20/10/2026 10:12', 'Enviado', 'Reporte recibido'], ['20/10/2026 13:40', 'En atención', 'Mesa de ayuda revisa el caso'], ['21/10/2026 09:15', 'Resuelto', 'El RFC receptor era de otra sociedad; se solicitó refacturar.']] },
+  { id: 'SOP-2026-0057', uid: 'u01', folio: '', pantalla: 'Mis viajes', categoria: 'Error en una pantalla', descripcion: 'El detalle del folio tarda en mostrar la línea de avance desde el teléfono.', adjunto: null, creado: '27/10/2026 18:05', estado: 'atencion', hist: [['27/10/2026 18:05', 'Enviado', 'Reporte recibido'], ['28/10/2026 09:00', 'En atención', 'Mesa de ayuda revisa el caso']] }
+];
+window.SMV_AYU = { DOCS, SOPORTE_CAT, SOPORTE_SEED };
+})(); }

@@ -1,3 +1,15 @@
+# Portal de Viáticos 2.0 — prototipo de referencia (código fuente) · FINAL HANDOFF 2026-10-30
+
+**Purpose:** interactive design prototype of Star Médica's travel-expense portal (requests, approval, lodging/flight, anticipo, comprobación, reimbursement/closure, budget, dashboard, reports, help, administration). **Not production software:** no backend; all data is synthetic and lives in the browser session; ERP/SAP, e-mail and payments are simulated.
+
+- **Run:** serve this folder statically (`npx serve .`) and open `prototype/Portal Viaticos.dc.html` (or `index.html` for the modular `src/` shell of earlier stories).
+- **Demo bar «MODO DEMO · SOLO PROTOTIPO»:** switch simulated user/role and demo conditions. Prototype-only; never part of production UI.
+- **Structure:** `prototype/` (exact cumulative prototype + data modules + assets) · `src/` (modular reference port of stories closed up to 2026-10-21) · `docs/` (models and standards) · PROJECT_RULES.md (= project CLAUDE.md; canonical numbered rules) · PROJECT_WORKFLOW.md · FEATURE_SYNC_PENDING.md (open decisions) · IMPLEMENTATION_MAP.md · FINAL_HANDOFF.md (story status + PDFs).
+- **Mock → production:** data modules (`*-data.js`, `window.SMV_*`) model the canonical records and catalogs; resolvers in the prototype (permissions, scope, budget, saldo, deadlines) document the rules the backend must own.
+- **Pending client decisions:** FEATURE_SYNC_PENDING.md › FINAL HANDOFF section.
+- **Privacy:** synthetic people and amounts; no credentials. Confirm client-provided items (demo portraits, company RFCs, GL accounts) before making the repository public. No license is included.
+
+---
 # Portal de Viáticos 2.0 — prototipo de referencia (código fuente)
 
 **Cliente:** Starmedica · **Estado (2026-10-21 · snapshot acumulado):**

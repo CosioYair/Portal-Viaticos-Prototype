@@ -1,3 +1,35 @@
+# IMPLEMENTATION_MAP — FINAL HANDOFF (2026-10-30)
+
+All features live in the cumulative prototype `prototype/Portal Viaticos.dc.html` (one Design Component: template + logic class). Data modules are plain scripts that set `window.SMV_*`. `src/` is the modular reference port of stories closed up to 2026-10-21. Menu `us:` refs inside `us01-data.js` are historical numbering.
+
+| Feature | Route(s) | Logic (methods in Portal Viaticos.dc.html) | Data module |
+|---|---|---|---|
+| Layout · header (global «← Regresar») · menu · bell · Home by role | inicio | render shell · navSnap / navHist · tabCounts · kpiLive | us01-data.js (USERS, MENU, ICONS) · usbrand-img.js · usvisual-img.js · us01-photo.js |
+| Users & permissions · Bitácora | adm-usuarios · adm-bitacora | u26*, antCapOf (permission resolver), BIT_SCOPE | us26-data.js |
+| Traveler profiles · tariffs · exceptions · traveler card | adm-perfiles · perfil | pv*, pvTarifa | usperfil-data.js · uscat-data.js |
+| External travelers | externos | ext* | us01-data.js (EXTERNALS) |
+| Budget · Monitor · loads | pres-monitor | presData · presCaps · presAddMov | uspres-data.js |
+| Creation | solicitud | sv* (svEval, svAllReqs) | us08-data.js · uscat-data.js |
+| Travel approval | aut-viaje | ap* | us09-data.js |
+| Lodging & flight (HSM → Hotelería Corporativo → Viáticos) | hospedaje · res-hsm · res-hc · res-hotel | hv* | us11-data.js |
+| Anticipo (collaborator · Contabilidad) | anticipo · con-ant | ant* | us14-data.js |
+| Hospital survey | ayu-encuesta · encuestas | enc* (encAplica, encScore) | us17-data.js (SMV_COM.ENC_*) |
+| Comprobación (capture, send, reintegro) | comprobacion | com* (comElig, comPlazos, comSaldo, comCanSend, comTope*, devPreCard) | us17-data.js (SMV_COM.RECS) |
+| Representation expenses | representacion · aut-rep · con-rep | rp* · rep* (repChain, repAutorizado, rpCuentas) | us17-data.js |
+| Viáticos validation | ges-comp | val* (valDecideDoc, valCanApprove, valConflict) | us17-data.js |
+| Contabilidad · reimbursement · reintegro · IT0014 · closure | con-comp | con* · cie* (comConcil, cieBloqueos) | us17-data.js |
+| Mis viajes · Journey | misviajes | mv* · mvStages · comStage / cieStage | (canonical records above) |
+| Dashboard | dashboard | dbRender (see docs/DASHBOARD_MODEL.md) | (aggregates only) |
+| Reports | reportes | rpt* (rptData, rptCat, rptPdf) | us23-data.js |
+| Help (policies, guides, support) | ayu-politicas · ayu-guia | ayu* (ayuDocs, ayuVig) | us26a-data.js |
+| Administration › Policies & guides | adm-politicas | apg* | us26a-data.js |
+| Catalogs & parameters | adm-catalogos | — (NOT IMPLEMENTED) | — |
+| Shared: generic list (search · filters · sort · «Página x de y») · confirm dialog · success modal · document viewer · file rules (5 MB) | all | buildList · askConfirm · notifySuccess · openDoc / docViewVals · uploadHelp | uscat-data.js (FILE_UPLOAD_RULES) |
+| Runtime | — | — | support.js |
+
+---
+## Historical map (stories closed up to 2026-10-21; still valid for `src/`)
+
 # IMPLEMENTATION_MAP — elemento aprobado → archivo (US-01 + US-02 + US-03 + US-04 + US-05 + US-08 + US-10 + US-25 · APPROVED · FULLY SYNCED · 2026-10-08)
 
 | Elemento aprobado | Archivo(s) |

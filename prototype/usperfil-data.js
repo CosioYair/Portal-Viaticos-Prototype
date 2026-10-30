@@ -115,7 +115,7 @@ const CONCEPTOS = [
   { id: 'c4', label: 'Anticipo', unidad: 'monto máximo autorizado', duracion: null, fuente: 'provisional' },
   // c9 Gastos de representación (regla 373): monto máximo por viaje; aplica SOLO a perfiles con capacidades.representacion (Director).
   // Las fuentes no definen importe → «Sin tarifa», configurable. Autorización DGA + revisión Contraloría sin cambios.
-  { id: 'c9', label: 'Gastos de representación', unidad: 'monto máximo por viaje', duracion: null, fuente: 'provisional', soloCapacidad: 'representacion' }
+  { id: 'c9', label: 'Gastos de representación', unidad: 'monto máximo por comprobación (evento)', duracion: null, fuente: 'provisional', soloCapacidad: 'representacion' }
 ];
 // Perfiles que heredan la tarifa de otro perfil (ninguno vigente).
 // CORRECCIÓN DEL CLIENTE (2026-10-06): DGA es ROL FUNCIONAL, no perfil de viajero → sin herencia «DGA = Director». Mecanismo conservado vacío.
@@ -184,7 +184,7 @@ const REGLAS_EXC = [
   { id: 'r9', label: 'Tarifa de vuelos', kind: 'money', unidad: 'monto máximo', policy: 'tarifa:c6' },
   { id: 'r10', label: 'Tarifa de gasolina', kind: 'money', unidad: 'monto máximo', policy: 'tarifa:c7' },
   { id: 'r11', label: 'Tarifa de casetas', kind: 'money', unidad: 'monto máximo', policy: 'tarifa:c8' },
-  { id: 'r13', label: 'Gastos de representación', kind: 'money', unidad: 'monto máximo por viaje', policy: 'tarifa:c9', soloCapacidad: 'representacion' },
+  { id: 'r13', label: 'Gastos de representación', kind: 'money', unidad: 'monto máximo por comprobación (evento)', policy: 'tarifa:c9', soloCapacidad: 'representacion' },
   { id: 'r4', label: 'Noches máximas por semana', kind: 'int', unidad: 'noches', policy: 'nochesSemana' },
   { id: 'r5', label: 'Semanas máximas por mes', kind: 'int', unidad: 'semanas', policy: 'semanasMes' },
   { id: 'r7', label: 'Días máximos por viaje', kind: 'int', unidad: 'días', policy: 'diasMax' },

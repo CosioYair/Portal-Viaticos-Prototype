@@ -44,8 +44,8 @@ const MENU = [
     { id: 'misviajes', label: 'Mis viajes', us: 'US-11', fn: 'Detalle de folios propios', vis: travelerBase },
     { id: 'anticipo', label: 'Anticipo', us: 'US-14', fn: 'Solicitar y seguir el anticipo de un viaje aprobado (monto propuesto por el sistema)', vis: all('VPF'), pf: 'anticipo' },
     { id: 'hospedaje', label: 'Hotel y vuelos', us: 'US-11', fn: 'Hospedaje y vuelo de los viajes aprobados (una vista por folio)', vis: travelerBase },
-    { id: 'comprobacion', label: 'Comprobación', us: 'US-19', vis: travelerBase },
-    { id: 'representacion', label: 'Gastos de representación', us: 'US-20', vis: { ...all('VPF'), DGA: '✓' }, pf: 'representacion' }
+    { id: 'comprobacion', label: 'Comprobación', us: 'US-19', fn: 'Registro, envío, edición y cancelación de la comprobación de gastos del viaje (CH HSM: a nombre de su externo)', vis: { ...travelerBase, CHH: '✓' } },
+    { id: 'representacion', label: 'Gastos de representación', us: 'US-20', fn: 'Comprobación separada de gastos de representación de Dirección (por evento, sin solicitud de viaje): registro, envío, cancelación y seguimiento del reembolso', vis: { DIR: '✓' } }
   ] },
   { group: null, items: [{ id: 'perfil', label: 'Perfil del viajero', us: 'US-04', fn: 'Consulta y actualización del perfil de viajero (Viáticos: consulta en solo lectura)', vis: { ...all('V'), COL: '✓', VIA: 'L' } }] },
   { group: null, items: [{ id: 'externos', label: 'Viajeros externos', us: 'US-05', fn: 'Gestión de colaboradores externos', vis: { CHH: '✓', VIA: 'L' } }] },
@@ -62,8 +62,8 @@ const MENU = [
     // Viáticos (cliente 2026-10-15): Consultar + CE «Cambiar estatus» por default (Aprobada → Rechazada sin movimientos posteriores · Rechazada → Aprobada); nunca Autorizar.
     { id: 'aut-viaje', label: 'Aprobación de viaje', us: 'US-09', vis: { DIR: '✓', CHC: '✓', DGA: '✓', VIA: '✓' }, actVis: { AU: { DIR: '✓', CHC: '✓', DGA: '✓' }, CE: { VIA: '✓' } } },
     // US-15 (cliente 2026-10-16): el anticipo ya NO tiene autorización de Director; solo pasa por Contabilización › Solicitud de anticipo (opción «Autorización › Anticipos» retirada).
-    { id: 'aut-rep', label: 'Gastos de representación', us: 'US-20', vis: { DGA: '✓', CTR: '✓' } },
-    { id: 'aut-comp', label: 'Comprobaciones', us: 'US-20', fn: 'Evidencias de gastos de representación (DGA)', vis: { DGA: '✓' } }
+    // US-19 (manager 2026-10-21): la opción genérica «Autorización › Comprobaciones» (aut-comp, DGA) se RETIRÓ; DGA interviene solo en Gastos de representación.
+    { id: 'aut-rep', label: 'Gastos de representación', us: 'US-20', fn: 'Autorización previa (DGA) y revisión (Contraloría) de gastos de representación', vis: { DGA: '✓', CTR: '✓' } }
   ] },
   { group: 'Reservaciones', items: [
     { id: 'res-hsm', label: 'Hospedaje HSM', us: 'US-13', vis: { HH: '✓' } },
@@ -105,7 +105,7 @@ const COUNTS = {
   u03: { 'aut-viaje': 3 },
   u04: { 'aut-viaje': 5, 'aut-rep': 0 },
   u05: { 'aut-viaje': 2 },
-  u06: { 'aut-viaje': 1, 'aut-rep': 2, 'aut-comp': 1 },
+  u06: { 'aut-viaje': 1, 'aut-rep': 2 },
   u07: { 'res-hsm': 2 },
   u08: { encuestas: 6, 'res-hotel': 2 },
   u09: { 'res-hotel': 5, 'ges-comp': 9 },
@@ -395,8 +395,8 @@ const NOTICES = {
 };
 
 // Header deadline alert per user (persistent) — null when none
+// US-18: el plazo de comprobación del viajero ya NO es un texto fijo: lo calcula el Portal con el registro canónico (comDeadline). Solo quedan avisos operativos.
 const DEADLINES = {
-  u01: { text: 'Comprobación del folio 00043 vence en 2 días hábiles', target: 'comprobacion', folio: '00043' },
   u09: { text: '2 comprobaciones con plazo vencido en tu bandeja', target: 'ges-comp' }
 };
 
@@ -444,14 +444,14 @@ const I = {
 const ICONS = {
   inicio: I.home, creacion: I.plus, misviajes: I.suitcase, anticipo: I.money, hospedaje: I.bed, vuelo: I.plane, comprobacion: I.fileCheck, representacion: I.receipt,
   perfil: I.user, externos: I.userPlus, 'pres-monitor': I.chart,
-  'aut-viaje': I.checkCircle, 'aut-ant': I.money, 'aut-rep': I.receipt, 'aut-comp': I.fileCheck,
+  'aut-viaje': I.checkCircle, 'aut-ant': I.money, 'aut-rep': I.receipt,
   'res-hsm': I.hospital, 'res-hc': I.hospital, 'res-hotel': I.hotel, 'ges-comp': I.fileCheck,
   'con-plan': I.list, 'con-ant': I.money, 'con-comp': I.fileCheck, 'con-rep': I.receipt,
   encuestas: I.survey, dashboard: I.grid, reportes: I.fileText,
   'adm-perfiles': I.users, 'adm-catalogos': I.book, 'adm-politicas': I.shield, 'adm-usuarios': I.key, 'adm-bitacora': I.history,
   'ayu-politicas': I.shield, 'ayu-guia': I.help, 'ayu-encuesta': I.survey
 };
-const ICON_NAMES = { inicio:'home', creacion:'plus', misviajes:'briefcase', anticipo:'dollar-sign', hospedaje:'bed', vuelo:'plane', comprobacion:'file-check', representacion:'receipt', perfil:'user', externos:'user-plus', 'pres-monitor':'bar-chart', 'aut-viaje':'check-circle', 'aut-ant':'dollar-sign', 'aut-rep':'receipt', 'aut-comp':'file-check', 'res-hsm':'hospital', 'res-hotel':'hotel', 'ges-comp':'file-check', 'con-plan':'list', 'con-ant':'dollar-sign', 'con-comp':'file-check', 'con-rep':'receipt', encuestas:'message-square-dots', dashboard:'layout-grid', reportes:'file-text', 'adm-perfiles':'users', 'adm-catalogos':'book-open', 'adm-politicas':'shield', 'adm-usuarios':'key', 'adm-bitacora':'history', 'ayu-politicas':'shield', 'ayu-guia':'help-circle', 'ayu-encuesta':'message-square-dots' };
+const ICON_NAMES = { inicio:'home', creacion:'plus', misviajes:'briefcase', anticipo:'dollar-sign', hospedaje:'bed', vuelo:'plane', comprobacion:'file-check', representacion:'receipt', perfil:'user', externos:'user-plus', 'pres-monitor':'bar-chart', 'aut-viaje':'check-circle', 'aut-ant':'dollar-sign', 'aut-rep':'receipt', 'res-hsm':'hospital', 'res-hotel':'hotel', 'ges-comp':'file-check', 'con-plan':'list', 'con-ant':'dollar-sign', 'con-comp':'file-check', 'con-rep':'receipt', encuestas:'message-square-dots', dashboard:'layout-grid', reportes:'file-text', 'adm-perfiles':'users', 'adm-catalogos':'book-open', 'adm-politicas':'shield', 'adm-usuarios':'key', 'adm-bitacora':'history', 'ayu-politicas':'shield', 'ayu-guia':'help-circle', 'ayu-encuesta':'message-square-dots' };
 
 // GLYPHS = catálogo local de iconos por nombre (un solo origen para toda la interfaz; sin CDN ni dependencias externas).
 // ORDEN DEL MENÚ POR ROL (solo presentación; regla 265): reordena opciones dentro de un grupo. No cambia permisos, rutas ni visibilidad.
